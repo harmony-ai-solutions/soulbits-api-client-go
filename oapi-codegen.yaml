@@ -1,0 +1,7 @@
+# oapi-codegen v2 configuration
+# Regenerates types + client from openapi.yaml into gen/client.go
+package: gen
+output: gen/client.go
+generate:
+  models: true
+  client: true

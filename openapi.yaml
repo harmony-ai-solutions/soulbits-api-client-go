@@ -1,0 +1,2059 @@
+openapi: 3.0.3
+# ============================================================================
+# Soulbits API — OpenAPI Specification
+# ============================================================================
+# The single, authoritative machine-readable contract for the entire Soulbits
+# Cloud platform REST surface. Covers two hosts:
+#   * cloud.soulbits.app   — auth, api keys, account, session, subscription
+#   * api.soulbits.app      — inference gateway (OpenAI-compatible + HSE audio)
+#
+# Version note: this spec targets OpenAPI 3.0.3 (not 3.1) so that both
+# first-party client generators consume it natively:
+#   * Go:    github.com/oapi-codegen/oapi-codegen/v2 (3.0 today; 3.1 pending #373)
+#   * JS/TS: openapi-typescript + openapi-fetch (3.0 + 3.1 both supported)
+# 3.1-only constructs (e.g. `type: ["string","null"]` unions) are intentionally
+# avoided; nullable fields use the 3.0 `nullable: true` keyword throughout.
+# Upgrading to 3.1 later is a mechanical edit if 3.1-only features are needed.
+#
+# The conduct-proxy WebSocket relay (connect.soulbits.app) is intentionally
+# OUT of scope for this spec — it is not a REST surface and OpenAPI cannot
+# describe WebSocket channels. The client libraries are REST-only; consumers
+# that need the conduct-proxy WS (e.g. Harmony Link plugins) implement HL's
+# own protocol directly and do not use these clients for it.
+#
+# Source of truth: this file (pkg/openapi/openapi.yaml). It is embedded into
+# the auth-service binary via go:embed and served at GET /v1/openapi.yaml and
+# GET /v1/openapi.json with the `servers` array rewritten to the caller's
+# access domain (beta.* / soulbits.app / project-harmony.ai legacy / localhost).
+#
+# The user-facing prose docs (docs/api-usage.md) MUST stay in sync with this
+# spec; this spec is the more granular, machine-checked artifact.
+# ============================================================================
+info:
+  title: Soulbits API
+  version: 1.0.0
+  description: |
+    Unified API for the Soulbits Cloud platform — authentication, API keys,
+    account, subscription, session brokering, and multi-modal inference (LLM,
+    text embeddings, rerank, TTS, STT, VAD, voice embedding, voice/audio
+    conversion).
+
+    The Soulbits API is a meta-API spanning two REST hosts:
+
+      1. **Cloud API** (`cloud.soulbits.app`) — authentication (email/password,
+         Google, Apple), API key management, account profile, session
+         lifecycle, subscription/tier information, and platform versioning.
+      2. **Inference API** (`api.soulbits.app`) — OpenAI-compatible chat
+         completions and text embeddings, Cohere-compatible rerank, plus the
+         Harmony Speech Engine surface (TTS, STT, VAD, speaker embedding,
+         audio conversion, voice conversion). Audio payloads are
+         base64-encoded inside JSON bodies (NOT multipart). Chat completions
+         are non-streaming.
+
+    Two authentication methods are accepted on protected endpoints:
+      * **API Key** — `sb_cloud_*` Bearer tokens, best for programmatic use.
+      * **PASETO v4.local** — `v4.local.*` Bearer tokens returned by login,
+        used by the web portal and mobile clients; refreshable via
+        `/v1/auth/refresh`.
+
+    Base URLs (beta shown; production drops the `beta.` prefix):
+      * Cloud API:    `https://beta.cloud.soulbits.app`
+      * Inference:    `https://beta.api.soulbits.app`
+
+    The served spec rewrites these to match the domain you accessed it from.
+  contact:
+    name: Soulbits
+    url: https://soulbits.app
+  license:
+    name: Proprietary
+    url: https://soulbits.app/terms
+  x-generated-from: pkg/openapi/openapi.yaml
+
+# ---------------------------------------------------------------------------
+# Servers — canonical defaults. The live endpoint rewrites these per caller.
+# Each host is tagged with `description`. Path items override `servers` where
+# a path lives on a different host (OpenAPI 3.1 path-level servers).
+# ---------------------------------------------------------------------------
+servers:
+  - url: https://beta.cloud.soulbits.app
+    description: Cloud API (auth, account, keys, session, subscription) — beta
+  - url: https://cloud.soulbits.app
+    description: Cloud API — production
+  - url: https://beta.api.soulbits.app
+    description: Inference API — beta
+  - url: https://api.soulbits.app
+    description: Inference API — production
+
+tags:
+  - name: Authentication
+    description: Account registration, login, OAuth (Google/Apple), password, email verification, link/unlink.
+  - name: API Keys
+    description: Create, list, revoke `sb_cloud_*` API keys (PASETO-authenticated only).
+  - name: Account
+    description: Current user profile + password change.
+  - name: Session
+    description: Cloud session lifecycle (connect/disconnect) and platform versions.
+  - name: Subscription
+    description: Subscription tiers and the caller's current subscription.
+  - name: Models
+    description: Public model catalog.
+  - name: Chat
+    description: OpenAI-compatible chat completions (LLM). Non-streaming.
+  - name: Embeddings
+    description: OpenAI-compatible text embeddings.
+  - name: Rerank
+    description: Cohere-compatible reranking.
+  - name: Audio
+    description: TTS, STT, VAD, speaker embedding, audio/voice conversion (Harmony Speech Engine). JSON-only, base64 audio.
+  - name: Images
+    description: Image generation (currently unavailable — no worker deployed).
+  - name: OpenAPI
+    description: Self-service download of this OpenAPI specification.
+
+# ---------------------------------------------------------------------------
+# Security schemes — both are `http bearer`; the server detects `sb_cloud_`
+# prefix vs `v4.local.` prefix. Clients choose which to send.
+# ---------------------------------------------------------------------------
+security:
+  - apiKey: []
+  - paseto: []
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: sb_cloud_*
+      description: |
+        API Key (`sb_cloud_*`). Best for long-lived programmatic / server-side
+        access. Detected by the `sb_cloud_` prefix. Validated via SHA-256 hash
+        + Valkey cache with PostgreSQL fallback; tier resolved at auth time.
+    paseto:
+      type: http
+      scheme: bearer
+      bearerFormat: v4.local.*
+      description: |
+        PASETO v4.local Bearer token (`v4.local.*`) returned by login. Used by
+        the web portal and mobile clients. Supports Valkey-backed revocation
+        cutoffs. Refresh via `POST /v1/auth/refresh`. API keys CANNOT manage
+        other API keys — only PASETO tokens can.
+
+  parameters:
+    ApiKeyId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+      description: API key identifier (UUID).
+    ModelType:
+      name: model_type
+      in: query
+      required: false
+      schema: { type: string }
+      description: Exact match on model type (`llm`, `tts`, `stt`, `vad`, `embeddings`, `rerank`, `voice_embed`, `audio_conversion`, `voice_conversion`).
+    InputModalities:
+      name: input_modalities
+      in: query
+      required: false
+      schema:
+        type: array
+        items: { type: string }
+        uniqueItems: true
+      style: form
+      explode: true
+      description: Superset match — model must accept ALL listed input modalities. Repeat the key for multiple values.
+    OutputModalities:
+      name: output_modalities
+      in: query
+      required: false
+      schema:
+        type: array
+        items: { type: string }
+        uniqueItems: true
+      style: form
+      explode: true
+      description: Superset match — model must emit ALL listed output modalities. Repeat the key for multiple values.
+
+  responses:
+    StandardError:
+      description: "Error response. Inference gateway shape: `{\"error\":\"<code>\",\"message\":\"<text>\"}`. Auth-service shape: `{\"error\":\"<message>\"}`. Session-broker shape: `{\"error_code\":\"<code>\",\"message\":\"<text>\"}`."
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    RateLimited:
+      description: 429 Too Many Requests — rate limit exceeded. Includes `Retry-After` header.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema: { type: integer }
+        X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+        X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+        X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Unauthorized:
+      description: 401 Unauthorized — missing, expired, revoked, or invalid credentials.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: 403 Forbidden — model requires a higher subscription tier.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: 404 Not Found — model not found or resource does not exist.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    InternalError:
+      description: 500 Internal Server Error — retry with backoff.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  headers:
+    RateLimitLimit:
+      description: Maximum requests allowed in the current window.
+      schema: { type: integer }
+    RateLimitRemaining:
+      description: Remaining requests in the current window (computed after incrementing the counter).
+      schema: { type: integer }
+    RateLimitReset:
+      description: Unix timestamp (seconds) when the window resets.
+      schema: { type: integer, format: int64 }
+
+  schemas:
+    # ---- Reusable primitives ----
+    RFC3339Timestamp:
+      type: string
+      format: date-time
+      description: RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+    Base64Audio:
+      type: string
+      format: byte
+      description: Base64-encoded audio bytes (sent inside JSON; NOT multipart).
+    Base64Blob:
+      type: string
+      format: byte
+      description: Base64-encoded binary payload (embedding, image, etc.).
+    Message:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+
+    # ---- Error ----
+    Error:
+      type: object
+      description: |
+        Error envelope. The exact field set varies slightly by service:
+          * Inference gateway: `{ "error": "<code>", "message": "<text>" }`
+          * Auth-service:      `{ "error": "<message>" }`
+          * Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
+        All variants validate against this schema (extra fields allowed).
+      properties:
+        error:
+          type: string
+          description: Error code (inference/session) OR message (auth-service).
+        error_code:
+          type: string
+          description: Error code (session-broker variant).
+        message:
+          type: string
+          description: Human-readable message.
+        upgrade_url:
+          type: string
+          format: uri
+          description: Present on 402 quota_exceeded for image generation.
+        current_tier:
+          type: string
+          description: Present on 402 — the user's current tier id.
+        required_tier:
+          type: string
+          description: Present on 402 — the minimum tier required.
+        soul_credits_available:
+          type: integer
+          description: Present on 402 — remaining Soul Credits.
+        task_id:
+          type: string
+          description: Present on 504 gateway_timeout — for debugging.
+      additionalProperties: true
+
+    # ---- Auth: token response ----
+    TokenResponse:
+      type: object
+      required: [token, refresh_token, expires_at]
+      description: Issued on successful login/register-verify/refresh/OAuth. The `expires_at` field lets clients schedule proactive PASETO refresh without decoding the encrypted v4.local payload.
+      properties:
+        token:
+          type: string
+          description: PASETO v4.local Bearer token (`v4.local.*`).
+        refresh_token:
+          type: string
+          description: Opaque refresh token. Rotated on each refresh; reuse detection revokes the whole family.
+        expires_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    # ---- Auth: profile ----
+    UserProfile:
+      type: object
+      required: [id, email, display_name, email_verified, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        display_name: { type: string }
+        email_verified: { type: boolean }
+        created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    # ---- Auth: API keys ----
+    APIKeyCreated:
+      type: object
+      required: [id, name, key, prefix, created_at]
+      description: Returned ONLY at creation time. The `key` field is shown once — store it securely.
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        key:
+          type: string
+          description: Full API key (`sb_cloud_` + base64url). Returned ONLY here; never retrievable later.
+          pattern: '^sb_cloud_[A-Za-z0-9_-]+$'
+        prefix:
+          type: string
+          description: First 12 characters of the key, for identification.
+        created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    APIKeyListItem:
+      type: object
+      required: [id, name, prefix, created_at, last_used_at, revoked_at]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        prefix: { type: string, description: First 12 chars (raw key never returned). }
+        created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+        last_used_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          nullable: true
+        revoked_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          nullable: true
+
+    # ---- Session ----
+    SessionConnectResponse:
+      type: object
+      required: [session_id, proxy_endpoint, status]
+      properties:
+        session_id: { type: string, format: uuid }
+        proxy_endpoint:
+          type: string
+          description: Conduct proxy WebSocket base URL for this session (e.g. `wss://connect.soulbits.app`).
+        status:
+          type: string
+          enum: [active, connecting]
+        image_version:
+          type: string
+          nullable: true
+          description: HL image version assigned from the warm pool.
+
+    SessionDisconnectResponse:
+      type: object
+      required: [status, grace_period_until]
+      properties:
+        status:
+          type: string
+          enum: [grace_period]
+        grace_period_until: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    SessionConnectedResponse:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [connected] }
+
+    VersionsResponse:
+      type: object
+      required: [versions, default, default_image]
+      properties:
+        versions:
+          type: array
+          items: { type: string }
+        default: { type: string }
+        default_image: { type: string }
+
+    # ---- Subscription ----
+    TierLimits:
+      type: object
+      description: Per-tier rate/quota limits. `null` means unlimited/not applicable.
+      properties:
+        chat_requests_per_min: { type: integer, nullable: true }
+        chat_requests_per_day: { type: integer, nullable: true }
+        voice_minutes_per_day: { type: integer, nullable: true }
+        video_gen_per_day: { type: integer, nullable: true }
+        video_10s_per_day: { type: integer, nullable: true }
+        video_60s_per_day: { type: integer, nullable: true }
+        image_gen_per_day: { type: integer, nullable: true }
+        message_length_tokens: { type: integer, nullable: true }
+        audio_requests_per_min: { type: integer, nullable: true }
+        vad_embed_per_min: { type: integer, nullable: true }
+      additionalProperties: true
+
+    Tier:
+      type: object
+      required: [id, display_name, sort_order, limits, features]
+      properties:
+        id: { type: string, description: "Tier id (`free`, `core`, `infinite`)." }
+        display_name: { type: string }
+        sort_order: { type: integer }
+        limits: { $ref: "#/components/schemas/TierLimits" }
+        features:
+          type: object
+          additionalProperties: true
+          description: Arbitrary feature flags.
+
+    SubscriptionMe:
+      type: object
+      required: [tier_id, display_name, status, expires_at, limits, features]
+      properties:
+        tier_id: { type: string }
+        display_name: { type: string }
+        status: { type: string, enum: [active, past_due, canceled, trialing] }
+        expires_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          nullable: true
+        limits: { $ref: "#/components/schemas/TierLimits" }
+        features:
+          type: object
+          additionalProperties: true
+
+    # ---- Models catalog ----
+    SpeechLanguage:
+      type: object
+      required: [code, name]
+      properties:
+        code: { type: string, description: "ISO 639 code (e.g. `EN`, `ZH`, `ES`, `FR`, `JA`)." }
+        name: { type: string }
+        voices:
+          type: array
+          items: { type: string }
+          description: Valid `voice` values for this language.
+
+    SpeechOptions:
+      type: object
+      description: Present only on speech models. Field presence maps to a real request parameter the model accepts.
+      properties:
+        languages:
+          type: array
+          items: { $ref: "#/components/schemas/SpeechLanguage" }
+          description: Present iff the model accepts the `language` request param.
+        voices:
+          type: array
+          items: { type: string }
+          description: Present iff the model accepts `voice` WITHOUT a language scope (e.g. KittenTTS).
+        supports_single_speaker: { type: boolean, nullable: true }
+        supports_voice_cloning: { type: boolean, nullable: true }
+        paralinguistic_tags:
+          type: array
+          items: { type: string }
+          description: Effect/emotion tokens embedded directly in the TTS `input` text (e.g. `[whispering]`). No special request field needed.
+
+    ModelEntry:
+      type: object
+      required: [model_id, display_name, model_type, min_tier, description]
+      properties:
+        model_id: { type: string }
+        display_name: { type: string }
+        model_type:
+          type: string
+          enum: [llm, tts, stt, vad, image, embeddings, rerank, voice_embed, audio_conversion, voice_conversion]
+        min_tier: { type: string, enum: [free, core, infinite] }
+        description:
+          type: string
+          description: i18n key (e.g. `models.descriptions.qwen-35-9b`) resolved by the portal; not plaintext.
+        input_modalities:
+          type: array
+          items: { type: string }
+          description: e.g. `["text","image","video"]`. Empty array if omitted.
+        output_modalities:
+          type: array
+          items: { type: string }
+        context_window:
+          type: integer
+          nullable: true
+          description: Token context window (LLM/embeddings).
+        embedding_dimensions:
+          type: integer
+          nullable: true
+          description: Output vector dimensionality (embeddings).
+        speech_options: { $ref: "#/components/schemas/SpeechOptions" }
+
+    # ---- Chat ----
+    ChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role: { type: string, enum: [system, user, assistant, tool] }
+        content:
+          oneOf:
+            - type: string
+            - type: array
+              description: OpenAI multi-modal content parts (text/image_url/etc).
+              items:
+                type: object
+                properties:
+                  type: { type: string }
+                  text: { type: string }
+                  image_url:
+                    type: object
+                    properties:
+                      url: { type: string }
+          description: OpenAI-style content; string for text-only, array for multi-modal.
+
+    ChatCompletionRequest:
+      type: object
+      required: [model, messages]
+      properties:
+        model:
+          type: string
+          description: Model ID (e.g. `qwen-35-9b`).
+          examples: [qwen-35-9b]
+        messages:
+          type: array
+          items: { $ref: "#/components/schemas/ChatMessage" }
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+        max_tokens: { type: integer, minimum: 1 }
+        top_p: { type: number, minimum: 0, maximum: 1 }
+        frequency_penalty: { type: number, minimum: -2, maximum: 2 }
+        presence_penalty: { type: number, minimum: -2, maximum: 2 }
+        seed: { type: integer, description: Reproducible sampling seed. }
+        stop:
+          oneOf:
+            - { type: string }
+            - type: array
+              items: { type: string }
+          description: Stop sequence(s).
+        response_format:
+          type: object
+          description: "OpenAI response format (`{\"type\":\"text\"}` or `{\"type\":\"json_object\"}`)."
+          properties:
+            type: { type: string, enum: [text, json_object] }
+        logprobs:
+          type: boolean
+          description: Return log probabilities.
+        top_logprobs:
+          type: integer
+          minimum: 0
+          maximum: 20
+          description: Number of top logprobs per token (requires `logprobs:true`).
+        tools:
+          type: array
+          description: OpenAI function-calling tool definitions.
+          items:
+            type: object
+        tool_choice:
+          oneOf:
+            - { type: string, enum: [none, auto, required] }
+            - { type: object }
+        stream:
+          type: boolean
+          default: false
+          description: "**NOT SUPPORTED** — the gateway uses a queue-based RPC pattern; every request returns one complete response object. A `true` value is ignored."
+      additionalProperties: true
+      description: |
+        OpenAI-compatible chat completions request body. The gateway forwards
+        the body as opaque JSON to the LLM worker (Aphrodite/vLLM/sglang),
+        rewriting only the `model` field. Standard OpenAI pass-through params
+        (`stop`, `seed`, `response_format`, `logprobs`, `tools`,
+        `tool_choice`) are supported by the backend engine. `stream` is not
+        supported today.
+
+    ChatCompletionResponse:
+      type: object
+      required: [id, object, created, model, choices]
+      properties:
+        id: { type: string }
+        object: { type: string, enum: [chat.completion] }
+        created: { type: integer, format: int64 }
+        model: { type: string }
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              index: { type: integer }
+              message: { $ref: "#/components/schemas/ChatMessage" }
+              finish_reason: { type: string, enum: [stop, length, tool_calls, content_filter] }
+        usage:
+          type: object
+          properties:
+            prompt_tokens: { type: integer }
+            completion_tokens: { type: integer }
+            total_tokens: { type: integer }
+
+    # ---- Embeddings ----
+    EmbeddingRequest:
+      type: object
+      required: [model, input]
+      properties:
+        model:
+          type: string
+          examples: [qwen3-embed-4b]
+        input:
+          oneOf:
+            - { type: string }
+            - type: array
+              items: { type: string }
+          description: Text (or array of texts) to embed. For multimodal models, `input` may be a base64 data URI or URL when `modality` is `image`/`audio`.
+        encoding_format:
+          type: string
+          enum: [float, base64]
+          default: float
+        dimensions:
+          type: integer
+          minimum: 1
+          description: Infinity-engine Matryoshka dimensionality reduction. Default `0` = model's native dims. Omit for native dimensions.
+        modality:
+          type: string
+          enum: [text, image, audio]
+          default: text
+          description: Infinity-engine input discriminator. When `image`/`audio`, `input` accepts URLs/base64 data URIs.
+        user: { type: string, description: OpenAI-compatible end-user identifier (optional). }
+      additionalProperties: true
+
+    EmbeddingResponse:
+      type: object
+      required: [object, data, model, usage]
+      properties:
+        id: { type: string, description: Infinity includes an `id`; OpenAI omits it. }
+        object: { type: string, enum: [list] }
+        created: { type: integer, format: int64, description: Infinity includes `created`; OpenAI omits it. }
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              object: { type: string, enum: [embedding] }
+              index: { type: integer }
+              embedding:
+                oneOf:
+                  - type: array
+                    items: { type: number }
+                  - { type: string, description: base64-encoded floats when `encoding_format=base64`. }
+        model: { type: string }
+        usage:
+          type: object
+          properties:
+            prompt_tokens: { type: integer }
+            total_tokens: { type: integer }
+
+    # ---- Rerank ----
+    RerankRequest:
+      type: object
+      required: [model, query, documents]
+      properties:
+        model:
+          type: string
+          examples: [qwen3-rerank-0-6b]
+        query: { type: string }
+        documents:
+          type: array
+          items: { type: string }
+          description: Document strings to rank against the query.
+        top_n:
+          type: integer
+          minimum: 1
+          description: Return only the top N results. Default = all.
+        return_documents:
+          type: boolean
+          default: false
+          description: Infinity — include the document text in each result.
+        raw_scores:
+          type: boolean
+          default: false
+          description: Infinity — return raw logits instead of normalized scores.
+      additionalProperties: true
+
+    RerankResponse:
+      type: object
+      required: [results]
+      properties:
+        id: { type: string, description: Infinity response id. }
+        object: { type: string, enum: [rerank] }
+        created: { type: integer, format: int64 }
+        model: { type: string }
+        results:
+          type: array
+          items:
+            type: object
+            required: [index, relevance_score]
+            properties:
+              index: { type: integer }
+              relevance_score: { type: number }
+              document:
+                type: string
+                description: Present when `return_documents=true`.
+        usage:
+          type: object
+          properties:
+            prompt_tokens: { type: integer }
+            total_tokens: { type: integer }
+
+    # ---- Shared audio options ----
+    GenerationOptions:
+      type: object
+      description: Generation parameters for TTS / voice conversion. Most fields are model-specific; unsupported fields are silently ignored.
+      properties:
+        seed: { type: integer, nullable: true }
+        style: { type: integer, nullable: true, description: Style index (model-dependent). }
+        speed: { type: number, nullable: true }
+        pitch: { type: number, nullable: true }
+        energy: { type: number, nullable: true }
+        exaggeration:
+          type: number
+          nullable: true
+          description: "(Chatterbox) Emotion exaggeration factor (default 0.5)."
+        cfg_weight:
+          type: number
+          nullable: true
+          description: "(Chatterbox) Classifier-free guidance weight (default 0.5)."
+        temperature:
+          type: number
+          nullable: true
+          description: "(Chatterbox) Sampling temperature (default 0.8)."
+        repetition_penalty:
+          type: number
+          nullable: true
+          description: "(Chatterbox) Repetition penalty >1.0 reduces repetition (default 1.2)."
+        top_p:
+          type: number
+          nullable: true
+          description: "(Chatterbox) Top-p nucleus sampling probability."
+        min_p:
+          type: number
+          nullable: true
+          description: "(Chatterbox TTS/Multilingual) Minimum probability threshold (default 0.05)."
+        top_k:
+          type: integer
+          nullable: true
+          description: "(Chatterbox Turbo) Top-k sampling candidates (default 1000)."
+        norm_loudness:
+          type: boolean
+          nullable: true
+          description: "(Chatterbox Turbo) Apply pyloudnorm loudness normalization (default true)."
+      additionalProperties: true
+
+    OutputOptions:
+      type: object
+      description: Output audio format.
+      properties:
+        format:
+          type: string
+          enum: [wav, mp3, flac]
+          default: wav
+        sample_rate:
+          type: integer
+          nullable: true
+          description: Resample output to this rate (Hz); null = model's native rate.
+        stream:
+          type: boolean
+          default: false
+          description: Reserved for future use.
+
+    PreProcessingFilters:
+      type: array
+      description: Filters applied before synthesis/conversion. Each filter is itself an AudioConversionRequest-shaped opaque object (recursive filter chain).
+      items:
+        type: object
+        additionalProperties: true
+
+    # ---- TTS ----
+    TTSRequest:
+      type: object
+      required: [model, input, mode]
+      description: |
+        Harmony Speech Engine TTS request. NOT OpenAI-shaped — requires `mode`,
+        audio format via `output_options.format` (not `response_format`), and
+        cloning via `input_audio`/`input_embedding`.
+      properties:
+        model:
+          type: string
+          description: TTS model or toolchain group (e.g. `kitten-tts-mini`, `chatterbox`, `openvoice_v2`).
+        input:
+          type: string
+          description: Text to synthesize. `chatterbox_turbo` accepts paralinguistic tags inline.
+        mode:
+          type: string
+          enum: [single_speaker_tts, voice_cloning]
+          description: "`single_speaker_tts` skips VAD/embedding/tone-conversion; `voice_cloning` runs the full pipeline."
+        language:
+          type: string
+          description: Language code — required only by multilingual models (`openvoice_v1/v2`, `chatterbox_multilingual`). See the catalog `speech_options.languages`.
+        voice:
+          type: string
+          description: Preset voice ID — required when the model/language has preset voices.
+        input_audio: { $ref: "#/components/schemas/Base64Audio" }
+        input_embedding:
+          allOf:
+            - { $ref: "#/components/schemas/Base64Blob" }
+          description: Pre-computed speaker embedding (faster than `input_audio`; skips VAD/embedding).
+        input_vad_data:
+          type: string
+          description: VAD result JSON from `/v1/audio/vad`; skips the internal VAD step.
+        input_vad_mode: { type: string, description: VAD engine hint (informational). }
+        generation_options: { $ref: "#/components/schemas/GenerationOptions" }
+        output_options: { $ref: "#/components/schemas/OutputOptions" }
+        pre_processing_filters: { $ref: "#/components/schemas/PreProcessingFilters" }
+        post_generation_filters:
+          type: array
+          description: Filters applied after synthesis (recursive filter chain).
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+
+    AudioDataResponse:
+      type: object
+      required: [id, model, created, data]
+      properties:
+        id: { type: string }
+        model: { type: string }
+        created: { type: integer, format: int64 }
+        data: { $ref: "#/components/schemas/Base64Blob" }
+
+    # ---- STT ----
+    STTRequest:
+      type: object
+      required: [model, input_audio]
+      description: JSON-only (NOT multipart). Audio is base64-encoded inside the JSON body.
+      properties:
+        model:
+          type: string
+          examples: [faster-whisper-large-v3-turbo]
+        input_audio: { $ref: "#/components/schemas/Base64Audio" }
+        get_language:
+          type: boolean
+          default: false
+          description: Return the detected source language tag.
+        get_timestamps:
+          type: boolean
+          default: false
+          description: Return word-level timestamps.
+      additionalProperties: true
+
+    STTResponse:
+      type: object
+      required: [id, model, created, text]
+      properties:
+        id: { type: string }
+        model: { type: string }
+        created: { type: integer, format: int64 }
+        text: { type: string }
+        language:
+          type: string
+          description: Present when `get_language=true`.
+        timestamps:
+          type: array
+          description: Present when `get_timestamps=true`.
+          items:
+            type: object
+            properties:
+              word: { type: string }
+              start: { type: number }
+              end: { type: number }
+
+    # ---- VAD ----
+    VADRequest:
+      type: object
+      required: [model, input_audio]
+      properties:
+        model:
+          type: string
+          description: VAD model (`silero-vad`; `faster-whisper-*` also accepted but less precise).
+        input_audio: { $ref: "#/components/schemas/Base64Audio" }
+        get_timestamps:
+          type: boolean
+          default: false
+        threshold:
+          type: number
+          nullable: true
+          description: Detection sensitivity — Silero only (default 0.5).
+        min_speech_duration_ms: { type: integer, nullable: true, description: Silero only (default 250). }
+        min_silence_duration_ms: { type: integer, nullable: true, description: Silero only (default 100). }
+        speech_pad_ms: { type: integer, nullable: true, description: Silero only (default 30). }
+        return_seconds: { type: boolean, description: Silero only — return timestamps in seconds instead of ms. }
+      additionalProperties: true
+
+    VADResponse:
+      type: object
+      required: [id, model, created, speech_activity]
+      properties:
+        id: { type: string }
+        model: { type: string }
+        created: { type: integer, format: int64 }
+        speech_activity: { type: boolean }
+        timestamps:
+          type: array
+          description: Present when `get_timestamps=true`.
+          items:
+            type: object
+            properties:
+              start: { type: integer, description: ms (or seconds if `return_seconds=true`). }
+              end: { type: integer }
+
+    # ---- Speaker embedding ----
+    SpeakerEmbedRequest:
+      type: object
+      required: [model, input_audio]
+      properties:
+        model:
+          type: string
+          description: Embedding-capable model (e.g. `harmonyspeech`, `chatterbox`, `openvoice_v1`, `openvoice_v2`).
+        input_audio: { $ref: "#/components/schemas/Base64Audio" }
+      additionalProperties: true
+
+    # ---- Audio conversion ----
+    AudioConversionRequest:
+      type: object
+      required: [model, source_audio]
+      properties:
+        model:
+          type: string
+          examples: [voicefixer]
+        source_audio: { $ref: "#/components/schemas/Base64Audio" }
+        output_options: { $ref: "#/components/schemas/OutputOptions" }
+        pre_processing_filters: { $ref: "#/components/schemas/PreProcessingFilters" }
+      additionalProperties: true
+
+    # ---- Voice conversion ----
+    VoiceConversionRequest:
+      type: object
+      required: [model, source_audio]
+      description: At least one of `target_audio` or `target_embedding` is required.
+      properties:
+        model:
+          type: string
+          examples: [chatterbox_vc]
+        source_audio: { $ref: "#/components/schemas/Base64Audio" }
+        target_audio: { $ref: "#/components/schemas/Base64Audio" }
+        target_embedding:
+          allOf:
+            - { $ref: "#/components/schemas/Base64Blob" }
+          description: Pre-computed speaker embedding (faster than `target_audio`).
+        generation_options: { $ref: "#/components/schemas/GenerationOptions" }
+        output_options: { $ref: "#/components/schemas/OutputOptions" }
+        pre_processing_filters: { $ref: "#/components/schemas/PreProcessingFilters" }
+      additionalProperties: true
+
+    # ---- Image generation (currently unavailable) ----
+    ImageGenerationRequest:
+      type: object
+      required: [model, prompt]
+      description: OpenAI-compatible image generation. Currently NOT served — no worker is deployed.
+      deprecated: true
+      properties:
+        model: { type: string }
+        prompt: { type: string }
+        n: { type: integer, minimum: 1, default: 1 }
+        size:
+          type: string
+          enum: ["256x256", "512x512", "1024x1024"]
+          default: "1024x1024"
+      additionalProperties: true
+
+    # ---- OpenAPI self-download ----
+    OpenAPISpec:
+      type: object
+      description: The full OpenAPI document (JSON or YAML). Served with `servers` rewritten to the caller's access domain.
+      additionalProperties: true
+
+# ===========================================================================
+# Paths
+# ===========================================================================
+paths:
+  # ---- Cloud API: Authentication (unauthenticated group) ----------------
+  /v1/auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new account
+      description: Creates a user (Argon2id password hash) and sends a verification email. Returns 202 (no token). Requires email verification before login.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password, minLength: 8 }
+                display_name: { type: string }
+      responses:
+        "202":
+          description: Account created; verification email sent.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "409": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/login:
+    post:
+      tags: [Authentication]
+      summary: Log in with email + password
+      description: Requires `email_verified=true`. Returns PASETO + refresh token pair with `expires_at`.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+      responses:
+        "200":
+          description: Login successful.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/StandardError" }
+        "403":
+          description: Email not verified.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh the PASETO token
+      description: Rotates refresh tokens within a family; reuse detection revokes the entire family. The fresh PASETO uses the user's CURRENT `email_verified` status.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token: { type: string }
+      responses:
+        "200":
+          description: Refresh successful.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/verify:
+    get:
+      tags: [Authentication]
+      summary: Verify email address
+      description: Accepts the token as a URL path segment OR query param. Returns a token pair on success.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema: { type: string }
+          description: Hex verification token from the email link.
+      responses:
+        "200":
+          description: Email verified.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "404": { $ref: "#/components/responses/StandardError" }
+        "410":
+          description: Token expired.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/auth/resend-verification:
+    post:
+      tags: [Authentication]
+      summary: Resend the verification email
+      description: Per-user 60s cooldown; returns `Retry-After` header on 429.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        "202":
+          description: Verification email re-sent (or no such user — no enumeration).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "404": { $ref: "#/components/responses/StandardError" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/auth/password/reset/request:
+    post:
+      tags: [Authentication]
+      summary: Request a password reset
+      description: Always returns 202 (no user enumeration).
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        "202":
+          description: Reset email sent if the account exists.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/password/reset/confirm:
+    post:
+      tags: [Authentication]
+      summary: Confirm a password reset
+      description: Writes a Valkey cutoff to invalidate all existing tokens (forces re-login).
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, new_password]
+              properties:
+                token: { type: string }
+                new_password: { type: string, format: password, minLength: 8 }
+      responses:
+        "200":
+          description: Password reset.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "404": { $ref: "#/components/responses/StandardError" }
+        "410":
+          description: Token expired.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/auth/google:
+    post:
+      tags: [Authentication]
+      summary: Google Sign-In (native / Android)
+      description: Validates the Google `id_token`. 409 on email conflict (link flow).
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_token]
+              properties:
+                id_token: { type: string }
+      responses:
+        "200":
+          description: Login successful.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/StandardError" }
+        "409": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/google/web:
+    post:
+      tags: [Authentication]
+      summary: Google Sign-In (web OAuth code flow)
+      description: Exchanges an authorization code for an id_token server-side. PKCE optional.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [auth_code, redirect_uri]
+              properties:
+                auth_code: { type: string }
+                redirect_uri: { type: string, format: uri }
+                code_verifier: { type: string, description: PKCE verifier (optional). }
+      responses:
+        "200":
+          description: Login successful.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/StandardError" }
+        "409": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/apple:
+    post:
+      tags: [Authentication]
+      summary: Apple Sign-In (native / iOS)
+      description: Validates the Apple `identity_token` against Apple JWKS. 409 on email conflict (link flow).
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identity_token]
+              properties:
+                identity_token: { type: string }
+      responses:
+        "200":
+          description: Login successful.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/StandardError" }
+        "409": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/apple/web:
+    post:
+      tags: [Authentication]
+      summary: Apple Sign-In (web OAuth code flow)
+      description: Exchanges an authorization `code` for an `id_token` at `https://appleid.apple.com/auth/token` using a per-request-minted `client_secret` JWT (ES256, signed with the Apple `.p8` key). 409 on email conflict (link flow).
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, redirect_uri]
+              properties:
+                code: { type: string, description: Apple authorization code. }
+                redirect_uri: { type: string, format: uri }
+      responses:
+        "200":
+          description: Login successful.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/StandardError" }
+        "409": { $ref: "#/components/responses/StandardError" }
+        "503":
+          description: Apple token endpoint unreachable.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---- Cloud API: Protected auth/account/key endpoints ------------------
+  /v1/auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Log out (revoke refresh tokens + PASETO cutoff)
+      description: Revokes all refresh tokens by default (or a specific one if `refresh_token` is provided). Writes a Valkey cutoff for instant PASETO invalidation.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token: { type: string, description: Optional — revoke only this token instead of all. }
+      responses:
+        "200":
+          description: Logged out.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/auth/me:
+    get:
+      tags: [Account]
+      summary: Get the current user profile
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Current user profile.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserProfile" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    patch:
+      tags: [Account]
+      summary: Update the current user profile
+      description: Partial update — only `display_name` is mutable currently.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [display_name]
+              properties:
+                display_name: { type: string }
+      responses:
+        "200":
+          description: Updated profile.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserProfile" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/auth/password:
+    put:
+      tags: [Account]
+      summary: Change password
+      description: Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [old_password, new_password]
+              properties:
+                old_password: { type: string, format: password }
+                new_password: { type: string, format: password, minLength: 8 }
+      responses:
+        "200":
+          description: Password changed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/auth/link/google:
+    post:
+      tags: [Authentication]
+      summary: Link a Google identity to the current account
+      description: 409 if already linked to a different user.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_token]
+              properties:
+                id_token: { type: string }
+      responses:
+        "200":
+          description: Linked.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/StandardError" }
+    delete:
+      tags: [Authentication]
+      summary: Unlink the Google identity
+      description: Lockout guard — refuses if no password is set.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "204":
+          description: Unlinked.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/auth/link/apple:
+    post:
+      tags: [Authentication]
+      summary: Link an Apple identity to the current account
+      description: Validates the `identity_token` against Apple JWKS. 409 if already linked to a different user.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identity_token]
+              properties:
+                identity_token: { type: string }
+      responses:
+        "200":
+          description: Linked.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/StandardError" }
+    delete:
+      tags: [Authentication]
+      summary: Unlink the Apple identity
+      description: Lockout guard — refuses if no password is set.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "204":
+          description: Unlinked.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ---- API Keys (PASETO only) ------------------------------------------
+  /v1/auth/api-keys:
+    post:
+      tags: [API Keys]
+      summary: Create an API key
+      description: |
+        Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
+        API keys CANNOT create/list/revoke other API keys.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, description: Human-readable key label. }
+      responses:
+        "201":
+          description: API key created (full key shown only here).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/APIKeyCreated" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409":
+          description: Maximum active keys reached.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    get:
+      tags: [API Keys]
+      summary: List API keys
+      description: Returns metadata only — the raw key value is NEVER returned (only the prefix for identification).
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: API keys for the current user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/APIKeyListItem" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/auth/api-keys/{id}:
+    delete:
+      tags: [API Keys]
+      summary: Revoke an API key
+      description: Idempotent (already-revoked returns 204). Writes a negative Valkey cache entry so revocation is effective within milliseconds.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - $ref: "#/components/parameters/ApiKeyId"
+      responses:
+        "204":
+          description: Revoked (or was already revoked).
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ---- Session ----------------------------------------------------------
+  /v1/session/connect:
+    post:
+      tags: [Session]
+      summary: Connect a cloud session
+      description: Acquires a connect lock, assigns a warm-pool HL task, and schedules a 30s connect timeout (cancelled when `/v1/session/connected` fires). Routed in Valkey by userID.
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                version: { type: string, description: Optional HL image version. }
+      responses:
+        "200":
+          description: Session connect response.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionConnectResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/session/disconnect:
+    post:
+      tags: [Session]
+      summary: Disconnect a cloud session (enter grace period)
+      description: Transitions the session to a 5-minute grace period, then schedules cleanup.
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_id: { type: string, format: uuid }
+                reason: { type: string }
+      responses:
+        "200":
+          description: Grace period entered.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionDisconnectResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/session/connected:
+    post:
+      tags: [Session]
+      summary: Report session connected (proxy → broker)
+      description: Called by the conduct proxy when the WebSocket upgrade completes; cancels the connect timeout.
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Connected acknowledged.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionConnectedResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/versions:
+    get:
+      tags: [Session]
+      summary: List available HL image versions
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Available versions.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/VersionsResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ---- Subscription -----------------------------------------------------
+  /v1/subscription/tiers:
+    get:
+      tags: [Subscription]
+      summary: List subscription tiers
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: All subscription tiers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Tier" }
+
+  /v1/subscription/me:
+    get:
+      tags: [Subscription]
+      summary: Get the current user's subscription
+      description: Resolves the tier from the auth context; defaults to `free` if no subscription exists.
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Current subscription.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SubscriptionMe" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ---- OpenAPI self-download -------------------------------------------
+  /v1/openapi.yaml:
+    get:
+      tags: [OpenAPI]
+      summary: Download this OpenAPI specification (YAML)
+      description: |
+        Serves the embedded OpenAPI 3.1 document in YAML. The `servers` array
+        is rewritten to reflect the domain you accessed this endpoint from
+        (`beta.*` preserved, `project-harmony.ai` legacy mapped to canonical
+        `soulbits.app`, localhost passed through for dev). Public (no auth)
+        to aid tooling (Postman, IDE import, code generation).
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: The OpenAPI document (YAML).
+          content:
+            application/yaml:
+              schema: { $ref: "#/components/schemas/OpenAPISpec" }
+
+  /v1/openapi.json:
+    get:
+      tags: [OpenAPI]
+      summary: Download this OpenAPI specification (JSON)
+      description: Same as `/v1/openapi.yaml` but JSON-encoded.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: The OpenAPI document (JSON).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpenAPISpec" }
+
+  # ---- Inference API: Models (public) ----------------------------------
+  /v1/models:
+    get:
+      tags: [Models]
+      summary: List available models
+      description: Public (no auth). Returns all active models with metadata. Supports OpenRouter-style superset modality filters.
+      security: []
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      parameters:
+        - $ref: "#/components/parameters/ModelType"
+        - $ref: "#/components/parameters/InputModalities"
+        - $ref: "#/components/parameters/OutputModalities"
+      responses:
+        "200":
+          description: All active models (filtered).
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ModelEntry" }
+
+  # ---- Inference API: Chat ---------------------------------------------
+  /v1/chat/completions:
+    post:
+      tags: [Chat]
+      summary: Chat completions (LLM)
+      description: |
+        OpenAI-compatible chat completions. The gateway forwards the body as
+        opaque JSON to the LLM worker (Aphrodite/vLLM/sglang), rewriting only
+        the `model` field. **Non-streaming** — `stream:true` is ignored (the
+        gateway uses a queue-based RPC pattern; every request returns one
+        complete response object). Max body 1 MB; timeout 120s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChatCompletionRequest" }
+      responses:
+        "200":
+          description: Chat completion.
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatCompletionResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "504":
+          description: Gateway timeout — inference request timed out (includes `task_id`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---- Inference API: Embeddings ---------------------------------------
+  /v1/embeddings:
+    post:
+      tags: [Embeddings]
+      summary: Text embeddings
+      description: OpenAI-compatible text embeddings (served by the Infinity engine). Supports Matryoshka `dimensions` and multimodal `modality`. Max body 1 MB; timeout 10s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EmbeddingRequest" }
+      responses:
+        "200":
+          description: Embeddings.
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EmbeddingResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  # ---- Inference API: Rerank ------------------------------------------
+  /v1/rerank:
+    post:
+      tags: [Rerank]
+      summary: Rerank documents by relevance to a query
+      description: Cohere-compatible (served by the Infinity engine). Max body 1 MB; timeout 10s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RerankRequest" }
+      responses:
+        "200":
+          description: Rerank results.
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RerankResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  # ---- Inference API: Audio (HSE) --------------------------------------
+  /v1/audio/speech:
+    post:
+      tags: [Audio]
+      summary: Text-to-Speech (TTS)
+      description: |
+        Harmony Speech Engine TTS. NOT OpenAI-shaped — requires `mode`; audio
+        format via `output_options.format` (not `response_format`); cloning via
+        `input_audio`/`input_embedding`. Max body 10 MB; timeout 120s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TTSRequest" }
+      responses:
+        "200":
+          description: Synthesized audio (base64).
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AudioDataResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "504":
+          description: Gateway timeout.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/audio/transcriptions:
+    post:
+      tags: [Audio]
+      summary: Speech-to-Text (STT)
+      description: JSON-only (NOT multipart). Audio is base64-encoded inside the JSON body. Max body 10 MB; timeout 300s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/STTRequest" }
+      responses:
+        "200":
+          description: Transcription.
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/STTResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "504":
+          description: Gateway timeout.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/audio/vad:
+    post:
+      tags: [Audio]
+      summary: Voice Activity Detection (VAD)
+      description: Detects speech segments in audio. Returns timestamps and speech-confidence metadata. Max body 10 MB; timeout 10s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VADRequest" }
+      responses:
+        "200":
+          description: VAD result.
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/VADResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/embed/speaker:
+    post:
+      tags: [Audio]
+      summary: Speaker embedding
+      description: Creates a voice embedding from an audio sample; can be passed as `input_embedding` (TTS) or `target_embedding` (voice conversion) to skip re-sending reference audio. Max body 10 MB; timeout 30s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SpeakerEmbedRequest" }
+      responses:
+        "200":
+          description: Speaker embedding (base64).
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AudioDataResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/audio/convert:
+    post:
+      tags: [Audio]
+      summary: Audio conversion / enhancement
+      description: Audio enhancement / format conversion (e.g. denoising, restoration via VoiceFixer). Max body 10 MB; timeout 120s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AudioConversionRequest" }
+      responses:
+        "200":
+          description: Enhanced/converted audio (base64).
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AudioDataResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "504":
+          description: Gateway timeout.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/voice/convert:
+    post:
+      tags: [Audio]
+      summary: Voice conversion
+      description: Converts the voice in source audio to sound like a target speaker (reference audio or pre-computed embedding). At least one of `target_audio`/`target_embedding` is required. Max body 10 MB; timeout 120s.
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VoiceConversionRequest" }
+      responses:
+        "200":
+          description: Converted audio (base64).
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            X-RateLimit-Reset: { $ref: "#/components/headers/RateLimitReset" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AudioDataResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "504":
+          description: Gateway timeout.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---- Inference API: Images (currently unavailable) -------------------
+  /v1/images/generations:
+    post:
+      tags: [Images]
+      summary: Generate images (currently unavailable)
+      description: |
+        ⚠️ NOT CURRENTLY SERVED. The route, quota logic, and rate-limit wiring
+        exist in the gateway, but **no image-generation worker is deployed**
+        and **no image model is present in the catalog**. Requests will fail
+        (gateway timeout or 5xx). This endpoint will be re-enabled once an
+        image backend (ComfyUI on Salad) is deployed. Quota enforcement order
+        (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
+        Credits → 402.
+      deprecated: true
+      servers:
+        - url: https://beta.api.soulbits.app
+        - url: https://api.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ImageGenerationRequest" }
+      responses:
+        "503":
+          description: Service Unavailable — no image backend deployed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "402":
+          description: Quota exceeded (when re-enabled — upgrade or buy Soul Credits).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
