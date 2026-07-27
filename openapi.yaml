@@ -342,15 +342,21 @@ components:
     # ---- Session ----
     SessionConnectResponse:
       type: object
-      required: [session_id, proxy_endpoint, status]
+      required: [session_id, status]
       properties:
         session_id: { type: string, format: uuid }
         proxy_endpoint:
           type: string
-          description: Conduct proxy WebSocket base URL for this session (e.g. `wss://connect.soulbits.app`).
+          description: Conduct proxy WebSocket base URL for this session (e.g. `wss://connect.soulbits.app`). Present when status is `ready` or `active`.
         status:
           type: string
-          enum: [active, connecting]
+          enum: [provisioning, ready, active, failed]
+        retry_after_ms:
+          type: integer
+          description: Milliseconds to wait before polling again. Present when status is `provisioning`.
+        failure_reason:
+          type: string
+          description: Human-readable failure reason. Present when status is `failed`.
         image_version:
           type: string
           nullable: true
@@ -1553,7 +1559,7 @@ paths:
     post:
       tags: [Session]
       summary: Connect a cloud session
-      description: Acquires a connect lock, assigns a warm-pool HL task, and schedules a 30s connect timeout (cancelled when `/v1/session/connected` fires). Routed in Valkey by userID.
+      description: Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
       servers:
         - url: https://beta.cloud.soulbits.app
         - url: https://cloud.soulbits.app
@@ -1567,12 +1573,22 @@ paths:
                 version: { type: string, description: Optional HL image version. }
       responses:
         "200":
-          description: Session connect response.
+          description: Session is ready — the client can open a WebSocket to the `proxy_endpoint`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionConnectResponse" }
+        "202":
+          description: Session is provisioning — retry after `retry_after_ms` milliseconds.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/SessionConnectResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/RateLimited" }
+        "503":
+          description: Session provisioning failed — see `failure_reason`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionConnectResponse" }
 
   /v1/session/disconnect:
     post:

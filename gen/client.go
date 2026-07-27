@@ -318,8 +318,10 @@ func (e RerankResponseObject) Valid() bool {
 
 // Defines values for SessionConnectResponseStatus.
 const (
-	SessionConnectResponseStatusActive     SessionConnectResponseStatus = "active"
-	SessionConnectResponseStatusConnecting SessionConnectResponseStatus = "connecting"
+	SessionConnectResponseStatusActive       SessionConnectResponseStatus = "active"
+	SessionConnectResponseStatusFailed       SessionConnectResponseStatus = "failed"
+	SessionConnectResponseStatusProvisioning SessionConnectResponseStatus = "provisioning"
+	SessionConnectResponseStatusReady        SessionConnectResponseStatus = "ready"
 )
 
 // Valid indicates whether the value is a known member of the SessionConnectResponseStatus enum.
@@ -327,7 +329,11 @@ func (e SessionConnectResponseStatus) Valid() bool {
 	switch e {
 	case SessionConnectResponseStatusActive:
 		return true
-	case SessionConnectResponseStatusConnecting:
+	case SessionConnectResponseStatusFailed:
+		return true
+	case SessionConnectResponseStatusProvisioning:
+		return true
+	case SessionConnectResponseStatusReady:
 		return true
 	default:
 		return false
@@ -867,13 +873,19 @@ type STTResponse struct {
 
 // SessionConnectResponse defines model for SessionConnectResponse.
 type SessionConnectResponse struct {
+	// FailureReason Human-readable failure reason. Present when status is `failed`.
+	FailureReason *string `json:"failure_reason,omitempty"`
+
 	// ImageVersion HL image version assigned from the warm pool.
 	ImageVersion *string `json:"image_version,omitempty"`
 
-	// ProxyEndpoint Conduct proxy WebSocket base URL for this session (e.g. `wss://connect.soulbits.app`).
-	ProxyEndpoint string                       `json:"proxy_endpoint"`
-	SessionId     openapi_types.UUID           `json:"session_id"`
-	Status        SessionConnectResponseStatus `json:"status"`
+	// ProxyEndpoint Conduct proxy WebSocket base URL for this session (e.g. `wss://connect.soulbits.app`). Present when status is `ready` or `active`.
+	ProxyEndpoint *string `json:"proxy_endpoint,omitempty"`
+
+	// RetryAfterMs Milliseconds to wait before polling again. Present when status is `provisioning`.
+	RetryAfterMs *int                         `json:"retry_after_ms,omitempty"`
+	SessionId    openapi_types.UUID           `json:"session_id"`
+	Status       SessionConnectResponseStatus `json:"status"`
 }
 
 // SessionConnectResponseStatus defines model for SessionConnectResponse.Status.
@@ -7809,8 +7821,10 @@ type PostV1SessionConnectResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *SessionConnectResponse
+	JSON202      *SessionConnectResponse
 	JSON401      *Unauthorized
 	JSON429      *RateLimited
+	JSON503      *SessionConnectResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -10127,6 +10141,13 @@ func ParsePostV1SessionConnectResponse(rsp *http.Response) (*PostV1SessionConnec
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest SessionConnectResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest Unauthorized
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -10140,6 +10161,13 @@ func ParsePostV1SessionConnectResponse(rsp *http.Response) (*PostV1SessionConnec
 			return nil, err
 		}
 		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest SessionConnectResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
 
 	}
 
