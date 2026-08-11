@@ -47,6 +47,10 @@ func (c *Config) ensureDefaults() {
 		c.InferenceBaseURL = DefaultInferenceBaseURL
 	}
 	if c.HTTPClient == nil {
-		c.HTTPClient = &http.Client{Timeout: 30 * time.Second}
+		// 120s default: the inference API blocks on the LLM worker (the
+		// gateway's LLM timeout is 120s), and vision chat with base64 images
+		// can legitimately exceed 30s. 30s caused the engine to abort with
+		// "context deadline exceeded (Client.Timeout exceeded while awaiting headers)".
+		c.HTTPClient = &http.Client{Timeout: 120 * time.Second}
 	}
 }

@@ -7,9 +7,27 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/harmony-ai-solutions/soulbits-api-client-go/gen"
 )
+
+// TestEnsureDefaultsSetsHTTPClientTimeout verifies that a nil HTTPClient is
+// defaulted with the 120s inference timeout, so callers that don't supply an
+// explicit client still tolerate long LLM/vision requests.
+func TestEnsureDefaultsSetsHTTPClientTimeout(t *testing.T) {
+	t.Parallel()
+
+	cfg := &Config{}
+	cfg.ensureDefaults()
+
+	if cfg.HTTPClient == nil {
+		t.Fatal("expected ensureDefaults to set HTTPClient")
+	}
+	if cfg.HTTPClient.Timeout != 120*time.Second {
+		t.Errorf("default HTTP client timeout = %v, want %v", cfg.HTTPClient.Timeout, 120*time.Second)
+	}
+}
 
 // TestClientLoginListModelsChat verifies a full login → list models → chat
 // flow against mocked cloud and inference servers.
