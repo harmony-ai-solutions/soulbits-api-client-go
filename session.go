@@ -10,6 +10,25 @@ import (
 	"github.com/harmony-ai-solutions/soulbits-api-client-go/gen"
 )
 
+// ConnectSessionRequest holds the optional parameters for a session connect.
+type ConnectSessionRequest struct {
+	// Version is an optional HL image version.
+	Version *string
+
+	// DeviceID is the per-install device identity for the D-DEV-04
+	// authorization gate. The broker refuses to provision for unauthorized
+	// devices — send the device UUID here so the gate can check it. Absent
+	// or unknown device → 403 device_authorization_required.
+	DeviceID *string
+}
+
+// DeviceAuthRequiredError indicates the broker returned 403
+// device_authorization_required. The caller must complete the email
+// auth-code flow (POST /v1/devices/authorize) and retry connect.
+type DeviceAuthRequiredError struct{}
+
+func (e *DeviceAuthRequiredError) Error() string { return "device_authorization_required" }
+
 // ConnectSessionResult wraps the session connect response with additional context.
 type ConnectSessionResult struct {
 	*gen.SessionConnectResponse
@@ -36,16 +55,21 @@ func (r *ConnectSessionResult) IsFailed() bool {
 }
 
 // ConnectSession acquires a session lock and assigns a warm-pool HL container.
-// An optional version can be specified to request a specific HL image version.
 //
 // Returns the current session state which may be:
 //   - provisioning (202) — poll with backoff using retry_after_ms
 //   - ready or active (200) — proxy_endpoint is available
 //   - failed (503) — inspect failure_reason for details
 //
+// A 403 response produces a *DeviceAuthRequiredError — the device must
+// complete the email auth-code flow before retrying.
+//
 // Use ConnectSessionPoll for a convenience method that handles the full polling loop.
-func (c *Client) ConnectSession(ctx context.Context, version *string) (*ConnectSessionResult, error) {
-	body := gen.PostV1SessionConnectJSONRequestBody(gen.PostV1SessionConnectJSONBody{Version: version})
+func (c *Client) ConnectSession(ctx context.Context, req ConnectSessionRequest) (*ConnectSessionResult, error) {
+	body := gen.PostV1SessionConnectJSONRequestBody(gen.PostV1SessionConnectJSONBody{
+		Version:  req.Version,
+		DeviceId: req.DeviceID,
+	})
 	resp, err := c.cloudGen.PostV1SessionConnectWithResponse(ctx, body)
 	if err != nil {
 		return nil, fmt.Errorf("connect session request: %w", err)
@@ -73,6 +97,10 @@ func (c *Client) ConnectSession(ctx context.Context, version *string) (*ConnectS
 			result.RetryAfterMs = resp.JSON202.RetryAfterMs
 		}
 		return result, nil
+
+	case http.StatusForbidden:
+		// D-DEV-04 device authorization gate — terminal, not retryable.
+		return nil, &DeviceAuthRequiredError{}
 
 	case http.StatusServiceUnavailable:
 		// Session provisioning failed.
@@ -118,13 +146,16 @@ func DefaultConnectSessionPollConfig() ConnectSessionPollConfig {
 // ConnectSessionPoll connects to a session and polls until ready, active, or
 // failed. It uses the retry_after_ms value from the server for backoff between
 // polls. Uses default configuration (max 30 retries, 5 minute total timeout).
-func (c *Client) ConnectSessionPoll(ctx context.Context, version *string) (*ConnectSessionResult, error) {
-	return c.ConnectSessionPollWithConfig(ctx, version, DefaultConnectSessionPollConfig())
+//
+// A *DeviceAuthRequiredError (403) terminates polling immediately — the device
+// must complete the email auth-code flow before retrying.
+func (c *Client) ConnectSessionPoll(ctx context.Context, req ConnectSessionRequest) (*ConnectSessionResult, error) {
+	return c.ConnectSessionPollWithConfig(ctx, req, DefaultConnectSessionPollConfig())
 }
 
 // ConnectSessionPollWithConfig connects to a session and polls until ready,
 // active, or failed with the given configuration.
-func (c *Client) ConnectSessionPollWithConfig(ctx context.Context, version *string, cfg ConnectSessionPollConfig) (*ConnectSessionResult, error) {
+func (c *Client) ConnectSessionPollWithConfig(ctx context.Context, req ConnectSessionRequest, cfg ConnectSessionPollConfig) (*ConnectSessionResult, error) {
 	if cfg.TotalTimeout <= 0 {
 		cfg.TotalTimeout = 5 * time.Minute
 	}
@@ -142,7 +173,7 @@ func (c *Client) ConnectSessionPollWithConfig(ctx context.Context, version *stri
 	defer cancel()
 
 	for attempt := 0; attempt <= cfg.MaxRetries; attempt++ {
-		result, err := c.ConnectSession(ctx, version)
+		result, err := c.ConnectSession(ctx, req)
 		if err != nil {
 			return nil, err
 		}

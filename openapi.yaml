@@ -1571,6 +1571,13 @@ paths:
               type: object
               properties:
                 version: { type: string, description: Optional HL image version. }
+                device_id:
+                  type: string
+                  description: >
+                    Per-install device identity for the D-DEV-04 authorization
+                    gate. The broker refuses to provision for unauthorized
+                    devices (403 device_authorization_required). Absent on first
+                    connect triggers the email auth-code flow.
       responses:
         "200":
           description: Session is ready — the client can open a WebSocket to the `proxy_endpoint`.
@@ -1583,6 +1590,16 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/SessionConnectResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: Device authorization required — the connecting device must complete the email auth-code flow before a session can be provisioned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    enum: [device_authorization_required]
         "429": { $ref: "#/components/responses/RateLimited" }
         "503":
           description: Session provisioning failed — see `failure_reason`.

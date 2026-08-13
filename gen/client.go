@@ -407,6 +407,21 @@ func (e TTSRequestMode) Valid() bool {
 	}
 }
 
+// Defines values for PostV1SessionConnect403JSONResponseBodyError.
+const (
+	DeviceAuthorizationRequired PostV1SessionConnect403JSONResponseBodyError = "device_authorization_required"
+)
+
+// Valid indicates whether the value is a known member of the PostV1SessionConnect403JSONResponseBodyError enum.
+func (e PostV1SessionConnect403JSONResponseBodyError) Valid() bool {
+	switch e {
+	case DeviceAuthorizationRequired:
+		return true
+	default:
+		return false
+	}
+}
+
 // APIKeyCreated Returned ONLY at creation time. The `key` field is shown once — store it securely.
 type APIKeyCreated struct {
 	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
@@ -1293,9 +1308,15 @@ type GetV1ModelsParams struct {
 
 // PostV1SessionConnectJSONBody defines parameters for PostV1SessionConnect.
 type PostV1SessionConnectJSONBody struct {
+	// DeviceId Per-install device identity for the D-DEV-04 authorization gate. The broker refuses to provision for unauthorized devices (403 device_authorization_required). Absent on first connect triggers the email auth-code flow.
+	DeviceId *string `json:"device_id,omitempty"`
+
 	// Version Optional HL image version.
 	Version *string `json:"version,omitempty"`
 }
+
+// PostV1SessionConnect403JSONResponseBodyError defines parameters for PostV1SessionConnect.
+type PostV1SessionConnect403JSONResponseBodyError string
 
 // PostV1SessionDisconnectJSONBody defines parameters for PostV1SessionDisconnect.
 type PostV1SessionDisconnectJSONBody struct {
@@ -10278,6 +10299,10 @@ type PostV1SessionConnectResponse struct {
 	JSON202 *SessionConnectResponse
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *struct {
+		Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
+	}
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
 	// JSON503 the response for an HTTP 503 `application/json` response
@@ -10299,6 +10324,13 @@ func (r PostV1SessionConnectResponse) GetJSON202() *SessionConnectResponse {
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
 func (r PostV1SessionConnectResponse) GetJSON401() *Unauthorized {
 	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1SessionConnectResponse) GetJSON403() *struct {
+	Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
+} {
+	return r.JSON403
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -13764,6 +13796,15 @@ func ParsePostV1SessionConnectResponse(rsp *http.Response) (*PostV1SessionConnec
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest struct {
+			Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest RateLimited
