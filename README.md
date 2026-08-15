@@ -54,7 +54,7 @@ The client automatically routes requests to the correct host:
 
 | Host | Operations |
 |------|-----------|
-| `cloud.soulbits.app` | Auth, account, API keys, session, subscription |
+| `cloud.soulbits.app` | Auth, account, API keys, devices, session, subscription |
 | `api.soulbits.app` | Chat, embeddings, rerank, TTS, STT, VAD, voice/audio conversion |
 
 ## Usage Examples

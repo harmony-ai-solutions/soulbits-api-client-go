@@ -122,6 +122,48 @@ func (e ChatMessageRole) Valid() bool {
 	}
 }
 
+// Defines values for DevicePlatform.
+const (
+	DevicePlatformAndroid DevicePlatform = "android"
+	DevicePlatformIos     DevicePlatform = "ios"
+	DevicePlatformWeb     DevicePlatform = "web"
+)
+
+// Valid indicates whether the value is a known member of the DevicePlatform enum.
+func (e DevicePlatform) Valid() bool {
+	switch e {
+	case DevicePlatformAndroid:
+		return true
+	case DevicePlatformIos:
+		return true
+	case DevicePlatformWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeviceListItemPlatform.
+const (
+	DeviceListItemPlatformAndroid DeviceListItemPlatform = "android"
+	DeviceListItemPlatformIos     DeviceListItemPlatform = "ios"
+	DeviceListItemPlatformWeb     DeviceListItemPlatform = "web"
+)
+
+// Valid indicates whether the value is a known member of the DeviceListItemPlatform enum.
+func (e DeviceListItemPlatform) Valid() bool {
+	switch e {
+	case DeviceListItemPlatformAndroid:
+		return true
+	case DeviceListItemPlatformIos:
+		return true
+	case DeviceListItemPlatformWeb:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for EmbeddingRequestEncodingFormat.
 const (
 	Base64 EmbeddingRequestEncodingFormat = "base64"
@@ -296,6 +338,27 @@ func (e OutputOptionsFormat) Valid() bool {
 	}
 }
 
+// Defines values for RegisterDeviceRequestPlatform.
+const (
+	RegisterDeviceRequestPlatformAndroid RegisterDeviceRequestPlatform = "android"
+	RegisterDeviceRequestPlatformIos     RegisterDeviceRequestPlatform = "ios"
+	RegisterDeviceRequestPlatformWeb     RegisterDeviceRequestPlatform = "web"
+)
+
+// Valid indicates whether the value is a known member of the RegisterDeviceRequestPlatform enum.
+func (e RegisterDeviceRequestPlatform) Valid() bool {
+	switch e {
+	case RegisterDeviceRequestPlatformAndroid:
+		return true
+	case RegisterDeviceRequestPlatformIos:
+		return true
+	case RegisterDeviceRequestPlatformWeb:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for RerankResponseObject.
 const (
 	RerankResponseObjectRerank RerankResponseObject = "rerank"
@@ -449,6 +512,18 @@ type APIKeyListItem struct {
 	RevokedAt *RFC3339Timestamp `json:"revoked_at"`
 }
 
+// ApproveDeviceRequest Redeems the high-entropy approval token from the emailed button URL.
+type ApproveDeviceRequest struct {
+	// Token High-entropy base64url approval token (43 chars) from the email button URL.
+	Token string `json:"token"`
+}
+
+// ApproveDeviceResponse defines model for ApproveDeviceResponse.
+type ApproveDeviceResponse struct {
+	DeviceId string `json:"device_id"`
+	Message  string `json:"message"`
+}
+
 // AudioConversionRequest defines model for AudioConversionRequest.
 type AudioConversionRequest struct {
 	Model string `json:"model"`
@@ -472,6 +547,15 @@ type AudioDataResponse struct {
 	Data  Base64Blob `json:"data"`
 	Id    string     `json:"id"`
 	Model string     `json:"model"`
+}
+
+// AuthorizeDeviceRequest Dual-mode request/verify body. Without `code` the server mails the
+// 6-digit code plus the approval button link (202). With `code` the
+// server verifies it and marks the device authorized (200).
+type AuthorizeDeviceRequest struct {
+	// Code 6-digit email auth code. Omit to request the code + approval link.
+	Code     *string `json:"code,omitempty"`
+	DeviceId string  `json:"device_id"`
 }
 
 // Base64Audio Base64-encoded audio bytes (sent inside JSON; NOT multipart).
@@ -598,6 +682,62 @@ type ChatMessage_Content struct {
 
 // ChatMessageRole defines model for ChatMessage.Role.
 type ChatMessageRole string
+
+// Device A registered client device. `push_token`, `authorized_at` and
+// `last_seen_at` are nullable until observed by the server.
+type Device struct {
+	Authorized bool `json:"authorized"`
+
+	// AuthorizedAt When the device was authorized; `null` until authorized.
+	AuthorizedAt *RFC3339Timestamp `json:"authorized_at,omitempty"`
+
+	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	CreatedAt RFC3339Timestamp `json:"created_at"`
+
+	// DeviceId Per-install device identity.
+	DeviceId   string            `json:"device_id"`
+	LastSeenAt *RFC3339Timestamp `json:"last_seen_at,omitempty"`
+	Platform   DevicePlatform    `json:"platform"`
+
+	// PushToken Push notification token for this install; `null` when push is not registered.
+	PushToken *string `json:"push_token"`
+
+	// UpdatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	UpdatedAt RFC3339Timestamp   `json:"updated_at"`
+	UserId    openapi_types.UUID `json:"user_id"`
+}
+
+// DevicePlatform defines model for Device.Platform.
+type DevicePlatform string
+
+// DeviceAuthorizationStatus Poll state for the device auth flow — the app polls until `authorized` is true.
+type DeviceAuthorizationStatus struct {
+	// AuthorizationPending True while a code/token pair is outstanding for this device.
+	AuthorizationPending bool   `json:"authorization_pending"`
+	Authorized           bool   `json:"authorized"`
+	DeviceId             string `json:"device_id"`
+}
+
+// DeviceListItem Device list item — same shape as `Device` minus `user_id` (a caller only ever lists their own devices).
+type DeviceListItem struct {
+	Authorized   bool              `json:"authorized"`
+	AuthorizedAt *RFC3339Timestamp `json:"authorized_at,omitempty"`
+
+	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	CreatedAt RFC3339Timestamp `json:"created_at"`
+
+	// DeviceId Per-install device identity.
+	DeviceId   string                 `json:"device_id"`
+	LastSeenAt *RFC3339Timestamp      `json:"last_seen_at,omitempty"`
+	Platform   DeviceListItemPlatform `json:"platform"`
+	PushToken  *string                `json:"push_token"`
+
+	// UpdatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	UpdatedAt RFC3339Timestamp `json:"updated_at"`
+}
+
+// DeviceListItemPlatform defines model for DeviceListItem.Platform.
+type DeviceListItemPlatform string
 
 // EmbeddingRequest defines model for EmbeddingRequest.
 type EmbeddingRequest struct {
@@ -809,6 +949,19 @@ type PreProcessingFilters = []map[string]interface{}
 
 // RFC3339Timestamp RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
 type RFC3339Timestamp = time.Time
+
+// RegisterDeviceRequest Register (or refresh) a device install. Omit/`null` `push_token` to clear push registration.
+type RegisterDeviceRequest struct {
+	// DeviceId Per-install device identity (client-generated UUID).
+	DeviceId string                        `json:"device_id"`
+	Platform RegisterDeviceRequestPlatform `json:"platform"`
+
+	// PushToken Push notification token for this install.
+	PushToken *string `json:"push_token,omitempty"`
+}
+
+// RegisterDeviceRequestPlatform defines model for RegisterDeviceRequest.Platform.
+type RegisterDeviceRequestPlatform string
 
 // RerankRequest defines model for RerankRequest.
 type RerankRequest struct {
@@ -1294,6 +1447,12 @@ type GetV1AuthVerifyParams struct {
 	Token string `form:"token" json:"token"`
 }
 
+// GetDeviceAuthorizationStatusParams defines parameters for GetDeviceAuthorizationStatus.
+type GetDeviceAuthorizationStatusParams struct {
+	// DeviceId Device identifier to poll.
+	DeviceId string `form:"device_id" json:"device_id"`
+}
+
 // GetV1ModelsParams defines parameters for GetV1Models.
 type GetV1ModelsParams struct {
 	// ModelType Exact match on model type (`llm`, `tts`, `stt`, `vad`, `embeddings`, `rerank`, `voice_embed`, `audio_conversion`, `voice_conversion`).
@@ -1386,6 +1545,15 @@ type PostV1AuthResendVerificationJSONRequestBody PostV1AuthResendVerificationJSO
 
 // PostV1ChatCompletionsJSONRequestBody defines body for PostV1ChatCompletions for application/json ContentType.
 type PostV1ChatCompletionsJSONRequestBody = ChatCompletionRequest
+
+// RegisterDeviceJSONRequestBody defines body for RegisterDevice for application/json ContentType.
+type RegisterDeviceJSONRequestBody = RegisterDeviceRequest
+
+// ApproveDeviceJSONRequestBody defines body for ApproveDevice for application/json ContentType.
+type ApproveDeviceJSONRequestBody = ApproveDeviceRequest
+
+// AuthorizeDeviceJSONRequestBody defines body for AuthorizeDevice for application/json ContentType.
+type AuthorizeDeviceJSONRequestBody = AuthorizeDeviceRequest
 
 // PostV1EmbedSpeakerJSONRequestBody defines body for PostV1EmbedSpeaker for application/json ContentType.
 type PostV1EmbedSpeakerJSONRequestBody = SpeakerEmbedRequest
@@ -4375,6 +4543,89 @@ type ClientInterface interface {
 	// Corresponds with POST /v1/chat/completions (the `PostV1ChatCompletions` operationId).
 	PostV1ChatCompletions(ctx context.Context, body PostV1ChatCompletionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListDevices List the caller's devices
+	//
+	// Returns the current user's registered devices (no `user_id` per item — they are all the caller's).
+	//
+	// Corresponds with GET /v1/devices (the `ListDevices` operationId).
+	ListDevices(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RegisterDeviceWithBody Register or refresh a device
+	//
+	// Registers a client install (or refreshes an existing one, e.g. a new
+	// push token). Devices must be authorized before cloud sessions can be
+	// provisioned for them — see `/v1/session/connect` (403
+	// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/devices (the `RegisterDevice` operationId).
+	RegisterDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RegisterDevice Register or refresh a device
+	//
+	// Registers a client install (or refreshes an existing one, e.g. a new
+	// push token). Devices must be authorized before cloud sessions can be
+	// provisioned for them — see `/v1/session/connect` (403
+	// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/devices (the `RegisterDevice` operationId).
+	RegisterDevice(ctx context.Context, body RegisterDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ApproveDeviceWithBody Approve a device via emailed approval token
+	//
+	// Redeems the high-entropy approval token from the email button URL. The authenticated session user must match the user the token was issued for. Marks the device authorized and consumes both pending secrets (code and token).
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/devices/approve (the `ApproveDevice` operationId).
+	ApproveDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ApproveDevice Approve a device via emailed approval token
+	//
+	// Redeems the high-entropy approval token from the email button URL. The authenticated session user must match the user the token was issued for. Marks the device authorized and consumes both pending secrets (code and token).
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/devices/approve (the `ApproveDevice` operationId).
+	ApproveDevice(ctx context.Context, body ApproveDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AuthorizeDeviceWithBody Request an email auth code + approval link, or verify a code
+	//
+	// Without `code`: mails the user a 6-digit code (fallback manual entry) AND an approval button linking to the portal device-approve page. Returns 202. With `code`: verifies the code and marks the device authorized. Returns 200.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/devices/authorize (the `AuthorizeDevice` operationId).
+	AuthorizeDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AuthorizeDevice Request an email auth code + approval link, or verify a code
+	//
+	// Without `code`: mails the user a 6-digit code (fallback manual entry) AND an approval button linking to the portal device-approve page. Returns 202. With `code`: verifies the code and marks the device authorized. Returns 200.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/devices/authorize (the `AuthorizeDevice` operationId).
+	AuthorizeDevice(ctx context.Context, body AuthorizeDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDeviceAuthorizationStatus Poll device authorization state
+	//
+	// App-polling endpoint for the device auth flow. Returns whether the
+	// device is authorized and whether a code/token pair is still
+	// outstanding for it.
+	//
+	// Corresponds with GET /v1/devices/authorize/status (the `GetDeviceAuthorizationStatus` operationId).
+	GetDeviceAuthorizationStatus(ctx context.Context, params *GetDeviceAuthorizationStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RevokeDevice Revoke a device
+	//
+	// Revokes a device's authorization and removes it from the user's device list.
+	//
+	// Corresponds with DELETE /v1/devices/{device_id} (the `RevokeDevice` operationId).
+	RevokeDevice(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostV1EmbedSpeakerWithBody Speaker embedding
 	//
 	// Creates a voice embedding from an audio sample; can be passed as `input_embedding` (TTS) or `target_embedding` (voice conversion) to skip re-sending reference audio. Max body 10 MB; timeout 30s.
@@ -5469,6 +5720,179 @@ func (c *Client) PostV1ChatCompletionsWithBody(ctx context.Context, contentType 
 // Corresponds with POST /v1/chat/completions (the `PostV1ChatCompletions` operationId).
 func (c *Client) PostV1ChatCompletions(ctx context.Context, body PostV1ChatCompletionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV1ChatCompletionsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListDevices List the caller's devices
+//
+// Returns the current user's registered devices (no `user_id` per item — they are all the caller's).
+//
+// Corresponds with GET /v1/devices (the `ListDevices` operationId).
+func (c *Client) ListDevices(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListDevicesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RegisterDeviceWithBody Register or refresh a device
+//
+// Registers a client install (or refreshes an existing one, e.g. a new
+// push token). Devices must be authorized before cloud sessions can be
+// provisioned for them — see `/v1/session/connect` (403
+// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/devices (the `RegisterDevice` operationId).
+func (c *Client) RegisterDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRegisterDeviceRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RegisterDevice Register or refresh a device
+//
+// Registers a client install (or refreshes an existing one, e.g. a new
+// push token). Devices must be authorized before cloud sessions can be
+// provisioned for them — see `/v1/session/connect` (403
+// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/devices (the `RegisterDevice` operationId).
+func (c *Client) RegisterDevice(ctx context.Context, body RegisterDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRegisterDeviceRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ApproveDeviceWithBody Approve a device via emailed approval token
+//
+// Redeems the high-entropy approval token from the email button URL. The authenticated session user must match the user the token was issued for. Marks the device authorized and consumes both pending secrets (code and token).
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/devices/approve (the `ApproveDevice` operationId).
+func (c *Client) ApproveDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewApproveDeviceRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ApproveDevice Approve a device via emailed approval token
+//
+// Redeems the high-entropy approval token from the email button URL. The authenticated session user must match the user the token was issued for. Marks the device authorized and consumes both pending secrets (code and token).
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/devices/approve (the `ApproveDevice` operationId).
+func (c *Client) ApproveDevice(ctx context.Context, body ApproveDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewApproveDeviceRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AuthorizeDeviceWithBody Request an email auth code + approval link, or verify a code
+//
+// Without `code`: mails the user a 6-digit code (fallback manual entry) AND an approval button linking to the portal device-approve page. Returns 202. With `code`: verifies the code and marks the device authorized. Returns 200.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/devices/authorize (the `AuthorizeDevice` operationId).
+func (c *Client) AuthorizeDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAuthorizeDeviceRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AuthorizeDevice Request an email auth code + approval link, or verify a code
+//
+// Without `code`: mails the user a 6-digit code (fallback manual entry) AND an approval button linking to the portal device-approve page. Returns 202. With `code`: verifies the code and marks the device authorized. Returns 200.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/devices/authorize (the `AuthorizeDevice` operationId).
+func (c *Client) AuthorizeDevice(ctx context.Context, body AuthorizeDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAuthorizeDeviceRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetDeviceAuthorizationStatus Poll device authorization state
+//
+// App-polling endpoint for the device auth flow. Returns whether the
+// device is authorized and whether a code/token pair is still
+// outstanding for it.
+//
+// Corresponds with GET /v1/devices/authorize/status (the `GetDeviceAuthorizationStatus` operationId).
+func (c *Client) GetDeviceAuthorizationStatus(ctx context.Context, params *GetDeviceAuthorizationStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDeviceAuthorizationStatusRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RevokeDevice Revoke a device
+//
+// Revokes a device's authorization and removes it from the user's device list.
+//
+// Corresponds with DELETE /v1/devices/{device_id} (the `RevokeDevice` operationId).
+func (c *Client) RevokeDevice(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRevokeDeviceRequest(c.Server, deviceId)
 	if err != nil {
 		return nil, err
 	}
@@ -6910,6 +7334,237 @@ func NewPostV1ChatCompletionsRequestWithBody(server string, contentType string, 
 	return req, nil
 }
 
+// NewListDevicesRequest constructs an http.Request for the ListDevices method
+func NewListDevicesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewRegisterDeviceRequest calls the generic RegisterDevice builder with application/json body
+func NewRegisterDeviceRequest(server string, body RegisterDeviceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRegisterDeviceRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewRegisterDeviceRequestWithBody constructs an http.Request for the RegisterDevice method, with any body, and a specified content type
+func NewRegisterDeviceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewApproveDeviceRequest calls the generic ApproveDevice builder with application/json body
+func NewApproveDeviceRequest(server string, body ApproveDeviceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewApproveDeviceRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewApproveDeviceRequestWithBody constructs an http.Request for the ApproveDevice method, with any body, and a specified content type
+func NewApproveDeviceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/approve")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewAuthorizeDeviceRequest calls the generic AuthorizeDevice builder with application/json body
+func NewAuthorizeDeviceRequest(server string, body AuthorizeDeviceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAuthorizeDeviceRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewAuthorizeDeviceRequestWithBody constructs an http.Request for the AuthorizeDevice method, with any body, and a specified content type
+func NewAuthorizeDeviceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/authorize")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetDeviceAuthorizationStatusRequest constructs an http.Request for the GetDeviceAuthorizationStatus method
+func NewGetDeviceAuthorizationStatusRequest(server string, params *GetDeviceAuthorizationStatusParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/authorize/status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "device_id", params.DeviceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewRevokeDeviceRequest constructs an http.Request for the RevokeDevice method
+func NewRevokeDeviceRequest(server string, deviceId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "device_id", deviceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPostV1EmbedSpeakerRequest calls the generic PostV1EmbedSpeaker builder with application/json body
 func NewPostV1EmbedSpeakerRequest(server string, body PostV1EmbedSpeakerJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -7481,7 +8136,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/audio/convert (the `PostV1AudioConvert` operationId).
-	PostV1AudioConvertWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioConvertResponse, error)
+	PostV1AudioConvertWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioConvertResp, error)
 
 	// PostV1AudioConvertWithResponse Audio conversion / enhancement
 	//
@@ -7490,7 +8145,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/audio/convert (the `PostV1AudioConvert` operationId).
-	PostV1AudioConvertWithResponse(ctx context.Context, body PostV1AudioConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioConvertResponse, error)
+	PostV1AudioConvertWithResponse(ctx context.Context, body PostV1AudioConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioConvertResp, error)
 
 	// PostV1AudioSpeechWithBodyWithResponse Text-to-Speech (TTS)
 	//
@@ -7501,7 +8156,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/audio/speech (the `PostV1AudioSpeech` operationId).
-	PostV1AudioSpeechWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioSpeechResponse, error)
+	PostV1AudioSpeechWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioSpeechResp, error)
 
 	// PostV1AudioSpeechWithResponse Text-to-Speech (TTS)
 	//
@@ -7512,7 +8167,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/audio/speech (the `PostV1AudioSpeech` operationId).
-	PostV1AudioSpeechWithResponse(ctx context.Context, body PostV1AudioSpeechJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioSpeechResponse, error)
+	PostV1AudioSpeechWithResponse(ctx context.Context, body PostV1AudioSpeechJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioSpeechResp, error)
 
 	// PostV1AudioTranscriptionsWithBodyWithResponse Speech-to-Text (STT)
 	//
@@ -7521,7 +8176,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/audio/transcriptions (the `PostV1AudioTranscriptions` operationId).
-	PostV1AudioTranscriptionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioTranscriptionsResponse, error)
+	PostV1AudioTranscriptionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioTranscriptionsResp, error)
 
 	// PostV1AudioTranscriptionsWithResponse Speech-to-Text (STT)
 	//
@@ -7530,7 +8185,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/audio/transcriptions (the `PostV1AudioTranscriptions` operationId).
-	PostV1AudioTranscriptionsWithResponse(ctx context.Context, body PostV1AudioTranscriptionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioTranscriptionsResponse, error)
+	PostV1AudioTranscriptionsWithResponse(ctx context.Context, body PostV1AudioTranscriptionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioTranscriptionsResp, error)
 
 	// PostV1AudioVadWithBodyWithResponse Voice Activity Detection (VAD)
 	//
@@ -7539,7 +8194,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/audio/vad (the `PostV1AudioVad` operationId).
-	PostV1AudioVadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioVadResponse, error)
+	PostV1AudioVadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioVadResp, error)
 
 	// PostV1AudioVadWithResponse Voice Activity Detection (VAD)
 	//
@@ -7548,7 +8203,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/audio/vad (the `PostV1AudioVad` operationId).
-	PostV1AudioVadWithResponse(ctx context.Context, body PostV1AudioVadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioVadResponse, error)
+	PostV1AudioVadWithResponse(ctx context.Context, body PostV1AudioVadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioVadResp, error)
 
 	// GetV1AuthApiKeysWithResponse List API keys
 	//
@@ -7557,7 +8212,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/auth/api-keys (the `GetV1AuthApiKeys` operationId).
-	GetV1AuthApiKeysWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthApiKeysResponse, error)
+	GetV1AuthApiKeysWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthApiKeysResp, error)
 
 	// PostV1AuthApiKeysWithBodyWithResponse Create an API key
 	//
@@ -7567,7 +8222,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/api-keys (the `PostV1AuthApiKeys` operationId).
-	PostV1AuthApiKeysWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResponse, error)
+	PostV1AuthApiKeysWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResp, error)
 
 	// PostV1AuthApiKeysWithResponse Create an API key
 	//
@@ -7577,7 +8232,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/api-keys (the `PostV1AuthApiKeys` operationId).
-	PostV1AuthApiKeysWithResponse(ctx context.Context, body PostV1AuthApiKeysJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResponse, error)
+	PostV1AuthApiKeysWithResponse(ctx context.Context, body PostV1AuthApiKeysJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResp, error)
 
 	// DeleteV1AuthApiKeysIdWithResponse Revoke an API key
 	//
@@ -7586,7 +8241,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with DELETE /v1/auth/api-keys/{id} (the `DeleteV1AuthApiKeysId` operationId).
-	DeleteV1AuthApiKeysIdWithResponse(ctx context.Context, id ApiKeyId, reqEditors ...RequestEditorFn) (*DeleteV1AuthApiKeysIdResponse, error)
+	DeleteV1AuthApiKeysIdWithResponse(ctx context.Context, id ApiKeyId, reqEditors ...RequestEditorFn) (*DeleteV1AuthApiKeysIdResp, error)
 
 	// PostV1AuthAppleWithBodyWithResponse Apple Sign-In (native / iOS)
 	//
@@ -7595,7 +8250,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/apple (the `PostV1AuthApple` operationId).
-	PostV1AuthAppleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAppleResponse, error)
+	PostV1AuthAppleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAppleResp, error)
 
 	// PostV1AuthAppleWithResponse Apple Sign-In (native / iOS)
 	//
@@ -7604,7 +8259,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/apple (the `PostV1AuthApple` operationId).
-	PostV1AuthAppleWithResponse(ctx context.Context, body PostV1AuthAppleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleResponse, error)
+	PostV1AuthAppleWithResponse(ctx context.Context, body PostV1AuthAppleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleResp, error)
 
 	// PostV1AuthAppleWebWithBodyWithResponse Apple Sign-In (web OAuth code flow)
 	//
@@ -7613,7 +8268,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/apple/web (the `PostV1AuthAppleWeb` operationId).
-	PostV1AuthAppleWebWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResponse, error)
+	PostV1AuthAppleWebWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResp, error)
 
 	// PostV1AuthAppleWebWithResponse Apple Sign-In (web OAuth code flow)
 	//
@@ -7622,7 +8277,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/apple/web (the `PostV1AuthAppleWeb` operationId).
-	PostV1AuthAppleWebWithResponse(ctx context.Context, body PostV1AuthAppleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResponse, error)
+	PostV1AuthAppleWebWithResponse(ctx context.Context, body PostV1AuthAppleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResp, error)
 
 	// PostV1AuthGoogleWithBodyWithResponse Google Sign-In (native / Android)
 	//
@@ -7631,7 +8286,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/google (the `PostV1AuthGoogle` operationId).
-	PostV1AuthGoogleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleResponse, error)
+	PostV1AuthGoogleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleResp, error)
 
 	// PostV1AuthGoogleWithResponse Google Sign-In (native / Android)
 	//
@@ -7640,7 +8295,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/google (the `PostV1AuthGoogle` operationId).
-	PostV1AuthGoogleWithResponse(ctx context.Context, body PostV1AuthGoogleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleResponse, error)
+	PostV1AuthGoogleWithResponse(ctx context.Context, body PostV1AuthGoogleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleResp, error)
 
 	// PostV1AuthGoogleWebWithBodyWithResponse Google Sign-In (web OAuth code flow)
 	//
@@ -7649,7 +8304,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/google/web (the `PostV1AuthGoogleWeb` operationId).
-	PostV1AuthGoogleWebWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResponse, error)
+	PostV1AuthGoogleWebWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResp, error)
 
 	// PostV1AuthGoogleWebWithResponse Google Sign-In (web OAuth code flow)
 	//
@@ -7658,7 +8313,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/google/web (the `PostV1AuthGoogleWeb` operationId).
-	PostV1AuthGoogleWebWithResponse(ctx context.Context, body PostV1AuthGoogleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResponse, error)
+	PostV1AuthGoogleWebWithResponse(ctx context.Context, body PostV1AuthGoogleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResp, error)
 
 	// DeleteV1AuthLinkAppleWithResponse Unlink the Apple identity
 	//
@@ -7667,7 +8322,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with DELETE /v1/auth/link/apple (the `DeleteV1AuthLinkApple` operationId).
-	DeleteV1AuthLinkAppleWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthLinkAppleResponse, error)
+	DeleteV1AuthLinkAppleWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthLinkAppleResp, error)
 
 	// PostV1AuthLinkAppleWithBodyWithResponse Link an Apple identity to the current account
 	//
@@ -7676,7 +8331,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/link/apple (the `PostV1AuthLinkApple` operationId).
-	PostV1AuthLinkAppleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLinkAppleResponse, error)
+	PostV1AuthLinkAppleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLinkAppleResp, error)
 
 	// PostV1AuthLinkAppleWithResponse Link an Apple identity to the current account
 	//
@@ -7685,7 +8340,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/link/apple (the `PostV1AuthLinkApple` operationId).
-	PostV1AuthLinkAppleWithResponse(ctx context.Context, body PostV1AuthLinkAppleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLinkAppleResponse, error)
+	PostV1AuthLinkAppleWithResponse(ctx context.Context, body PostV1AuthLinkAppleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLinkAppleResp, error)
 
 	// DeleteV1AuthLinkGoogleWithResponse Unlink the Google identity
 	//
@@ -7694,7 +8349,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with DELETE /v1/auth/link/google (the `DeleteV1AuthLinkGoogle` operationId).
-	DeleteV1AuthLinkGoogleWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthLinkGoogleResponse, error)
+	DeleteV1AuthLinkGoogleWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthLinkGoogleResp, error)
 
 	// PostV1AuthLinkGoogleWithBodyWithResponse Link a Google identity to the current account
 	//
@@ -7703,7 +8358,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/link/google (the `PostV1AuthLinkGoogle` operationId).
-	PostV1AuthLinkGoogleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLinkGoogleResponse, error)
+	PostV1AuthLinkGoogleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLinkGoogleResp, error)
 
 	// PostV1AuthLinkGoogleWithResponse Link a Google identity to the current account
 	//
@@ -7712,7 +8367,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/link/google (the `PostV1AuthLinkGoogle` operationId).
-	PostV1AuthLinkGoogleWithResponse(ctx context.Context, body PostV1AuthLinkGoogleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLinkGoogleResponse, error)
+	PostV1AuthLinkGoogleWithResponse(ctx context.Context, body PostV1AuthLinkGoogleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLinkGoogleResp, error)
 
 	// PostV1AuthLoginWithBodyWithResponse Log in with email + password
 	//
@@ -7721,7 +8376,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/login (the `PostV1AuthLogin` operationId).
-	PostV1AuthLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLoginResponse, error)
+	PostV1AuthLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLoginResp, error)
 
 	// PostV1AuthLoginWithResponse Log in with email + password
 	//
@@ -7730,7 +8385,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/login (the `PostV1AuthLogin` operationId).
-	PostV1AuthLoginWithResponse(ctx context.Context, body PostV1AuthLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLoginResponse, error)
+	PostV1AuthLoginWithResponse(ctx context.Context, body PostV1AuthLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLoginResp, error)
 
 	// PostV1AuthLogoutWithBodyWithResponse Log out (revoke refresh tokens + PASETO cutoff)
 	//
@@ -7739,7 +8394,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/logout (the `PostV1AuthLogout` operationId).
-	PostV1AuthLogoutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLogoutResponse, error)
+	PostV1AuthLogoutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLogoutResp, error)
 
 	// PostV1AuthLogoutWithResponse Log out (revoke refresh tokens + PASETO cutoff)
 	//
@@ -7748,14 +8403,14 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/logout (the `PostV1AuthLogout` operationId).
-	PostV1AuthLogoutWithResponse(ctx context.Context, body PostV1AuthLogoutJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLogoutResponse, error)
+	PostV1AuthLogoutWithResponse(ctx context.Context, body PostV1AuthLogoutJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLogoutResp, error)
 
 	// GetV1AuthMeWithResponse Get the current user profile
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/auth/me (the `GetV1AuthMe` operationId).
-	GetV1AuthMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthMeResponse, error)
+	GetV1AuthMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthMeResp, error)
 
 	// PatchV1AuthMeWithBodyWithResponse Update the current user profile
 	//
@@ -7764,7 +8419,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PATCH /v1/auth/me (the `PatchV1AuthMe` operationId).
-	PatchV1AuthMeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchV1AuthMeResponse, error)
+	PatchV1AuthMeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchV1AuthMeResp, error)
 
 	// PatchV1AuthMeWithResponse Update the current user profile
 	//
@@ -7773,7 +8428,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PATCH /v1/auth/me (the `PatchV1AuthMe` operationId).
-	PatchV1AuthMeWithResponse(ctx context.Context, body PatchV1AuthMeJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchV1AuthMeResponse, error)
+	PatchV1AuthMeWithResponse(ctx context.Context, body PatchV1AuthMeJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchV1AuthMeResp, error)
 
 	// PutV1AuthPasswordWithBodyWithResponse Change password
 	//
@@ -7782,7 +8437,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /v1/auth/password (the `PutV1AuthPassword` operationId).
-	PutV1AuthPasswordWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AuthPasswordResponse, error)
+	PutV1AuthPasswordWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AuthPasswordResp, error)
 
 	// PutV1AuthPasswordWithResponse Change password
 	//
@@ -7791,7 +8446,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /v1/auth/password (the `PutV1AuthPassword` operationId).
-	PutV1AuthPasswordWithResponse(ctx context.Context, body PutV1AuthPasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AuthPasswordResponse, error)
+	PutV1AuthPasswordWithResponse(ctx context.Context, body PutV1AuthPasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AuthPasswordResp, error)
 
 	// PostV1AuthPasswordResetConfirmWithBodyWithResponse Confirm a password reset
 	//
@@ -7800,7 +8455,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/password/reset/confirm (the `PostV1AuthPasswordResetConfirm` operationId).
-	PostV1AuthPasswordResetConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetConfirmResponse, error)
+	PostV1AuthPasswordResetConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetConfirmResp, error)
 
 	// PostV1AuthPasswordResetConfirmWithResponse Confirm a password reset
 	//
@@ -7809,7 +8464,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/password/reset/confirm (the `PostV1AuthPasswordResetConfirm` operationId).
-	PostV1AuthPasswordResetConfirmWithResponse(ctx context.Context, body PostV1AuthPasswordResetConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetConfirmResponse, error)
+	PostV1AuthPasswordResetConfirmWithResponse(ctx context.Context, body PostV1AuthPasswordResetConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetConfirmResp, error)
 
 	// PostV1AuthPasswordResetRequestWithBodyWithResponse Request a password reset
 	//
@@ -7818,7 +8473,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/password/reset/request (the `PostV1AuthPasswordResetRequest` operationId).
-	PostV1AuthPasswordResetRequestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResponse, error)
+	PostV1AuthPasswordResetRequestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResp, error)
 
 	// PostV1AuthPasswordResetRequestWithResponse Request a password reset
 	//
@@ -7827,7 +8482,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/password/reset/request (the `PostV1AuthPasswordResetRequest` operationId).
-	PostV1AuthPasswordResetRequestWithResponse(ctx context.Context, body PostV1AuthPasswordResetRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResponse, error)
+	PostV1AuthPasswordResetRequestWithResponse(ctx context.Context, body PostV1AuthPasswordResetRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResp, error)
 
 	// PostV1AuthRefreshWithBodyWithResponse Refresh the PASETO token
 	//
@@ -7836,7 +8491,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/refresh (the `PostV1AuthRefresh` operationId).
-	PostV1AuthRefreshWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthRefreshResponse, error)
+	PostV1AuthRefreshWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthRefreshResp, error)
 
 	// PostV1AuthRefreshWithResponse Refresh the PASETO token
 	//
@@ -7845,7 +8500,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/refresh (the `PostV1AuthRefresh` operationId).
-	PostV1AuthRefreshWithResponse(ctx context.Context, body PostV1AuthRefreshJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthRefreshResponse, error)
+	PostV1AuthRefreshWithResponse(ctx context.Context, body PostV1AuthRefreshJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthRefreshResp, error)
 
 	// PostV1AuthRegisterWithBodyWithResponse Register a new account
 	//
@@ -7854,7 +8509,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/register (the `PostV1AuthRegister` operationId).
-	PostV1AuthRegisterWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthRegisterResponse, error)
+	PostV1AuthRegisterWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthRegisterResp, error)
 
 	// PostV1AuthRegisterWithResponse Register a new account
 	//
@@ -7863,7 +8518,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/register (the `PostV1AuthRegister` operationId).
-	PostV1AuthRegisterWithResponse(ctx context.Context, body PostV1AuthRegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthRegisterResponse, error)
+	PostV1AuthRegisterWithResponse(ctx context.Context, body PostV1AuthRegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthRegisterResp, error)
 
 	// PostV1AuthResendVerificationWithBodyWithResponse Resend the verification email
 	//
@@ -7872,7 +8527,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/resend-verification (the `PostV1AuthResendVerification` operationId).
-	PostV1AuthResendVerificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResponse, error)
+	PostV1AuthResendVerificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResp, error)
 
 	// PostV1AuthResendVerificationWithResponse Resend the verification email
 	//
@@ -7881,7 +8536,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/resend-verification (the `PostV1AuthResendVerification` operationId).
-	PostV1AuthResendVerificationWithResponse(ctx context.Context, body PostV1AuthResendVerificationJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResponse, error)
+	PostV1AuthResendVerificationWithResponse(ctx context.Context, body PostV1AuthResendVerificationJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResp, error)
 
 	// GetV1AuthVerifyWithResponse Verify email address
 	//
@@ -7890,7 +8545,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/auth/verify (the `GetV1AuthVerify` operationId).
-	GetV1AuthVerifyWithResponse(ctx context.Context, params *GetV1AuthVerifyParams, reqEditors ...RequestEditorFn) (*GetV1AuthVerifyResponse, error)
+	GetV1AuthVerifyWithResponse(ctx context.Context, params *GetV1AuthVerifyParams, reqEditors ...RequestEditorFn) (*GetV1AuthVerifyResp, error)
 
 	// PostV1ChatCompletionsWithBodyWithResponse Chat completions (LLM)
 	//
@@ -7903,7 +8558,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/chat/completions (the `PostV1ChatCompletions` operationId).
-	PostV1ChatCompletionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1ChatCompletionsResponse, error)
+	PostV1ChatCompletionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1ChatCompletionsResp, error)
 
 	// PostV1ChatCompletionsWithResponse Chat completions (LLM)
 	//
@@ -7916,7 +8571,96 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/chat/completions (the `PostV1ChatCompletions` operationId).
-	PostV1ChatCompletionsWithResponse(ctx context.Context, body PostV1ChatCompletionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1ChatCompletionsResponse, error)
+	PostV1ChatCompletionsWithResponse(ctx context.Context, body PostV1ChatCompletionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1ChatCompletionsResp, error)
+
+	// ListDevicesWithResponse List the caller's devices
+	//
+	// Returns the current user's registered devices (no `user_id` per item — they are all the caller's).
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/devices (the `ListDevices` operationId).
+	ListDevicesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListDevicesResp, error)
+
+	// RegisterDeviceWithBodyWithResponse Register or refresh a device
+	//
+	// Registers a client install (or refreshes an existing one, e.g. a new
+	// push token). Devices must be authorized before cloud sessions can be
+	// provisioned for them — see `/v1/session/connect` (403
+	// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices (the `RegisterDevice` operationId).
+	RegisterDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RegisterDeviceResp, error)
+
+	// RegisterDeviceWithResponse Register or refresh a device
+	//
+	// Registers a client install (or refreshes an existing one, e.g. a new
+	// push token). Devices must be authorized before cloud sessions can be
+	// provisioned for them — see `/v1/session/connect` (403
+	// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices (the `RegisterDevice` operationId).
+	RegisterDeviceWithResponse(ctx context.Context, body RegisterDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*RegisterDeviceResp, error)
+
+	// ApproveDeviceWithBodyWithResponse Approve a device via emailed approval token
+	//
+	// Redeems the high-entropy approval token from the email button URL. The authenticated session user must match the user the token was issued for. Marks the device authorized and consumes both pending secrets (code and token).
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/approve (the `ApproveDevice` operationId).
+	ApproveDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ApproveDeviceResp, error)
+
+	// ApproveDeviceWithResponse Approve a device via emailed approval token
+	//
+	// Redeems the high-entropy approval token from the email button URL. The authenticated session user must match the user the token was issued for. Marks the device authorized and consumes both pending secrets (code and token).
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/approve (the `ApproveDevice` operationId).
+	ApproveDeviceWithResponse(ctx context.Context, body ApproveDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*ApproveDeviceResp, error)
+
+	// AuthorizeDeviceWithBodyWithResponse Request an email auth code + approval link, or verify a code
+	//
+	// Without `code`: mails the user a 6-digit code (fallback manual entry) AND an approval button linking to the portal device-approve page. Returns 202. With `code`: verifies the code and marks the device authorized. Returns 200.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/authorize (the `AuthorizeDevice` operationId).
+	AuthorizeDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AuthorizeDeviceResp, error)
+
+	// AuthorizeDeviceWithResponse Request an email auth code + approval link, or verify a code
+	//
+	// Without `code`: mails the user a 6-digit code (fallback manual entry) AND an approval button linking to the portal device-approve page. Returns 202. With `code`: verifies the code and marks the device authorized. Returns 200.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/authorize (the `AuthorizeDevice` operationId).
+	AuthorizeDeviceWithResponse(ctx context.Context, body AuthorizeDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*AuthorizeDeviceResp, error)
+
+	// GetDeviceAuthorizationStatusWithResponse Poll device authorization state
+	//
+	// App-polling endpoint for the device auth flow. Returns whether the
+	// device is authorized and whether a code/token pair is still
+	// outstanding for it.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/devices/authorize/status (the `GetDeviceAuthorizationStatus` operationId).
+	GetDeviceAuthorizationStatusWithResponse(ctx context.Context, params *GetDeviceAuthorizationStatusParams, reqEditors ...RequestEditorFn) (*GetDeviceAuthorizationStatusResp, error)
+
+	// RevokeDeviceWithResponse Revoke a device
+	//
+	// Revokes a device's authorization and removes it from the user's device list.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v1/devices/{device_id} (the `RevokeDevice` operationId).
+	RevokeDeviceWithResponse(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*RevokeDeviceResp, error)
 
 	// PostV1EmbedSpeakerWithBodyWithResponse Speaker embedding
 	//
@@ -7925,7 +8669,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/embed/speaker (the `PostV1EmbedSpeaker` operationId).
-	PostV1EmbedSpeakerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1EmbedSpeakerResponse, error)
+	PostV1EmbedSpeakerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1EmbedSpeakerResp, error)
 
 	// PostV1EmbedSpeakerWithResponse Speaker embedding
 	//
@@ -7934,7 +8678,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/embed/speaker (the `PostV1EmbedSpeaker` operationId).
-	PostV1EmbedSpeakerWithResponse(ctx context.Context, body PostV1EmbedSpeakerJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1EmbedSpeakerResponse, error)
+	PostV1EmbedSpeakerWithResponse(ctx context.Context, body PostV1EmbedSpeakerJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1EmbedSpeakerResp, error)
 
 	// PostV1EmbeddingsWithBodyWithResponse Text embeddings
 	//
@@ -7943,7 +8687,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/embeddings (the `PostV1Embeddings` operationId).
-	PostV1EmbeddingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1EmbeddingsResponse, error)
+	PostV1EmbeddingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1EmbeddingsResp, error)
 
 	// PostV1EmbeddingsWithResponse Text embeddings
 	//
@@ -7952,7 +8696,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/embeddings (the `PostV1Embeddings` operationId).
-	PostV1EmbeddingsWithResponse(ctx context.Context, body PostV1EmbeddingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1EmbeddingsResponse, error)
+	PostV1EmbeddingsWithResponse(ctx context.Context, body PostV1EmbeddingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1EmbeddingsResp, error)
 
 	// PostV1ImagesGenerationsWithBodyWithResponse Generate images (currently unavailable)
 	//
@@ -7969,7 +8713,7 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v1/images/generations (the `PostV1ImagesGenerations` operationId).
 	//
 	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	PostV1ImagesGenerationsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1ImagesGenerationsResponse, error)
+	PostV1ImagesGenerationsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1ImagesGenerationsResp, error)
 
 	// PostV1ImagesGenerationsWithResponse Generate images (currently unavailable)
 	//
@@ -7986,7 +8730,7 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v1/images/generations (the `PostV1ImagesGenerations` operationId).
 	//
 	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-	PostV1ImagesGenerationsWithResponse(ctx context.Context, body PostV1ImagesGenerationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1ImagesGenerationsResponse, error)
+	PostV1ImagesGenerationsWithResponse(ctx context.Context, body PostV1ImagesGenerationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1ImagesGenerationsResp, error)
 
 	// GetV1ModelsWithResponse List available models
 	//
@@ -7995,7 +8739,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/models (the `GetV1Models` operationId).
-	GetV1ModelsWithResponse(ctx context.Context, params *GetV1ModelsParams, reqEditors ...RequestEditorFn) (*GetV1ModelsResponse, error)
+	GetV1ModelsWithResponse(ctx context.Context, params *GetV1ModelsParams, reqEditors ...RequestEditorFn) (*GetV1ModelsResp, error)
 
 	// GetV1OpenapiJsonWithResponse Download this OpenAPI specification (JSON)
 	//
@@ -8004,7 +8748,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/openapi.json (the `GetV1OpenapiJson` operationId).
-	GetV1OpenapiJsonWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1OpenapiJsonResponse, error)
+	GetV1OpenapiJsonWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1OpenapiJsonResp, error)
 
 	// GetV1OpenapiYamlWithResponse Download this OpenAPI specification (YAML)
 	//
@@ -8017,7 +8761,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/openapi.yaml (the `GetV1OpenapiYaml` operationId).
-	GetV1OpenapiYamlWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1OpenapiYamlResponse, error)
+	GetV1OpenapiYamlWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1OpenapiYamlResp, error)
 
 	// PostV1RerankWithBodyWithResponse Rerank documents by relevance to a query
 	//
@@ -8026,7 +8770,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/rerank (the `PostV1Rerank` operationId).
-	PostV1RerankWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1RerankResponse, error)
+	PostV1RerankWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1RerankResp, error)
 
 	// PostV1RerankWithResponse Rerank documents by relevance to a query
 	//
@@ -8035,7 +8779,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/rerank (the `PostV1Rerank` operationId).
-	PostV1RerankWithResponse(ctx context.Context, body PostV1RerankJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1RerankResponse, error)
+	PostV1RerankWithResponse(ctx context.Context, body PostV1RerankJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1RerankResp, error)
 
 	// PostV1SessionConnectWithBodyWithResponse Connect a cloud session
 	//
@@ -8044,7 +8788,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-	PostV1SessionConnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResponse, error)
+	PostV1SessionConnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResp, error)
 
 	// PostV1SessionConnectWithResponse Connect a cloud session
 	//
@@ -8053,7 +8797,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-	PostV1SessionConnectWithResponse(ctx context.Context, body PostV1SessionConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResponse, error)
+	PostV1SessionConnectWithResponse(ctx context.Context, body PostV1SessionConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResp, error)
 
 	// PostV1SessionConnectedWithResponse Report session connected (proxy → broker)
 	//
@@ -8062,7 +8806,7 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
-	PostV1SessionConnectedWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1SessionConnectedResponse, error)
+	PostV1SessionConnectedWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1SessionConnectedResp, error)
 
 	// PostV1SessionDisconnectWithBodyWithResponse Disconnect a cloud session (enter grace period)
 	//
@@ -8071,7 +8815,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-	PostV1SessionDisconnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResponse, error)
+	PostV1SessionDisconnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResp, error)
 
 	// PostV1SessionDisconnectWithResponse Disconnect a cloud session (enter grace period)
 	//
@@ -8080,7 +8824,7 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-	PostV1SessionDisconnectWithResponse(ctx context.Context, body PostV1SessionDisconnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResponse, error)
+	PostV1SessionDisconnectWithResponse(ctx context.Context, body PostV1SessionDisconnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResp, error)
 
 	// GetV1SubscriptionMeWithResponse Get the current user's subscription
 	//
@@ -8089,21 +8833,21 @@ type ClientWithResponsesInterface interface {
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/subscription/me (the `GetV1SubscriptionMe` operationId).
-	GetV1SubscriptionMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionMeResponse, error)
+	GetV1SubscriptionMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionMeResp, error)
 
 	// GetV1SubscriptionTiersWithResponse List subscription tiers
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/subscription/tiers (the `GetV1SubscriptionTiers` operationId).
-	GetV1SubscriptionTiersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionTiersResponse, error)
+	GetV1SubscriptionTiersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionTiersResp, error)
 
 	// GetV1VersionsWithResponse List available HL image versions
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /v1/versions (the `GetV1Versions` operationId).
-	GetV1VersionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1VersionsResponse, error)
+	GetV1VersionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1VersionsResp, error)
 
 	// PostV1VoiceConvertWithBodyWithResponse Voice conversion
 	//
@@ -8112,7 +8856,7 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/voice/convert (the `PostV1VoiceConvert` operationId).
-	PostV1VoiceConvertWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResponse, error)
+	PostV1VoiceConvertWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResp, error)
 
 	// PostV1VoiceConvertWithResponse Voice conversion
 	//
@@ -8121,25 +8865,25 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/voice/convert (the `PostV1VoiceConvert` operationId).
-	PostV1VoiceConvertWithResponse(ctx context.Context, body PostV1VoiceConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResponse, error)
+	PostV1VoiceConvertWithResponse(ctx context.Context, body PostV1VoiceConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResp, error)
 }
 
-// PostV1AudioConvertResponse200Headers the declared response headers of an HTTP 200 response for PostV1AudioConvert
-type PostV1AudioConvertResponse200Headers struct {
+// PostV1AudioConvertResp200Headers the declared response headers of an HTTP 200 response for PostV1AudioConvert
+type PostV1AudioConvertResp200Headers struct {
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-// PostV1AudioConvertResponse429Headers the declared response headers of an HTTP 429 response for PostV1AudioConvert
-type PostV1AudioConvertResponse429Headers struct {
+// PostV1AudioConvertResp429Headers the declared response headers of an HTTP 429 response for PostV1AudioConvert
+type PostV1AudioConvertResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1AudioConvertResponse struct {
+type PostV1AudioConvertResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8157,53 +8901,53 @@ type PostV1AudioConvertResponse struct {
 	// JSON504 the response for an HTTP 504 `application/json` response
 	JSON504 *Error
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1AudioConvertResponse200Headers
+	Headers200 *PostV1AudioConvertResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1AudioConvertResponse429Headers
+	Headers429 *PostV1AudioConvertResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AudioConvertResponse) GetJSON200() *AudioDataResponse {
+func (r PostV1AudioConvertResp) GetJSON200() *AudioDataResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AudioConvertResponse) GetJSON400() *StandardError {
+func (r PostV1AudioConvertResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AudioConvertResponse) GetJSON401() *Unauthorized {
+func (r PostV1AudioConvertResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1AudioConvertResponse) GetJSON403() *Forbidden {
+func (r PostV1AudioConvertResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1AudioConvertResponse) GetJSON404() *NotFound {
+func (r PostV1AudioConvertResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1AudioConvertResponse) GetJSON429() *RateLimited {
+func (r PostV1AudioConvertResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetJSON504 returns the response for an HTTP 504 `application/json` response
-func (r PostV1AudioConvertResponse) GetJSON504() *Error {
+func (r PostV1AudioConvertResp) GetJSON504() *Error {
 	return r.JSON504
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AudioConvertResponse) GetBody() []byte {
+func (r PostV1AudioConvertResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AudioConvertResponse) Status() string {
+func (r PostV1AudioConvertResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8211,7 +8955,7 @@ func (r PostV1AudioConvertResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AudioConvertResponse) StatusCode() int {
+func (r PostV1AudioConvertResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8219,29 +8963,29 @@ func (r PostV1AudioConvertResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AudioConvertResponse) ContentType() string {
+func (r PostV1AudioConvertResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1AudioSpeechResponse200Headers the declared response headers of an HTTP 200 response for PostV1AudioSpeech
-type PostV1AudioSpeechResponse200Headers struct {
+// PostV1AudioSpeechResp200Headers the declared response headers of an HTTP 200 response for PostV1AudioSpeech
+type PostV1AudioSpeechResp200Headers struct {
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-// PostV1AudioSpeechResponse429Headers the declared response headers of an HTTP 429 response for PostV1AudioSpeech
-type PostV1AudioSpeechResponse429Headers struct {
+// PostV1AudioSpeechResp429Headers the declared response headers of an HTTP 429 response for PostV1AudioSpeech
+type PostV1AudioSpeechResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1AudioSpeechResponse struct {
+type PostV1AudioSpeechResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8259,53 +9003,53 @@ type PostV1AudioSpeechResponse struct {
 	// JSON504 the response for an HTTP 504 `application/json` response
 	JSON504 *Error
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1AudioSpeechResponse200Headers
+	Headers200 *PostV1AudioSpeechResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1AudioSpeechResponse429Headers
+	Headers429 *PostV1AudioSpeechResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AudioSpeechResponse) GetJSON200() *AudioDataResponse {
+func (r PostV1AudioSpeechResp) GetJSON200() *AudioDataResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AudioSpeechResponse) GetJSON400() *StandardError {
+func (r PostV1AudioSpeechResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AudioSpeechResponse) GetJSON401() *Unauthorized {
+func (r PostV1AudioSpeechResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1AudioSpeechResponse) GetJSON403() *Forbidden {
+func (r PostV1AudioSpeechResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1AudioSpeechResponse) GetJSON404() *NotFound {
+func (r PostV1AudioSpeechResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1AudioSpeechResponse) GetJSON429() *RateLimited {
+func (r PostV1AudioSpeechResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetJSON504 returns the response for an HTTP 504 `application/json` response
-func (r PostV1AudioSpeechResponse) GetJSON504() *Error {
+func (r PostV1AudioSpeechResp) GetJSON504() *Error {
 	return r.JSON504
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AudioSpeechResponse) GetBody() []byte {
+func (r PostV1AudioSpeechResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AudioSpeechResponse) Status() string {
+func (r PostV1AudioSpeechResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8313,7 +9057,7 @@ func (r PostV1AudioSpeechResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AudioSpeechResponse) StatusCode() int {
+func (r PostV1AudioSpeechResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8321,29 +9065,29 @@ func (r PostV1AudioSpeechResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AudioSpeechResponse) ContentType() string {
+func (r PostV1AudioSpeechResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1AudioTranscriptionsResponse200Headers the declared response headers of an HTTP 200 response for PostV1AudioTranscriptions
-type PostV1AudioTranscriptionsResponse200Headers struct {
+// PostV1AudioTranscriptionsResp200Headers the declared response headers of an HTTP 200 response for PostV1AudioTranscriptions
+type PostV1AudioTranscriptionsResp200Headers struct {
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-// PostV1AudioTranscriptionsResponse429Headers the declared response headers of an HTTP 429 response for PostV1AudioTranscriptions
-type PostV1AudioTranscriptionsResponse429Headers struct {
+// PostV1AudioTranscriptionsResp429Headers the declared response headers of an HTTP 429 response for PostV1AudioTranscriptions
+type PostV1AudioTranscriptionsResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1AudioTranscriptionsResponse struct {
+type PostV1AudioTranscriptionsResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8361,53 +9105,53 @@ type PostV1AudioTranscriptionsResponse struct {
 	// JSON504 the response for an HTTP 504 `application/json` response
 	JSON504 *Error
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1AudioTranscriptionsResponse200Headers
+	Headers200 *PostV1AudioTranscriptionsResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1AudioTranscriptionsResponse429Headers
+	Headers429 *PostV1AudioTranscriptionsResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AudioTranscriptionsResponse) GetJSON200() *STTResponse {
+func (r PostV1AudioTranscriptionsResp) GetJSON200() *STTResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AudioTranscriptionsResponse) GetJSON400() *StandardError {
+func (r PostV1AudioTranscriptionsResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AudioTranscriptionsResponse) GetJSON401() *Unauthorized {
+func (r PostV1AudioTranscriptionsResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1AudioTranscriptionsResponse) GetJSON403() *Forbidden {
+func (r PostV1AudioTranscriptionsResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1AudioTranscriptionsResponse) GetJSON404() *NotFound {
+func (r PostV1AudioTranscriptionsResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1AudioTranscriptionsResponse) GetJSON429() *RateLimited {
+func (r PostV1AudioTranscriptionsResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetJSON504 returns the response for an HTTP 504 `application/json` response
-func (r PostV1AudioTranscriptionsResponse) GetJSON504() *Error {
+func (r PostV1AudioTranscriptionsResp) GetJSON504() *Error {
 	return r.JSON504
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AudioTranscriptionsResponse) GetBody() []byte {
+func (r PostV1AudioTranscriptionsResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AudioTranscriptionsResponse) Status() string {
+func (r PostV1AudioTranscriptionsResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8415,7 +9159,7 @@ func (r PostV1AudioTranscriptionsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AudioTranscriptionsResponse) StatusCode() int {
+func (r PostV1AudioTranscriptionsResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8423,29 +9167,29 @@ func (r PostV1AudioTranscriptionsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AudioTranscriptionsResponse) ContentType() string {
+func (r PostV1AudioTranscriptionsResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1AudioVadResponse200Headers the declared response headers of an HTTP 200 response for PostV1AudioVad
-type PostV1AudioVadResponse200Headers struct {
+// PostV1AudioVadResp200Headers the declared response headers of an HTTP 200 response for PostV1AudioVad
+type PostV1AudioVadResp200Headers struct {
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-// PostV1AudioVadResponse429Headers the declared response headers of an HTTP 429 response for PostV1AudioVad
-type PostV1AudioVadResponse429Headers struct {
+// PostV1AudioVadResp429Headers the declared response headers of an HTTP 429 response for PostV1AudioVad
+type PostV1AudioVadResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1AudioVadResponse struct {
+type PostV1AudioVadResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8461,48 +9205,48 @@ type PostV1AudioVadResponse struct {
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1AudioVadResponse200Headers
+	Headers200 *PostV1AudioVadResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1AudioVadResponse429Headers
+	Headers429 *PostV1AudioVadResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AudioVadResponse) GetJSON200() *VADResponse {
+func (r PostV1AudioVadResp) GetJSON200() *VADResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AudioVadResponse) GetJSON400() *StandardError {
+func (r PostV1AudioVadResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AudioVadResponse) GetJSON401() *Unauthorized {
+func (r PostV1AudioVadResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1AudioVadResponse) GetJSON403() *Forbidden {
+func (r PostV1AudioVadResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1AudioVadResponse) GetJSON404() *NotFound {
+func (r PostV1AudioVadResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1AudioVadResponse) GetJSON429() *RateLimited {
+func (r PostV1AudioVadResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AudioVadResponse) GetBody() []byte {
+func (r PostV1AudioVadResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AudioVadResponse) Status() string {
+func (r PostV1AudioVadResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8510,7 +9254,7 @@ func (r PostV1AudioVadResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AudioVadResponse) StatusCode() int {
+func (r PostV1AudioVadResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8518,14 +9262,14 @@ func (r PostV1AudioVadResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AudioVadResponse) ContentType() string {
+func (r PostV1AudioVadResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1AuthApiKeysResponse struct {
+type GetV1AuthApiKeysResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8535,22 +9279,22 @@ type GetV1AuthApiKeysResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetV1AuthApiKeysResponse) GetJSON200() *[]APIKeyListItem {
+func (r GetV1AuthApiKeysResp) GetJSON200() *[]APIKeyListItem {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetV1AuthApiKeysResponse) GetJSON401() *Unauthorized {
+func (r GetV1AuthApiKeysResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1AuthApiKeysResponse) GetBody() []byte {
+func (r GetV1AuthApiKeysResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1AuthApiKeysResponse) Status() string {
+func (r GetV1AuthApiKeysResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8558,7 +9302,7 @@ func (r GetV1AuthApiKeysResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1AuthApiKeysResponse) StatusCode() int {
+func (r GetV1AuthApiKeysResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8566,14 +9310,14 @@ func (r GetV1AuthApiKeysResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1AuthApiKeysResponse) ContentType() string {
+func (r GetV1AuthApiKeysResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthApiKeysResponse struct {
+type PostV1AuthApiKeysResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON201 the response for an HTTP 201 `application/json` response
@@ -8585,27 +9329,27 @@ type PostV1AuthApiKeysResponse struct {
 }
 
 // GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r PostV1AuthApiKeysResponse) GetJSON201() *APIKeyCreated {
+func (r PostV1AuthApiKeysResp) GetJSON201() *APIKeyCreated {
 	return r.JSON201
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthApiKeysResponse) GetJSON401() *Unauthorized {
+func (r PostV1AuthApiKeysResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1AuthApiKeysResponse) GetJSON409() *Error {
+func (r PostV1AuthApiKeysResp) GetJSON409() *Error {
 	return r.JSON409
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthApiKeysResponse) GetBody() []byte {
+func (r PostV1AuthApiKeysResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthApiKeysResponse) Status() string {
+func (r PostV1AuthApiKeysResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8613,7 +9357,7 @@ func (r PostV1AuthApiKeysResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthApiKeysResponse) StatusCode() int {
+func (r PostV1AuthApiKeysResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8621,14 +9365,14 @@ func (r PostV1AuthApiKeysResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthApiKeysResponse) ContentType() string {
+func (r PostV1AuthApiKeysResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type DeleteV1AuthApiKeysIdResponse struct {
+type DeleteV1AuthApiKeysIdResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -8636,17 +9380,17 @@ type DeleteV1AuthApiKeysIdResponse struct {
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r DeleteV1AuthApiKeysIdResponse) GetJSON401() *Unauthorized {
+func (r DeleteV1AuthApiKeysIdResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r DeleteV1AuthApiKeysIdResponse) GetBody() []byte {
+func (r DeleteV1AuthApiKeysIdResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r DeleteV1AuthApiKeysIdResponse) Status() string {
+func (r DeleteV1AuthApiKeysIdResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8654,7 +9398,7 @@ func (r DeleteV1AuthApiKeysIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r DeleteV1AuthApiKeysIdResponse) StatusCode() int {
+func (r DeleteV1AuthApiKeysIdResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8662,14 +9406,14 @@ func (r DeleteV1AuthApiKeysIdResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r DeleteV1AuthApiKeysIdResponse) ContentType() string {
+func (r DeleteV1AuthApiKeysIdResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthAppleResponse struct {
+type PostV1AuthAppleResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8683,32 +9427,32 @@ type PostV1AuthAppleResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthAppleResponse) GetJSON200() *TokenResponse {
+func (r PostV1AuthAppleResp) GetJSON200() *TokenResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthAppleResponse) GetJSON400() *StandardError {
+func (r PostV1AuthAppleResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthAppleResponse) GetJSON401() *StandardError {
+func (r PostV1AuthAppleResp) GetJSON401() *StandardError {
 	return r.JSON401
 }
 
 // GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1AuthAppleResponse) GetJSON409() *StandardError {
+func (r PostV1AuthAppleResp) GetJSON409() *StandardError {
 	return r.JSON409
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthAppleResponse) GetBody() []byte {
+func (r PostV1AuthAppleResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthAppleResponse) Status() string {
+func (r PostV1AuthAppleResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8716,7 +9460,7 @@ func (r PostV1AuthAppleResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthAppleResponse) StatusCode() int {
+func (r PostV1AuthAppleResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8724,14 +9468,14 @@ func (r PostV1AuthAppleResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthAppleResponse) ContentType() string {
+func (r PostV1AuthAppleResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthAppleWebResponse struct {
+type PostV1AuthAppleWebResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8747,37 +9491,37 @@ type PostV1AuthAppleWebResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthAppleWebResponse) GetJSON200() *TokenResponse {
+func (r PostV1AuthAppleWebResp) GetJSON200() *TokenResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthAppleWebResponse) GetJSON400() *StandardError {
+func (r PostV1AuthAppleWebResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthAppleWebResponse) GetJSON401() *StandardError {
+func (r PostV1AuthAppleWebResp) GetJSON401() *StandardError {
 	return r.JSON401
 }
 
 // GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1AuthAppleWebResponse) GetJSON409() *StandardError {
+func (r PostV1AuthAppleWebResp) GetJSON409() *StandardError {
 	return r.JSON409
 }
 
 // GetJSON503 returns the response for an HTTP 503 `application/json` response
-func (r PostV1AuthAppleWebResponse) GetJSON503() *Error {
+func (r PostV1AuthAppleWebResp) GetJSON503() *Error {
 	return r.JSON503
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthAppleWebResponse) GetBody() []byte {
+func (r PostV1AuthAppleWebResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthAppleWebResponse) Status() string {
+func (r PostV1AuthAppleWebResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8785,7 +9529,7 @@ func (r PostV1AuthAppleWebResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthAppleWebResponse) StatusCode() int {
+func (r PostV1AuthAppleWebResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8793,14 +9537,14 @@ func (r PostV1AuthAppleWebResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthAppleWebResponse) ContentType() string {
+func (r PostV1AuthAppleWebResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthGoogleResponse struct {
+type PostV1AuthGoogleResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8814,32 +9558,32 @@ type PostV1AuthGoogleResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthGoogleResponse) GetJSON200() *TokenResponse {
+func (r PostV1AuthGoogleResp) GetJSON200() *TokenResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthGoogleResponse) GetJSON400() *StandardError {
+func (r PostV1AuthGoogleResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthGoogleResponse) GetJSON401() *StandardError {
+func (r PostV1AuthGoogleResp) GetJSON401() *StandardError {
 	return r.JSON401
 }
 
 // GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1AuthGoogleResponse) GetJSON409() *StandardError {
+func (r PostV1AuthGoogleResp) GetJSON409() *StandardError {
 	return r.JSON409
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthGoogleResponse) GetBody() []byte {
+func (r PostV1AuthGoogleResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthGoogleResponse) Status() string {
+func (r PostV1AuthGoogleResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8847,7 +9591,7 @@ func (r PostV1AuthGoogleResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthGoogleResponse) StatusCode() int {
+func (r PostV1AuthGoogleResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8855,14 +9599,14 @@ func (r PostV1AuthGoogleResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthGoogleResponse) ContentType() string {
+func (r PostV1AuthGoogleResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthGoogleWebResponse struct {
+type PostV1AuthGoogleWebResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8876,32 +9620,32 @@ type PostV1AuthGoogleWebResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthGoogleWebResponse) GetJSON200() *TokenResponse {
+func (r PostV1AuthGoogleWebResp) GetJSON200() *TokenResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthGoogleWebResponse) GetJSON400() *StandardError {
+func (r PostV1AuthGoogleWebResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthGoogleWebResponse) GetJSON401() *StandardError {
+func (r PostV1AuthGoogleWebResp) GetJSON401() *StandardError {
 	return r.JSON401
 }
 
 // GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1AuthGoogleWebResponse) GetJSON409() *StandardError {
+func (r PostV1AuthGoogleWebResp) GetJSON409() *StandardError {
 	return r.JSON409
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthGoogleWebResponse) GetBody() []byte {
+func (r PostV1AuthGoogleWebResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthGoogleWebResponse) Status() string {
+func (r PostV1AuthGoogleWebResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8909,7 +9653,7 @@ func (r PostV1AuthGoogleWebResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthGoogleWebResponse) StatusCode() int {
+func (r PostV1AuthGoogleWebResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8917,14 +9661,14 @@ func (r PostV1AuthGoogleWebResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthGoogleWebResponse) ContentType() string {
+func (r PostV1AuthGoogleWebResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type DeleteV1AuthLinkAppleResponse struct {
+type DeleteV1AuthLinkAppleResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -8932,17 +9676,17 @@ type DeleteV1AuthLinkAppleResponse struct {
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r DeleteV1AuthLinkAppleResponse) GetJSON401() *Unauthorized {
+func (r DeleteV1AuthLinkAppleResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r DeleteV1AuthLinkAppleResponse) GetBody() []byte {
+func (r DeleteV1AuthLinkAppleResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r DeleteV1AuthLinkAppleResponse) Status() string {
+func (r DeleteV1AuthLinkAppleResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -8950,7 +9694,7 @@ func (r DeleteV1AuthLinkAppleResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r DeleteV1AuthLinkAppleResponse) StatusCode() int {
+func (r DeleteV1AuthLinkAppleResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -8958,14 +9702,14 @@ func (r DeleteV1AuthLinkAppleResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r DeleteV1AuthLinkAppleResponse) ContentType() string {
+func (r DeleteV1AuthLinkAppleResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthLinkAppleResponse struct {
+type PostV1AuthLinkAppleResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -8977,27 +9721,27 @@ type PostV1AuthLinkAppleResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthLinkAppleResponse) GetJSON200() *Message {
+func (r PostV1AuthLinkAppleResp) GetJSON200() *Message {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthLinkAppleResponse) GetJSON401() *Unauthorized {
+func (r PostV1AuthLinkAppleResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1AuthLinkAppleResponse) GetJSON409() *StandardError {
+func (r PostV1AuthLinkAppleResp) GetJSON409() *StandardError {
 	return r.JSON409
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthLinkAppleResponse) GetBody() []byte {
+func (r PostV1AuthLinkAppleResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthLinkAppleResponse) Status() string {
+func (r PostV1AuthLinkAppleResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9005,7 +9749,7 @@ func (r PostV1AuthLinkAppleResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthLinkAppleResponse) StatusCode() int {
+func (r PostV1AuthLinkAppleResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9013,14 +9757,14 @@ func (r PostV1AuthLinkAppleResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthLinkAppleResponse) ContentType() string {
+func (r PostV1AuthLinkAppleResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type DeleteV1AuthLinkGoogleResponse struct {
+type DeleteV1AuthLinkGoogleResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -9028,17 +9772,17 @@ type DeleteV1AuthLinkGoogleResponse struct {
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r DeleteV1AuthLinkGoogleResponse) GetJSON401() *Unauthorized {
+func (r DeleteV1AuthLinkGoogleResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r DeleteV1AuthLinkGoogleResponse) GetBody() []byte {
+func (r DeleteV1AuthLinkGoogleResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r DeleteV1AuthLinkGoogleResponse) Status() string {
+func (r DeleteV1AuthLinkGoogleResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9046,7 +9790,7 @@ func (r DeleteV1AuthLinkGoogleResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r DeleteV1AuthLinkGoogleResponse) StatusCode() int {
+func (r DeleteV1AuthLinkGoogleResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9054,14 +9798,14 @@ func (r DeleteV1AuthLinkGoogleResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r DeleteV1AuthLinkGoogleResponse) ContentType() string {
+func (r DeleteV1AuthLinkGoogleResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthLinkGoogleResponse struct {
+type PostV1AuthLinkGoogleResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9073,27 +9817,27 @@ type PostV1AuthLinkGoogleResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthLinkGoogleResponse) GetJSON200() *Message {
+func (r PostV1AuthLinkGoogleResp) GetJSON200() *Message {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthLinkGoogleResponse) GetJSON401() *Unauthorized {
+func (r PostV1AuthLinkGoogleResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1AuthLinkGoogleResponse) GetJSON409() *StandardError {
+func (r PostV1AuthLinkGoogleResp) GetJSON409() *StandardError {
 	return r.JSON409
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthLinkGoogleResponse) GetBody() []byte {
+func (r PostV1AuthLinkGoogleResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthLinkGoogleResponse) Status() string {
+func (r PostV1AuthLinkGoogleResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9101,7 +9845,7 @@ func (r PostV1AuthLinkGoogleResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthLinkGoogleResponse) StatusCode() int {
+func (r PostV1AuthLinkGoogleResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9109,14 +9853,14 @@ func (r PostV1AuthLinkGoogleResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthLinkGoogleResponse) ContentType() string {
+func (r PostV1AuthLinkGoogleResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthLoginResponse struct {
+type PostV1AuthLoginResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9130,32 +9874,32 @@ type PostV1AuthLoginResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthLoginResponse) GetJSON200() *TokenResponse {
+func (r PostV1AuthLoginResp) GetJSON200() *TokenResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthLoginResponse) GetJSON400() *StandardError {
+func (r PostV1AuthLoginResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthLoginResponse) GetJSON401() *StandardError {
+func (r PostV1AuthLoginResp) GetJSON401() *StandardError {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1AuthLoginResponse) GetJSON403() *Error {
+func (r PostV1AuthLoginResp) GetJSON403() *Error {
 	return r.JSON403
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthLoginResponse) GetBody() []byte {
+func (r PostV1AuthLoginResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthLoginResponse) Status() string {
+func (r PostV1AuthLoginResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9163,7 +9907,7 @@ func (r PostV1AuthLoginResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthLoginResponse) StatusCode() int {
+func (r PostV1AuthLoginResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9171,14 +9915,14 @@ func (r PostV1AuthLoginResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthLoginResponse) ContentType() string {
+func (r PostV1AuthLoginResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthLogoutResponse struct {
+type PostV1AuthLogoutResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9188,22 +9932,22 @@ type PostV1AuthLogoutResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthLogoutResponse) GetJSON200() *Message {
+func (r PostV1AuthLogoutResp) GetJSON200() *Message {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthLogoutResponse) GetJSON401() *Unauthorized {
+func (r PostV1AuthLogoutResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthLogoutResponse) GetBody() []byte {
+func (r PostV1AuthLogoutResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthLogoutResponse) Status() string {
+func (r PostV1AuthLogoutResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9211,7 +9955,7 @@ func (r PostV1AuthLogoutResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthLogoutResponse) StatusCode() int {
+func (r PostV1AuthLogoutResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9219,14 +9963,14 @@ func (r PostV1AuthLogoutResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthLogoutResponse) ContentType() string {
+func (r PostV1AuthLogoutResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1AuthMeResponse struct {
+type GetV1AuthMeResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9236,22 +9980,22 @@ type GetV1AuthMeResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetV1AuthMeResponse) GetJSON200() *UserProfile {
+func (r GetV1AuthMeResp) GetJSON200() *UserProfile {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetV1AuthMeResponse) GetJSON401() *Unauthorized {
+func (r GetV1AuthMeResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1AuthMeResponse) GetBody() []byte {
+func (r GetV1AuthMeResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1AuthMeResponse) Status() string {
+func (r GetV1AuthMeResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9259,7 +10003,7 @@ func (r GetV1AuthMeResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1AuthMeResponse) StatusCode() int {
+func (r GetV1AuthMeResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9267,14 +10011,14 @@ func (r GetV1AuthMeResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1AuthMeResponse) ContentType() string {
+func (r GetV1AuthMeResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PatchV1AuthMeResponse struct {
+type PatchV1AuthMeResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9284,22 +10028,22 @@ type PatchV1AuthMeResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PatchV1AuthMeResponse) GetJSON200() *UserProfile {
+func (r PatchV1AuthMeResp) GetJSON200() *UserProfile {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PatchV1AuthMeResponse) GetJSON401() *Unauthorized {
+func (r PatchV1AuthMeResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r PatchV1AuthMeResponse) GetBody() []byte {
+func (r PatchV1AuthMeResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PatchV1AuthMeResponse) Status() string {
+func (r PatchV1AuthMeResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9307,7 +10051,7 @@ func (r PatchV1AuthMeResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PatchV1AuthMeResponse) StatusCode() int {
+func (r PatchV1AuthMeResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9315,14 +10059,14 @@ func (r PatchV1AuthMeResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PatchV1AuthMeResponse) ContentType() string {
+func (r PatchV1AuthMeResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PutV1AuthPasswordResponse struct {
+type PutV1AuthPasswordResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9332,22 +10076,22 @@ type PutV1AuthPasswordResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PutV1AuthPasswordResponse) GetJSON200() *Message {
+func (r PutV1AuthPasswordResp) GetJSON200() *Message {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PutV1AuthPasswordResponse) GetJSON401() *Unauthorized {
+func (r PutV1AuthPasswordResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r PutV1AuthPasswordResponse) GetBody() []byte {
+func (r PutV1AuthPasswordResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PutV1AuthPasswordResponse) Status() string {
+func (r PutV1AuthPasswordResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9355,7 +10099,7 @@ func (r PutV1AuthPasswordResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PutV1AuthPasswordResponse) StatusCode() int {
+func (r PutV1AuthPasswordResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9363,14 +10107,14 @@ func (r PutV1AuthPasswordResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PutV1AuthPasswordResponse) ContentType() string {
+func (r PutV1AuthPasswordResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthPasswordResetConfirmResponse struct {
+type PostV1AuthPasswordResetConfirmResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9384,32 +10128,32 @@ type PostV1AuthPasswordResetConfirmResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthPasswordResetConfirmResponse) GetJSON200() *Message {
+func (r PostV1AuthPasswordResetConfirmResp) GetJSON200() *Message {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthPasswordResetConfirmResponse) GetJSON400() *StandardError {
+func (r PostV1AuthPasswordResetConfirmResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1AuthPasswordResetConfirmResponse) GetJSON404() *StandardError {
+func (r PostV1AuthPasswordResetConfirmResp) GetJSON404() *StandardError {
 	return r.JSON404
 }
 
 // GetJSON410 returns the response for an HTTP 410 `application/json` response
-func (r PostV1AuthPasswordResetConfirmResponse) GetJSON410() *Error {
+func (r PostV1AuthPasswordResetConfirmResp) GetJSON410() *Error {
 	return r.JSON410
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthPasswordResetConfirmResponse) GetBody() []byte {
+func (r PostV1AuthPasswordResetConfirmResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthPasswordResetConfirmResponse) Status() string {
+func (r PostV1AuthPasswordResetConfirmResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9417,7 +10161,7 @@ func (r PostV1AuthPasswordResetConfirmResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthPasswordResetConfirmResponse) StatusCode() int {
+func (r PostV1AuthPasswordResetConfirmResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9425,14 +10169,14 @@ func (r PostV1AuthPasswordResetConfirmResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthPasswordResetConfirmResponse) ContentType() string {
+func (r PostV1AuthPasswordResetConfirmResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthPasswordResetRequestResponse struct {
+type PostV1AuthPasswordResetRequestResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON202 the response for an HTTP 202 `application/json` response
@@ -9442,22 +10186,22 @@ type PostV1AuthPasswordResetRequestResponse struct {
 }
 
 // GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r PostV1AuthPasswordResetRequestResponse) GetJSON202() *Message {
+func (r PostV1AuthPasswordResetRequestResp) GetJSON202() *Message {
 	return r.JSON202
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthPasswordResetRequestResponse) GetJSON400() *StandardError {
+func (r PostV1AuthPasswordResetRequestResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthPasswordResetRequestResponse) GetBody() []byte {
+func (r PostV1AuthPasswordResetRequestResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthPasswordResetRequestResponse) Status() string {
+func (r PostV1AuthPasswordResetRequestResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9465,7 +10209,7 @@ func (r PostV1AuthPasswordResetRequestResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthPasswordResetRequestResponse) StatusCode() int {
+func (r PostV1AuthPasswordResetRequestResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9473,14 +10217,14 @@ func (r PostV1AuthPasswordResetRequestResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthPasswordResetRequestResponse) ContentType() string {
+func (r PostV1AuthPasswordResetRequestResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthRefreshResponse struct {
+type PostV1AuthRefreshResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9492,27 +10236,27 @@ type PostV1AuthRefreshResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1AuthRefreshResponse) GetJSON200() *TokenResponse {
+func (r PostV1AuthRefreshResp) GetJSON200() *TokenResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthRefreshResponse) GetJSON400() *StandardError {
+func (r PostV1AuthRefreshResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1AuthRefreshResponse) GetJSON401() *StandardError {
+func (r PostV1AuthRefreshResp) GetJSON401() *StandardError {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthRefreshResponse) GetBody() []byte {
+func (r PostV1AuthRefreshResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthRefreshResponse) Status() string {
+func (r PostV1AuthRefreshResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9520,7 +10264,7 @@ func (r PostV1AuthRefreshResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthRefreshResponse) StatusCode() int {
+func (r PostV1AuthRefreshResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9528,14 +10272,14 @@ func (r PostV1AuthRefreshResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthRefreshResponse) ContentType() string {
+func (r PostV1AuthRefreshResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1AuthRegisterResponse struct {
+type PostV1AuthRegisterResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON202 the response for an HTTP 202 `application/json` response
@@ -9547,27 +10291,27 @@ type PostV1AuthRegisterResponse struct {
 }
 
 // GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r PostV1AuthRegisterResponse) GetJSON202() *Message {
+func (r PostV1AuthRegisterResp) GetJSON202() *Message {
 	return r.JSON202
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthRegisterResponse) GetJSON400() *StandardError {
+func (r PostV1AuthRegisterResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1AuthRegisterResponse) GetJSON409() *StandardError {
+func (r PostV1AuthRegisterResp) GetJSON409() *StandardError {
 	return r.JSON409
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthRegisterResponse) GetBody() []byte {
+func (r PostV1AuthRegisterResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthRegisterResponse) Status() string {
+func (r PostV1AuthRegisterResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9575,7 +10319,7 @@ func (r PostV1AuthRegisterResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthRegisterResponse) StatusCode() int {
+func (r PostV1AuthRegisterResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9583,22 +10327,22 @@ func (r PostV1AuthRegisterResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthRegisterResponse) ContentType() string {
+func (r PostV1AuthRegisterResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1AuthResendVerificationResponse429Headers the declared response headers of an HTTP 429 response for PostV1AuthResendVerification
-type PostV1AuthResendVerificationResponse429Headers struct {
+// PostV1AuthResendVerificationResp429Headers the declared response headers of an HTTP 429 response for PostV1AuthResendVerification
+type PostV1AuthResendVerificationResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1AuthResendVerificationResponse struct {
+type PostV1AuthResendVerificationResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON202 the response for an HTTP 202 `application/json` response
@@ -9610,36 +10354,36 @@ type PostV1AuthResendVerificationResponse struct {
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1AuthResendVerificationResponse429Headers
+	Headers429 *PostV1AuthResendVerificationResp429Headers
 }
 
 // GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r PostV1AuthResendVerificationResponse) GetJSON202() *Message {
+func (r PostV1AuthResendVerificationResp) GetJSON202() *Message {
 	return r.JSON202
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1AuthResendVerificationResponse) GetJSON400() *StandardError {
+func (r PostV1AuthResendVerificationResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1AuthResendVerificationResponse) GetJSON404() *StandardError {
+func (r PostV1AuthResendVerificationResp) GetJSON404() *StandardError {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1AuthResendVerificationResponse) GetJSON429() *RateLimited {
+func (r PostV1AuthResendVerificationResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1AuthResendVerificationResponse) GetBody() []byte {
+func (r PostV1AuthResendVerificationResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1AuthResendVerificationResponse) Status() string {
+func (r PostV1AuthResendVerificationResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9647,7 +10391,7 @@ func (r PostV1AuthResendVerificationResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1AuthResendVerificationResponse) StatusCode() int {
+func (r PostV1AuthResendVerificationResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9655,14 +10399,14 @@ func (r PostV1AuthResendVerificationResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1AuthResendVerificationResponse) ContentType() string {
+func (r PostV1AuthResendVerificationResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1AuthVerifyResponse struct {
+type GetV1AuthVerifyResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9676,32 +10420,32 @@ type GetV1AuthVerifyResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetV1AuthVerifyResponse) GetJSON200() *TokenResponse {
+func (r GetV1AuthVerifyResp) GetJSON200() *TokenResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r GetV1AuthVerifyResponse) GetJSON400() *StandardError {
+func (r GetV1AuthVerifyResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r GetV1AuthVerifyResponse) GetJSON404() *StandardError {
+func (r GetV1AuthVerifyResp) GetJSON404() *StandardError {
 	return r.JSON404
 }
 
 // GetJSON410 returns the response for an HTTP 410 `application/json` response
-func (r GetV1AuthVerifyResponse) GetJSON410() *Error {
+func (r GetV1AuthVerifyResp) GetJSON410() *Error {
 	return r.JSON410
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1AuthVerifyResponse) GetBody() []byte {
+func (r GetV1AuthVerifyResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1AuthVerifyResponse) Status() string {
+func (r GetV1AuthVerifyResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9709,7 +10453,7 @@ func (r GetV1AuthVerifyResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1AuthVerifyResponse) StatusCode() int {
+func (r GetV1AuthVerifyResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9717,29 +10461,29 @@ func (r GetV1AuthVerifyResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1AuthVerifyResponse) ContentType() string {
+func (r GetV1AuthVerifyResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1ChatCompletionsResponse200Headers the declared response headers of an HTTP 200 response for PostV1ChatCompletions
-type PostV1ChatCompletionsResponse200Headers struct {
+// PostV1ChatCompletionsResp200Headers the declared response headers of an HTTP 200 response for PostV1ChatCompletions
+type PostV1ChatCompletionsResp200Headers struct {
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-// PostV1ChatCompletionsResponse429Headers the declared response headers of an HTTP 429 response for PostV1ChatCompletions
-type PostV1ChatCompletionsResponse429Headers struct {
+// PostV1ChatCompletionsResp429Headers the declared response headers of an HTTP 429 response for PostV1ChatCompletions
+type PostV1ChatCompletionsResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1ChatCompletionsResponse struct {
+type PostV1ChatCompletionsResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9757,53 +10501,53 @@ type PostV1ChatCompletionsResponse struct {
 	// JSON504 the response for an HTTP 504 `application/json` response
 	JSON504 *Error
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1ChatCompletionsResponse200Headers
+	Headers200 *PostV1ChatCompletionsResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1ChatCompletionsResponse429Headers
+	Headers429 *PostV1ChatCompletionsResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1ChatCompletionsResponse) GetJSON200() *ChatCompletionResponse {
+func (r PostV1ChatCompletionsResp) GetJSON200() *ChatCompletionResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1ChatCompletionsResponse) GetJSON400() *StandardError {
+func (r PostV1ChatCompletionsResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1ChatCompletionsResponse) GetJSON401() *Unauthorized {
+func (r PostV1ChatCompletionsResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1ChatCompletionsResponse) GetJSON403() *Forbidden {
+func (r PostV1ChatCompletionsResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1ChatCompletionsResponse) GetJSON404() *NotFound {
+func (r PostV1ChatCompletionsResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1ChatCompletionsResponse) GetJSON429() *RateLimited {
+func (r PostV1ChatCompletionsResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetJSON504 returns the response for an HTTP 504 `application/json` response
-func (r PostV1ChatCompletionsResponse) GetJSON504() *Error {
+func (r PostV1ChatCompletionsResp) GetJSON504() *Error {
 	return r.JSON504
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1ChatCompletionsResponse) GetBody() []byte {
+func (r PostV1ChatCompletionsResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1ChatCompletionsResponse) Status() string {
+func (r PostV1ChatCompletionsResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9811,7 +10555,7 @@ func (r PostV1ChatCompletionsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1ChatCompletionsResponse) StatusCode() int {
+func (r PostV1ChatCompletionsResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9819,29 +10563,400 @@ func (r PostV1ChatCompletionsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1ChatCompletionsResponse) ContentType() string {
+func (r PostV1ChatCompletionsResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1EmbedSpeakerResponse200Headers the declared response headers of an HTTP 200 response for PostV1EmbedSpeaker
-type PostV1EmbedSpeakerResponse200Headers struct {
-	XRateLimitLimit     *int
-	XRateLimitRemaining *int
-	XRateLimitReset     *int64
+type ListDevicesResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]DeviceListItem
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
 }
 
-// PostV1EmbedSpeakerResponse429Headers the declared response headers of an HTTP 429 response for PostV1EmbedSpeaker
-type PostV1EmbedSpeakerResponse429Headers struct {
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListDevicesResp) GetJSON200() *[]DeviceListItem {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListDevicesResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetBody returns the raw response body bytes
+func (r ListDevicesResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListDevicesResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListDevicesResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListDevicesResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type RegisterDeviceResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Device
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r RegisterDeviceResp) GetJSON200() *Device {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r RegisterDeviceResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r RegisterDeviceResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetBody returns the raw response body bytes
+func (r RegisterDeviceResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RegisterDeviceResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RegisterDeviceResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RegisterDeviceResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ApproveDeviceResp429Headers the declared response headers of an HTTP 429 response for ApproveDevice
+type ApproveDeviceResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1EmbedSpeakerResponse struct {
+type ApproveDeviceResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ApproveDeviceResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *ApproveDeviceResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ApproveDeviceResp) GetJSON200() *ApproveDeviceResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ApproveDeviceResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ApproveDeviceResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r ApproveDeviceResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r ApproveDeviceResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ApproveDeviceResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ApproveDeviceResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ApproveDeviceResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// AuthorizeDeviceResp429Headers the declared response headers of an HTTP 429 response for AuthorizeDevice
+type AuthorizeDeviceResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type AuthorizeDeviceResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Message
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *Message
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *AuthorizeDeviceResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r AuthorizeDeviceResp) GetJSON200() *Message {
+	return r.JSON200
+}
+
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
+func (r AuthorizeDeviceResp) GetJSON202() *Message {
+	return r.JSON202
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r AuthorizeDeviceResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r AuthorizeDeviceResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r AuthorizeDeviceResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r AuthorizeDeviceResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r AuthorizeDeviceResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r AuthorizeDeviceResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AuthorizeDeviceResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r AuthorizeDeviceResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetDeviceAuthorizationStatusResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DeviceAuthorizationStatus
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetDeviceAuthorizationStatusResp) GetJSON200() *DeviceAuthorizationStatus {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetDeviceAuthorizationStatusResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetDeviceAuthorizationStatusResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetDeviceAuthorizationStatusResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r GetDeviceAuthorizationStatusResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDeviceAuthorizationStatusResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDeviceAuthorizationStatusResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetDeviceAuthorizationStatusResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type RevokeDeviceResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r RevokeDeviceResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RevokeDeviceResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r RevokeDeviceResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RevokeDeviceResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RevokeDeviceResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RevokeDeviceResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// PostV1EmbedSpeakerResp200Headers the declared response headers of an HTTP 200 response for PostV1EmbedSpeaker
+type PostV1EmbedSpeakerResp200Headers struct {
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+// PostV1EmbedSpeakerResp429Headers the declared response headers of an HTTP 429 response for PostV1EmbedSpeaker
+type PostV1EmbedSpeakerResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type PostV1EmbedSpeakerResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9857,48 +10972,48 @@ type PostV1EmbedSpeakerResponse struct {
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1EmbedSpeakerResponse200Headers
+	Headers200 *PostV1EmbedSpeakerResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1EmbedSpeakerResponse429Headers
+	Headers429 *PostV1EmbedSpeakerResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1EmbedSpeakerResponse) GetJSON200() *AudioDataResponse {
+func (r PostV1EmbedSpeakerResp) GetJSON200() *AudioDataResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1EmbedSpeakerResponse) GetJSON400() *StandardError {
+func (r PostV1EmbedSpeakerResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1EmbedSpeakerResponse) GetJSON401() *Unauthorized {
+func (r PostV1EmbedSpeakerResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1EmbedSpeakerResponse) GetJSON403() *Forbidden {
+func (r PostV1EmbedSpeakerResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1EmbedSpeakerResponse) GetJSON404() *NotFound {
+func (r PostV1EmbedSpeakerResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1EmbedSpeakerResponse) GetJSON429() *RateLimited {
+func (r PostV1EmbedSpeakerResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1EmbedSpeakerResponse) GetBody() []byte {
+func (r PostV1EmbedSpeakerResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1EmbedSpeakerResponse) Status() string {
+func (r PostV1EmbedSpeakerResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9906,7 +11021,7 @@ func (r PostV1EmbedSpeakerResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1EmbedSpeakerResponse) StatusCode() int {
+func (r PostV1EmbedSpeakerResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9914,29 +11029,29 @@ func (r PostV1EmbedSpeakerResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1EmbedSpeakerResponse) ContentType() string {
+func (r PostV1EmbedSpeakerResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1EmbeddingsResponse200Headers the declared response headers of an HTTP 200 response for PostV1Embeddings
-type PostV1EmbeddingsResponse200Headers struct {
+// PostV1EmbeddingsResp200Headers the declared response headers of an HTTP 200 response for PostV1Embeddings
+type PostV1EmbeddingsResp200Headers struct {
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-// PostV1EmbeddingsResponse429Headers the declared response headers of an HTTP 429 response for PostV1Embeddings
-type PostV1EmbeddingsResponse429Headers struct {
+// PostV1EmbeddingsResp429Headers the declared response headers of an HTTP 429 response for PostV1Embeddings
+type PostV1EmbeddingsResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1EmbeddingsResponse struct {
+type PostV1EmbeddingsResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -9952,48 +11067,48 @@ type PostV1EmbeddingsResponse struct {
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1EmbeddingsResponse200Headers
+	Headers200 *PostV1EmbeddingsResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1EmbeddingsResponse429Headers
+	Headers429 *PostV1EmbeddingsResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1EmbeddingsResponse) GetJSON200() *EmbeddingResponse {
+func (r PostV1EmbeddingsResp) GetJSON200() *EmbeddingResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1EmbeddingsResponse) GetJSON400() *StandardError {
+func (r PostV1EmbeddingsResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1EmbeddingsResponse) GetJSON401() *Unauthorized {
+func (r PostV1EmbeddingsResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1EmbeddingsResponse) GetJSON403() *Forbidden {
+func (r PostV1EmbeddingsResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1EmbeddingsResponse) GetJSON404() *NotFound {
+func (r PostV1EmbeddingsResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1EmbeddingsResponse) GetJSON429() *RateLimited {
+func (r PostV1EmbeddingsResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1EmbeddingsResponse) GetBody() []byte {
+func (r PostV1EmbeddingsResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1EmbeddingsResponse) Status() string {
+func (r PostV1EmbeddingsResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10001,7 +11116,7 @@ func (r PostV1EmbeddingsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1EmbeddingsResponse) StatusCode() int {
+func (r PostV1EmbeddingsResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10009,14 +11124,14 @@ func (r PostV1EmbeddingsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1EmbeddingsResponse) ContentType() string {
+func (r PostV1EmbeddingsResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1ImagesGenerationsResponse struct {
+type PostV1ImagesGenerationsResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON402 the response for an HTTP 402 `application/json` response
@@ -10026,22 +11141,22 @@ type PostV1ImagesGenerationsResponse struct {
 }
 
 // GetJSON402 returns the response for an HTTP 402 `application/json` response
-func (r PostV1ImagesGenerationsResponse) GetJSON402() *Error {
+func (r PostV1ImagesGenerationsResp) GetJSON402() *Error {
 	return r.JSON402
 }
 
 // GetJSON503 returns the response for an HTTP 503 `application/json` response
-func (r PostV1ImagesGenerationsResponse) GetJSON503() *Error {
+func (r PostV1ImagesGenerationsResp) GetJSON503() *Error {
 	return r.JSON503
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1ImagesGenerationsResponse) GetBody() []byte {
+func (r PostV1ImagesGenerationsResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1ImagesGenerationsResponse) Status() string {
+func (r PostV1ImagesGenerationsResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10049,7 +11164,7 @@ func (r PostV1ImagesGenerationsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1ImagesGenerationsResponse) StatusCode() int {
+func (r PostV1ImagesGenerationsResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10057,14 +11172,14 @@ func (r PostV1ImagesGenerationsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1ImagesGenerationsResponse) ContentType() string {
+func (r PostV1ImagesGenerationsResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1ModelsResponse struct {
+type GetV1ModelsResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10072,17 +11187,17 @@ type GetV1ModelsResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetV1ModelsResponse) GetJSON200() *[]ModelEntry {
+func (r GetV1ModelsResp) GetJSON200() *[]ModelEntry {
 	return r.JSON200
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1ModelsResponse) GetBody() []byte {
+func (r GetV1ModelsResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1ModelsResponse) Status() string {
+func (r GetV1ModelsResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10090,7 +11205,7 @@ func (r GetV1ModelsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1ModelsResponse) StatusCode() int {
+func (r GetV1ModelsResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10098,14 +11213,14 @@ func (r GetV1ModelsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1ModelsResponse) ContentType() string {
+func (r GetV1ModelsResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1OpenapiJsonResponse struct {
+type GetV1OpenapiJsonResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10113,17 +11228,17 @@ type GetV1OpenapiJsonResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetV1OpenapiJsonResponse) GetJSON200() *OpenAPISpec {
+func (r GetV1OpenapiJsonResp) GetJSON200() *OpenAPISpec {
 	return r.JSON200
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1OpenapiJsonResponse) GetBody() []byte {
+func (r GetV1OpenapiJsonResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1OpenapiJsonResponse) Status() string {
+func (r GetV1OpenapiJsonResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10131,7 +11246,7 @@ func (r GetV1OpenapiJsonResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1OpenapiJsonResponse) StatusCode() int {
+func (r GetV1OpenapiJsonResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10139,14 +11254,14 @@ func (r GetV1OpenapiJsonResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1OpenapiJsonResponse) ContentType() string {
+func (r GetV1OpenapiJsonResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1OpenapiYamlResponse struct {
+type GetV1OpenapiYamlResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// YAML200 the response for an HTTP 200 `application/yaml` response
@@ -10154,17 +11269,17 @@ type GetV1OpenapiYamlResponse struct {
 }
 
 // GetYAML200 returns the response for an HTTP 200 `application/yaml` response
-func (r GetV1OpenapiYamlResponse) GetYAML200() *OpenAPISpec {
+func (r GetV1OpenapiYamlResp) GetYAML200() *OpenAPISpec {
 	return r.YAML200
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1OpenapiYamlResponse) GetBody() []byte {
+func (r GetV1OpenapiYamlResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1OpenapiYamlResponse) Status() string {
+func (r GetV1OpenapiYamlResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10172,7 +11287,7 @@ func (r GetV1OpenapiYamlResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1OpenapiYamlResponse) StatusCode() int {
+func (r GetV1OpenapiYamlResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10180,29 +11295,29 @@ func (r GetV1OpenapiYamlResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1OpenapiYamlResponse) ContentType() string {
+func (r GetV1OpenapiYamlResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1RerankResponse200Headers the declared response headers of an HTTP 200 response for PostV1Rerank
-type PostV1RerankResponse200Headers struct {
+// PostV1RerankResp200Headers the declared response headers of an HTTP 200 response for PostV1Rerank
+type PostV1RerankResp200Headers struct {
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-// PostV1RerankResponse429Headers the declared response headers of an HTTP 429 response for PostV1Rerank
-type PostV1RerankResponse429Headers struct {
+// PostV1RerankResp429Headers the declared response headers of an HTTP 429 response for PostV1Rerank
+type PostV1RerankResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1RerankResponse struct {
+type PostV1RerankResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10218,48 +11333,48 @@ type PostV1RerankResponse struct {
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1RerankResponse200Headers
+	Headers200 *PostV1RerankResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1RerankResponse429Headers
+	Headers429 *PostV1RerankResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1RerankResponse) GetJSON200() *RerankResponse {
+func (r PostV1RerankResp) GetJSON200() *RerankResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1RerankResponse) GetJSON400() *StandardError {
+func (r PostV1RerankResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1RerankResponse) GetJSON401() *Unauthorized {
+func (r PostV1RerankResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1RerankResponse) GetJSON403() *Forbidden {
+func (r PostV1RerankResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1RerankResponse) GetJSON404() *NotFound {
+func (r PostV1RerankResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1RerankResponse) GetJSON429() *RateLimited {
+func (r PostV1RerankResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1RerankResponse) GetBody() []byte {
+func (r PostV1RerankResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1RerankResponse) Status() string {
+func (r PostV1RerankResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10267,7 +11382,7 @@ func (r PostV1RerankResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1RerankResponse) StatusCode() int {
+func (r PostV1RerankResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10275,22 +11390,22 @@ func (r PostV1RerankResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1RerankResponse) ContentType() string {
+func (r PostV1RerankResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1SessionConnectResponse429Headers the declared response headers of an HTTP 429 response for PostV1SessionConnect
-type PostV1SessionConnectResponse429Headers struct {
+// PostV1SessionConnectResp429Headers the declared response headers of an HTTP 429 response for PostV1SessionConnect
+type PostV1SessionConnectResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1SessionConnectResponse struct {
+type PostV1SessionConnectResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10308,48 +11423,48 @@ type PostV1SessionConnectResponse struct {
 	// JSON503 the response for an HTTP 503 `application/json` response
 	JSON503 *SessionConnectResponse
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1SessionConnectResponse429Headers
+	Headers429 *PostV1SessionConnectResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1SessionConnectResponse) GetJSON200() *SessionConnectResponse {
+func (r PostV1SessionConnectResp) GetJSON200() *SessionConnectResponse {
 	return r.JSON200
 }
 
 // GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r PostV1SessionConnectResponse) GetJSON202() *SessionConnectResponse {
+func (r PostV1SessionConnectResp) GetJSON202() *SessionConnectResponse {
 	return r.JSON202
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1SessionConnectResponse) GetJSON401() *Unauthorized {
+func (r PostV1SessionConnectResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1SessionConnectResponse) GetJSON403() *struct {
+func (r PostV1SessionConnectResp) GetJSON403() *struct {
 	Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
 } {
 	return r.JSON403
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1SessionConnectResponse) GetJSON429() *RateLimited {
+func (r PostV1SessionConnectResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetJSON503 returns the response for an HTTP 503 `application/json` response
-func (r PostV1SessionConnectResponse) GetJSON503() *SessionConnectResponse {
+func (r PostV1SessionConnectResp) GetJSON503() *SessionConnectResponse {
 	return r.JSON503
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1SessionConnectResponse) GetBody() []byte {
+func (r PostV1SessionConnectResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1SessionConnectResponse) Status() string {
+func (r PostV1SessionConnectResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10357,7 +11472,7 @@ func (r PostV1SessionConnectResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1SessionConnectResponse) StatusCode() int {
+func (r PostV1SessionConnectResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10365,14 +11480,14 @@ func (r PostV1SessionConnectResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1SessionConnectResponse) ContentType() string {
+func (r PostV1SessionConnectResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1SessionConnectedResponse struct {
+type PostV1SessionConnectedResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10382,22 +11497,22 @@ type PostV1SessionConnectedResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1SessionConnectedResponse) GetJSON200() *SessionConnectedResponse {
+func (r PostV1SessionConnectedResp) GetJSON200() *SessionConnectedResponse {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1SessionConnectedResponse) GetJSON401() *Unauthorized {
+func (r PostV1SessionConnectedResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1SessionConnectedResponse) GetBody() []byte {
+func (r PostV1SessionConnectedResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1SessionConnectedResponse) Status() string {
+func (r PostV1SessionConnectedResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10405,7 +11520,7 @@ func (r PostV1SessionConnectedResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1SessionConnectedResponse) StatusCode() int {
+func (r PostV1SessionConnectedResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10413,14 +11528,14 @@ func (r PostV1SessionConnectedResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1SessionConnectedResponse) ContentType() string {
+func (r PostV1SessionConnectedResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostV1SessionDisconnectResponse struct {
+type PostV1SessionDisconnectResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10430,22 +11545,22 @@ type PostV1SessionDisconnectResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1SessionDisconnectResponse) GetJSON200() *SessionDisconnectResponse {
+func (r PostV1SessionDisconnectResp) GetJSON200() *SessionDisconnectResponse {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1SessionDisconnectResponse) GetJSON401() *Unauthorized {
+func (r PostV1SessionDisconnectResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1SessionDisconnectResponse) GetBody() []byte {
+func (r PostV1SessionDisconnectResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1SessionDisconnectResponse) Status() string {
+func (r PostV1SessionDisconnectResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10453,7 +11568,7 @@ func (r PostV1SessionDisconnectResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1SessionDisconnectResponse) StatusCode() int {
+func (r PostV1SessionDisconnectResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10461,14 +11576,14 @@ func (r PostV1SessionDisconnectResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1SessionDisconnectResponse) ContentType() string {
+func (r PostV1SessionDisconnectResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1SubscriptionMeResponse struct {
+type GetV1SubscriptionMeResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10478,22 +11593,22 @@ type GetV1SubscriptionMeResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetV1SubscriptionMeResponse) GetJSON200() *SubscriptionMe {
+func (r GetV1SubscriptionMeResp) GetJSON200() *SubscriptionMe {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetV1SubscriptionMeResponse) GetJSON401() *Unauthorized {
+func (r GetV1SubscriptionMeResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1SubscriptionMeResponse) GetBody() []byte {
+func (r GetV1SubscriptionMeResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1SubscriptionMeResponse) Status() string {
+func (r GetV1SubscriptionMeResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10501,7 +11616,7 @@ func (r GetV1SubscriptionMeResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1SubscriptionMeResponse) StatusCode() int {
+func (r GetV1SubscriptionMeResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10509,14 +11624,14 @@ func (r GetV1SubscriptionMeResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1SubscriptionMeResponse) ContentType() string {
+func (r GetV1SubscriptionMeResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1SubscriptionTiersResponse struct {
+type GetV1SubscriptionTiersResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10524,17 +11639,17 @@ type GetV1SubscriptionTiersResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetV1SubscriptionTiersResponse) GetJSON200() *[]Tier {
+func (r GetV1SubscriptionTiersResp) GetJSON200() *[]Tier {
 	return r.JSON200
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1SubscriptionTiersResponse) GetBody() []byte {
+func (r GetV1SubscriptionTiersResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1SubscriptionTiersResponse) Status() string {
+func (r GetV1SubscriptionTiersResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10542,7 +11657,7 @@ func (r GetV1SubscriptionTiersResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1SubscriptionTiersResponse) StatusCode() int {
+func (r GetV1SubscriptionTiersResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10550,14 +11665,14 @@ func (r GetV1SubscriptionTiersResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1SubscriptionTiersResponse) ContentType() string {
+func (r GetV1SubscriptionTiersResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetV1VersionsResponse struct {
+type GetV1VersionsResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10567,22 +11682,22 @@ type GetV1VersionsResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetV1VersionsResponse) GetJSON200() *VersionsResponse {
+func (r GetV1VersionsResp) GetJSON200() *VersionsResponse {
 	return r.JSON200
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetV1VersionsResponse) GetJSON401() *Unauthorized {
+func (r GetV1VersionsResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetBody returns the raw response body bytes
-func (r GetV1VersionsResponse) GetBody() []byte {
+func (r GetV1VersionsResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r GetV1VersionsResponse) Status() string {
+func (r GetV1VersionsResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10590,7 +11705,7 @@ func (r GetV1VersionsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetV1VersionsResponse) StatusCode() int {
+func (r GetV1VersionsResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10598,29 +11713,29 @@ func (r GetV1VersionsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetV1VersionsResponse) ContentType() string {
+func (r GetV1VersionsResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// PostV1VoiceConvertResponse200Headers the declared response headers of an HTTP 200 response for PostV1VoiceConvert
-type PostV1VoiceConvertResponse200Headers struct {
+// PostV1VoiceConvertResp200Headers the declared response headers of an HTTP 200 response for PostV1VoiceConvert
+type PostV1VoiceConvertResp200Headers struct {
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-// PostV1VoiceConvertResponse429Headers the declared response headers of an HTTP 429 response for PostV1VoiceConvert
-type PostV1VoiceConvertResponse429Headers struct {
+// PostV1VoiceConvertResp429Headers the declared response headers of an HTTP 429 response for PostV1VoiceConvert
+type PostV1VoiceConvertResp429Headers struct {
 	RetryAfter          *int
 	XRateLimitLimit     *int
 	XRateLimitRemaining *int
 	XRateLimitReset     *int64
 }
 
-type PostV1VoiceConvertResponse struct {
+type PostV1VoiceConvertResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
@@ -10638,53 +11753,53 @@ type PostV1VoiceConvertResponse struct {
 	// JSON504 the response for an HTTP 504 `application/json` response
 	JSON504 *Error
 	// Headers200 the parsed response headers for an HTTP 200 response
-	Headers200 *PostV1VoiceConvertResponse200Headers
+	Headers200 *PostV1VoiceConvertResp200Headers
 	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1VoiceConvertResponse429Headers
+	Headers429 *PostV1VoiceConvertResp429Headers
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1VoiceConvertResponse) GetJSON200() *AudioDataResponse {
+func (r PostV1VoiceConvertResp) GetJSON200() *AudioDataResponse {
 	return r.JSON200
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r PostV1VoiceConvertResponse) GetJSON400() *StandardError {
+func (r PostV1VoiceConvertResp) GetJSON400() *StandardError {
 	return r.JSON400
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1VoiceConvertResponse) GetJSON401() *Unauthorized {
+func (r PostV1VoiceConvertResp) GetJSON401() *Unauthorized {
 	return r.JSON401
 }
 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1VoiceConvertResponse) GetJSON403() *Forbidden {
+func (r PostV1VoiceConvertResp) GetJSON403() *Forbidden {
 	return r.JSON403
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostV1VoiceConvertResponse) GetJSON404() *NotFound {
+func (r PostV1VoiceConvertResp) GetJSON404() *NotFound {
 	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1VoiceConvertResponse) GetJSON429() *RateLimited {
+func (r PostV1VoiceConvertResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
 // GetJSON504 returns the response for an HTTP 504 `application/json` response
-func (r PostV1VoiceConvertResponse) GetJSON504() *Error {
+func (r PostV1VoiceConvertResp) GetJSON504() *Error {
 	return r.JSON504
 }
 
 // GetBody returns the raw response body bytes
-func (r PostV1VoiceConvertResponse) GetBody() []byte {
+func (r PostV1VoiceConvertResp) GetBody() []byte {
 	return r.Body
 }
 
 // Status returns HTTPResponse.Status
-func (r PostV1VoiceConvertResponse) Status() string {
+func (r PostV1VoiceConvertResp) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -10692,7 +11807,7 @@ func (r PostV1VoiceConvertResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostV1VoiceConvertResponse) StatusCode() int {
+func (r PostV1VoiceConvertResp) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10700,7 +11815,7 @@ func (r PostV1VoiceConvertResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1VoiceConvertResponse) ContentType() string {
+func (r PostV1VoiceConvertResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -10714,12 +11829,12 @@ func (r PostV1VoiceConvertResponse) ContentType() string {
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/audio/convert (the `PostV1AudioConvert` operationId).
-func (c *ClientWithResponses) PostV1AudioConvertWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioConvertResponse, error) {
+func (c *ClientWithResponses) PostV1AudioConvertWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioConvertResp, error) {
 	rsp, err := c.PostV1AudioConvertWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AudioConvertResponse(rsp)
+	return ParsePostV1AudioConvertResp(rsp)
 }
 
 // PostV1AudioConvertWithResponse Audio conversion / enhancement
@@ -10729,12 +11844,12 @@ func (c *ClientWithResponses) PostV1AudioConvertWithBodyWithResponse(ctx context
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/audio/convert (the `PostV1AudioConvert` operationId).
-func (c *ClientWithResponses) PostV1AudioConvertWithResponse(ctx context.Context, body PostV1AudioConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioConvertResponse, error) {
+func (c *ClientWithResponses) PostV1AudioConvertWithResponse(ctx context.Context, body PostV1AudioConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioConvertResp, error) {
 	rsp, err := c.PostV1AudioConvert(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AudioConvertResponse(rsp)
+	return ParsePostV1AudioConvertResp(rsp)
 }
 
 // PostV1AudioSpeechWithBodyWithResponse Text-to-Speech (TTS)
@@ -10746,12 +11861,12 @@ func (c *ClientWithResponses) PostV1AudioConvertWithResponse(ctx context.Context
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/audio/speech (the `PostV1AudioSpeech` operationId).
-func (c *ClientWithResponses) PostV1AudioSpeechWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioSpeechResponse, error) {
+func (c *ClientWithResponses) PostV1AudioSpeechWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioSpeechResp, error) {
 	rsp, err := c.PostV1AudioSpeechWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AudioSpeechResponse(rsp)
+	return ParsePostV1AudioSpeechResp(rsp)
 }
 
 // PostV1AudioSpeechWithResponse Text-to-Speech (TTS)
@@ -10763,12 +11878,12 @@ func (c *ClientWithResponses) PostV1AudioSpeechWithBodyWithResponse(ctx context.
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/audio/speech (the `PostV1AudioSpeech` operationId).
-func (c *ClientWithResponses) PostV1AudioSpeechWithResponse(ctx context.Context, body PostV1AudioSpeechJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioSpeechResponse, error) {
+func (c *ClientWithResponses) PostV1AudioSpeechWithResponse(ctx context.Context, body PostV1AudioSpeechJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioSpeechResp, error) {
 	rsp, err := c.PostV1AudioSpeech(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AudioSpeechResponse(rsp)
+	return ParsePostV1AudioSpeechResp(rsp)
 }
 
 // PostV1AudioTranscriptionsWithBodyWithResponse Speech-to-Text (STT)
@@ -10778,12 +11893,12 @@ func (c *ClientWithResponses) PostV1AudioSpeechWithResponse(ctx context.Context,
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/audio/transcriptions (the `PostV1AudioTranscriptions` operationId).
-func (c *ClientWithResponses) PostV1AudioTranscriptionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioTranscriptionsResponse, error) {
+func (c *ClientWithResponses) PostV1AudioTranscriptionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioTranscriptionsResp, error) {
 	rsp, err := c.PostV1AudioTranscriptionsWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AudioTranscriptionsResponse(rsp)
+	return ParsePostV1AudioTranscriptionsResp(rsp)
 }
 
 // PostV1AudioTranscriptionsWithResponse Speech-to-Text (STT)
@@ -10793,12 +11908,12 @@ func (c *ClientWithResponses) PostV1AudioTranscriptionsWithBodyWithResponse(ctx 
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/audio/transcriptions (the `PostV1AudioTranscriptions` operationId).
-func (c *ClientWithResponses) PostV1AudioTranscriptionsWithResponse(ctx context.Context, body PostV1AudioTranscriptionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioTranscriptionsResponse, error) {
+func (c *ClientWithResponses) PostV1AudioTranscriptionsWithResponse(ctx context.Context, body PostV1AudioTranscriptionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioTranscriptionsResp, error) {
 	rsp, err := c.PostV1AudioTranscriptions(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AudioTranscriptionsResponse(rsp)
+	return ParsePostV1AudioTranscriptionsResp(rsp)
 }
 
 // PostV1AudioVadWithBodyWithResponse Voice Activity Detection (VAD)
@@ -10808,12 +11923,12 @@ func (c *ClientWithResponses) PostV1AudioTranscriptionsWithResponse(ctx context.
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/audio/vad (the `PostV1AudioVad` operationId).
-func (c *ClientWithResponses) PostV1AudioVadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioVadResponse, error) {
+func (c *ClientWithResponses) PostV1AudioVadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AudioVadResp, error) {
 	rsp, err := c.PostV1AudioVadWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AudioVadResponse(rsp)
+	return ParsePostV1AudioVadResp(rsp)
 }
 
 // PostV1AudioVadWithResponse Voice Activity Detection (VAD)
@@ -10823,12 +11938,12 @@ func (c *ClientWithResponses) PostV1AudioVadWithBodyWithResponse(ctx context.Con
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/audio/vad (the `PostV1AudioVad` operationId).
-func (c *ClientWithResponses) PostV1AudioVadWithResponse(ctx context.Context, body PostV1AudioVadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioVadResponse, error) {
+func (c *ClientWithResponses) PostV1AudioVadWithResponse(ctx context.Context, body PostV1AudioVadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioVadResp, error) {
 	rsp, err := c.PostV1AudioVad(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AudioVadResponse(rsp)
+	return ParsePostV1AudioVadResp(rsp)
 }
 
 // GetV1AuthApiKeysWithResponse List API keys
@@ -10838,12 +11953,12 @@ func (c *ClientWithResponses) PostV1AudioVadWithResponse(ctx context.Context, bo
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/auth/api-keys (the `GetV1AuthApiKeys` operationId).
-func (c *ClientWithResponses) GetV1AuthApiKeysWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthApiKeysResponse, error) {
+func (c *ClientWithResponses) GetV1AuthApiKeysWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthApiKeysResp, error) {
 	rsp, err := c.GetV1AuthApiKeys(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1AuthApiKeysResponse(rsp)
+	return ParseGetV1AuthApiKeysResp(rsp)
 }
 
 // PostV1AuthApiKeysWithBodyWithResponse Create an API key
@@ -10854,12 +11969,12 @@ func (c *ClientWithResponses) GetV1AuthApiKeysWithResponse(ctx context.Context, 
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/api-keys (the `PostV1AuthApiKeys` operationId).
-func (c *ClientWithResponses) PostV1AuthApiKeysWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResponse, error) {
+func (c *ClientWithResponses) PostV1AuthApiKeysWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResp, error) {
 	rsp, err := c.PostV1AuthApiKeysWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthApiKeysResponse(rsp)
+	return ParsePostV1AuthApiKeysResp(rsp)
 }
 
 // PostV1AuthApiKeysWithResponse Create an API key
@@ -10870,12 +11985,12 @@ func (c *ClientWithResponses) PostV1AuthApiKeysWithBodyWithResponse(ctx context.
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/api-keys (the `PostV1AuthApiKeys` operationId).
-func (c *ClientWithResponses) PostV1AuthApiKeysWithResponse(ctx context.Context, body PostV1AuthApiKeysJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResponse, error) {
+func (c *ClientWithResponses) PostV1AuthApiKeysWithResponse(ctx context.Context, body PostV1AuthApiKeysJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResp, error) {
 	rsp, err := c.PostV1AuthApiKeys(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthApiKeysResponse(rsp)
+	return ParsePostV1AuthApiKeysResp(rsp)
 }
 
 // DeleteV1AuthApiKeysIdWithResponse Revoke an API key
@@ -10885,12 +12000,12 @@ func (c *ClientWithResponses) PostV1AuthApiKeysWithResponse(ctx context.Context,
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with DELETE /v1/auth/api-keys/{id} (the `DeleteV1AuthApiKeysId` operationId).
-func (c *ClientWithResponses) DeleteV1AuthApiKeysIdWithResponse(ctx context.Context, id ApiKeyId, reqEditors ...RequestEditorFn) (*DeleteV1AuthApiKeysIdResponse, error) {
+func (c *ClientWithResponses) DeleteV1AuthApiKeysIdWithResponse(ctx context.Context, id ApiKeyId, reqEditors ...RequestEditorFn) (*DeleteV1AuthApiKeysIdResp, error) {
 	rsp, err := c.DeleteV1AuthApiKeysId(ctx, id, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDeleteV1AuthApiKeysIdResponse(rsp)
+	return ParseDeleteV1AuthApiKeysIdResp(rsp)
 }
 
 // PostV1AuthAppleWithBodyWithResponse Apple Sign-In (native / iOS)
@@ -10900,12 +12015,12 @@ func (c *ClientWithResponses) DeleteV1AuthApiKeysIdWithResponse(ctx context.Cont
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/apple (the `PostV1AuthApple` operationId).
-func (c *ClientWithResponses) PostV1AuthAppleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAppleResponse, error) {
+func (c *ClientWithResponses) PostV1AuthAppleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAppleResp, error) {
 	rsp, err := c.PostV1AuthAppleWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthAppleResponse(rsp)
+	return ParsePostV1AuthAppleResp(rsp)
 }
 
 // PostV1AuthAppleWithResponse Apple Sign-In (native / iOS)
@@ -10915,12 +12030,12 @@ func (c *ClientWithResponses) PostV1AuthAppleWithBodyWithResponse(ctx context.Co
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/apple (the `PostV1AuthApple` operationId).
-func (c *ClientWithResponses) PostV1AuthAppleWithResponse(ctx context.Context, body PostV1AuthAppleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleResponse, error) {
+func (c *ClientWithResponses) PostV1AuthAppleWithResponse(ctx context.Context, body PostV1AuthAppleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleResp, error) {
 	rsp, err := c.PostV1AuthApple(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthAppleResponse(rsp)
+	return ParsePostV1AuthAppleResp(rsp)
 }
 
 // PostV1AuthAppleWebWithBodyWithResponse Apple Sign-In (web OAuth code flow)
@@ -10930,12 +12045,12 @@ func (c *ClientWithResponses) PostV1AuthAppleWithResponse(ctx context.Context, b
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/apple/web (the `PostV1AuthAppleWeb` operationId).
-func (c *ClientWithResponses) PostV1AuthAppleWebWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResponse, error) {
+func (c *ClientWithResponses) PostV1AuthAppleWebWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResp, error) {
 	rsp, err := c.PostV1AuthAppleWebWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthAppleWebResponse(rsp)
+	return ParsePostV1AuthAppleWebResp(rsp)
 }
 
 // PostV1AuthAppleWebWithResponse Apple Sign-In (web OAuth code flow)
@@ -10945,12 +12060,12 @@ func (c *ClientWithResponses) PostV1AuthAppleWebWithBodyWithResponse(ctx context
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/apple/web (the `PostV1AuthAppleWeb` operationId).
-func (c *ClientWithResponses) PostV1AuthAppleWebWithResponse(ctx context.Context, body PostV1AuthAppleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResponse, error) {
+func (c *ClientWithResponses) PostV1AuthAppleWebWithResponse(ctx context.Context, body PostV1AuthAppleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResp, error) {
 	rsp, err := c.PostV1AuthAppleWeb(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthAppleWebResponse(rsp)
+	return ParsePostV1AuthAppleWebResp(rsp)
 }
 
 // PostV1AuthGoogleWithBodyWithResponse Google Sign-In (native / Android)
@@ -10960,12 +12075,12 @@ func (c *ClientWithResponses) PostV1AuthAppleWebWithResponse(ctx context.Context
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/google (the `PostV1AuthGoogle` operationId).
-func (c *ClientWithResponses) PostV1AuthGoogleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleResponse, error) {
+func (c *ClientWithResponses) PostV1AuthGoogleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleResp, error) {
 	rsp, err := c.PostV1AuthGoogleWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthGoogleResponse(rsp)
+	return ParsePostV1AuthGoogleResp(rsp)
 }
 
 // PostV1AuthGoogleWithResponse Google Sign-In (native / Android)
@@ -10975,12 +12090,12 @@ func (c *ClientWithResponses) PostV1AuthGoogleWithBodyWithResponse(ctx context.C
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/google (the `PostV1AuthGoogle` operationId).
-func (c *ClientWithResponses) PostV1AuthGoogleWithResponse(ctx context.Context, body PostV1AuthGoogleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleResponse, error) {
+func (c *ClientWithResponses) PostV1AuthGoogleWithResponse(ctx context.Context, body PostV1AuthGoogleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleResp, error) {
 	rsp, err := c.PostV1AuthGoogle(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthGoogleResponse(rsp)
+	return ParsePostV1AuthGoogleResp(rsp)
 }
 
 // PostV1AuthGoogleWebWithBodyWithResponse Google Sign-In (web OAuth code flow)
@@ -10990,12 +12105,12 @@ func (c *ClientWithResponses) PostV1AuthGoogleWithResponse(ctx context.Context, 
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/google/web (the `PostV1AuthGoogleWeb` operationId).
-func (c *ClientWithResponses) PostV1AuthGoogleWebWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResponse, error) {
+func (c *ClientWithResponses) PostV1AuthGoogleWebWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResp, error) {
 	rsp, err := c.PostV1AuthGoogleWebWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthGoogleWebResponse(rsp)
+	return ParsePostV1AuthGoogleWebResp(rsp)
 }
 
 // PostV1AuthGoogleWebWithResponse Google Sign-In (web OAuth code flow)
@@ -11005,12 +12120,12 @@ func (c *ClientWithResponses) PostV1AuthGoogleWebWithBodyWithResponse(ctx contex
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/google/web (the `PostV1AuthGoogleWeb` operationId).
-func (c *ClientWithResponses) PostV1AuthGoogleWebWithResponse(ctx context.Context, body PostV1AuthGoogleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResponse, error) {
+func (c *ClientWithResponses) PostV1AuthGoogleWebWithResponse(ctx context.Context, body PostV1AuthGoogleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResp, error) {
 	rsp, err := c.PostV1AuthGoogleWeb(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthGoogleWebResponse(rsp)
+	return ParsePostV1AuthGoogleWebResp(rsp)
 }
 
 // DeleteV1AuthLinkAppleWithResponse Unlink the Apple identity
@@ -11020,12 +12135,12 @@ func (c *ClientWithResponses) PostV1AuthGoogleWebWithResponse(ctx context.Contex
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with DELETE /v1/auth/link/apple (the `DeleteV1AuthLinkApple` operationId).
-func (c *ClientWithResponses) DeleteV1AuthLinkAppleWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthLinkAppleResponse, error) {
+func (c *ClientWithResponses) DeleteV1AuthLinkAppleWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthLinkAppleResp, error) {
 	rsp, err := c.DeleteV1AuthLinkApple(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDeleteV1AuthLinkAppleResponse(rsp)
+	return ParseDeleteV1AuthLinkAppleResp(rsp)
 }
 
 // PostV1AuthLinkAppleWithBodyWithResponse Link an Apple identity to the current account
@@ -11035,12 +12150,12 @@ func (c *ClientWithResponses) DeleteV1AuthLinkAppleWithResponse(ctx context.Cont
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/link/apple (the `PostV1AuthLinkApple` operationId).
-func (c *ClientWithResponses) PostV1AuthLinkAppleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLinkAppleResponse, error) {
+func (c *ClientWithResponses) PostV1AuthLinkAppleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLinkAppleResp, error) {
 	rsp, err := c.PostV1AuthLinkAppleWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthLinkAppleResponse(rsp)
+	return ParsePostV1AuthLinkAppleResp(rsp)
 }
 
 // PostV1AuthLinkAppleWithResponse Link an Apple identity to the current account
@@ -11050,12 +12165,12 @@ func (c *ClientWithResponses) PostV1AuthLinkAppleWithBodyWithResponse(ctx contex
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/link/apple (the `PostV1AuthLinkApple` operationId).
-func (c *ClientWithResponses) PostV1AuthLinkAppleWithResponse(ctx context.Context, body PostV1AuthLinkAppleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLinkAppleResponse, error) {
+func (c *ClientWithResponses) PostV1AuthLinkAppleWithResponse(ctx context.Context, body PostV1AuthLinkAppleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLinkAppleResp, error) {
 	rsp, err := c.PostV1AuthLinkApple(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthLinkAppleResponse(rsp)
+	return ParsePostV1AuthLinkAppleResp(rsp)
 }
 
 // DeleteV1AuthLinkGoogleWithResponse Unlink the Google identity
@@ -11065,12 +12180,12 @@ func (c *ClientWithResponses) PostV1AuthLinkAppleWithResponse(ctx context.Contex
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with DELETE /v1/auth/link/google (the `DeleteV1AuthLinkGoogle` operationId).
-func (c *ClientWithResponses) DeleteV1AuthLinkGoogleWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthLinkGoogleResponse, error) {
+func (c *ClientWithResponses) DeleteV1AuthLinkGoogleWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthLinkGoogleResp, error) {
 	rsp, err := c.DeleteV1AuthLinkGoogle(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDeleteV1AuthLinkGoogleResponse(rsp)
+	return ParseDeleteV1AuthLinkGoogleResp(rsp)
 }
 
 // PostV1AuthLinkGoogleWithBodyWithResponse Link a Google identity to the current account
@@ -11080,12 +12195,12 @@ func (c *ClientWithResponses) DeleteV1AuthLinkGoogleWithResponse(ctx context.Con
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/link/google (the `PostV1AuthLinkGoogle` operationId).
-func (c *ClientWithResponses) PostV1AuthLinkGoogleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLinkGoogleResponse, error) {
+func (c *ClientWithResponses) PostV1AuthLinkGoogleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLinkGoogleResp, error) {
 	rsp, err := c.PostV1AuthLinkGoogleWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthLinkGoogleResponse(rsp)
+	return ParsePostV1AuthLinkGoogleResp(rsp)
 }
 
 // PostV1AuthLinkGoogleWithResponse Link a Google identity to the current account
@@ -11095,12 +12210,12 @@ func (c *ClientWithResponses) PostV1AuthLinkGoogleWithBodyWithResponse(ctx conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/link/google (the `PostV1AuthLinkGoogle` operationId).
-func (c *ClientWithResponses) PostV1AuthLinkGoogleWithResponse(ctx context.Context, body PostV1AuthLinkGoogleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLinkGoogleResponse, error) {
+func (c *ClientWithResponses) PostV1AuthLinkGoogleWithResponse(ctx context.Context, body PostV1AuthLinkGoogleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLinkGoogleResp, error) {
 	rsp, err := c.PostV1AuthLinkGoogle(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthLinkGoogleResponse(rsp)
+	return ParsePostV1AuthLinkGoogleResp(rsp)
 }
 
 // PostV1AuthLoginWithBodyWithResponse Log in with email + password
@@ -11110,12 +12225,12 @@ func (c *ClientWithResponses) PostV1AuthLinkGoogleWithResponse(ctx context.Conte
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/login (the `PostV1AuthLogin` operationId).
-func (c *ClientWithResponses) PostV1AuthLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLoginResponse, error) {
+func (c *ClientWithResponses) PostV1AuthLoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLoginResp, error) {
 	rsp, err := c.PostV1AuthLoginWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthLoginResponse(rsp)
+	return ParsePostV1AuthLoginResp(rsp)
 }
 
 // PostV1AuthLoginWithResponse Log in with email + password
@@ -11125,12 +12240,12 @@ func (c *ClientWithResponses) PostV1AuthLoginWithBodyWithResponse(ctx context.Co
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/login (the `PostV1AuthLogin` operationId).
-func (c *ClientWithResponses) PostV1AuthLoginWithResponse(ctx context.Context, body PostV1AuthLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLoginResponse, error) {
+func (c *ClientWithResponses) PostV1AuthLoginWithResponse(ctx context.Context, body PostV1AuthLoginJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLoginResp, error) {
 	rsp, err := c.PostV1AuthLogin(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthLoginResponse(rsp)
+	return ParsePostV1AuthLoginResp(rsp)
 }
 
 // PostV1AuthLogoutWithBodyWithResponse Log out (revoke refresh tokens + PASETO cutoff)
@@ -11140,12 +12255,12 @@ func (c *ClientWithResponses) PostV1AuthLoginWithResponse(ctx context.Context, b
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/logout (the `PostV1AuthLogout` operationId).
-func (c *ClientWithResponses) PostV1AuthLogoutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLogoutResponse, error) {
+func (c *ClientWithResponses) PostV1AuthLogoutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthLogoutResp, error) {
 	rsp, err := c.PostV1AuthLogoutWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthLogoutResponse(rsp)
+	return ParsePostV1AuthLogoutResp(rsp)
 }
 
 // PostV1AuthLogoutWithResponse Log out (revoke refresh tokens + PASETO cutoff)
@@ -11155,12 +12270,12 @@ func (c *ClientWithResponses) PostV1AuthLogoutWithBodyWithResponse(ctx context.C
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/logout (the `PostV1AuthLogout` operationId).
-func (c *ClientWithResponses) PostV1AuthLogoutWithResponse(ctx context.Context, body PostV1AuthLogoutJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLogoutResponse, error) {
+func (c *ClientWithResponses) PostV1AuthLogoutWithResponse(ctx context.Context, body PostV1AuthLogoutJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthLogoutResp, error) {
 	rsp, err := c.PostV1AuthLogout(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthLogoutResponse(rsp)
+	return ParsePostV1AuthLogoutResp(rsp)
 }
 
 // GetV1AuthMeWithResponse Get the current user profile
@@ -11168,12 +12283,12 @@ func (c *ClientWithResponses) PostV1AuthLogoutWithResponse(ctx context.Context, 
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/auth/me (the `GetV1AuthMe` operationId).
-func (c *ClientWithResponses) GetV1AuthMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthMeResponse, error) {
+func (c *ClientWithResponses) GetV1AuthMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthMeResp, error) {
 	rsp, err := c.GetV1AuthMe(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1AuthMeResponse(rsp)
+	return ParseGetV1AuthMeResp(rsp)
 }
 
 // PatchV1AuthMeWithBodyWithResponse Update the current user profile
@@ -11183,12 +12298,12 @@ func (c *ClientWithResponses) GetV1AuthMeWithResponse(ctx context.Context, reqEd
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PATCH /v1/auth/me (the `PatchV1AuthMe` operationId).
-func (c *ClientWithResponses) PatchV1AuthMeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchV1AuthMeResponse, error) {
+func (c *ClientWithResponses) PatchV1AuthMeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PatchV1AuthMeResp, error) {
 	rsp, err := c.PatchV1AuthMeWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePatchV1AuthMeResponse(rsp)
+	return ParsePatchV1AuthMeResp(rsp)
 }
 
 // PatchV1AuthMeWithResponse Update the current user profile
@@ -11198,12 +12313,12 @@ func (c *ClientWithResponses) PatchV1AuthMeWithBodyWithResponse(ctx context.Cont
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PATCH /v1/auth/me (the `PatchV1AuthMe` operationId).
-func (c *ClientWithResponses) PatchV1AuthMeWithResponse(ctx context.Context, body PatchV1AuthMeJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchV1AuthMeResponse, error) {
+func (c *ClientWithResponses) PatchV1AuthMeWithResponse(ctx context.Context, body PatchV1AuthMeJSONRequestBody, reqEditors ...RequestEditorFn) (*PatchV1AuthMeResp, error) {
 	rsp, err := c.PatchV1AuthMe(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePatchV1AuthMeResponse(rsp)
+	return ParsePatchV1AuthMeResp(rsp)
 }
 
 // PutV1AuthPasswordWithBodyWithResponse Change password
@@ -11213,12 +12328,12 @@ func (c *ClientWithResponses) PatchV1AuthMeWithResponse(ctx context.Context, bod
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /v1/auth/password (the `PutV1AuthPassword` operationId).
-func (c *ClientWithResponses) PutV1AuthPasswordWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AuthPasswordResponse, error) {
+func (c *ClientWithResponses) PutV1AuthPasswordWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AuthPasswordResp, error) {
 	rsp, err := c.PutV1AuthPasswordWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePutV1AuthPasswordResponse(rsp)
+	return ParsePutV1AuthPasswordResp(rsp)
 }
 
 // PutV1AuthPasswordWithResponse Change password
@@ -11228,12 +12343,12 @@ func (c *ClientWithResponses) PutV1AuthPasswordWithBodyWithResponse(ctx context.
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /v1/auth/password (the `PutV1AuthPassword` operationId).
-func (c *ClientWithResponses) PutV1AuthPasswordWithResponse(ctx context.Context, body PutV1AuthPasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AuthPasswordResponse, error) {
+func (c *ClientWithResponses) PutV1AuthPasswordWithResponse(ctx context.Context, body PutV1AuthPasswordJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AuthPasswordResp, error) {
 	rsp, err := c.PutV1AuthPassword(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePutV1AuthPasswordResponse(rsp)
+	return ParsePutV1AuthPasswordResp(rsp)
 }
 
 // PostV1AuthPasswordResetConfirmWithBodyWithResponse Confirm a password reset
@@ -11243,12 +12358,12 @@ func (c *ClientWithResponses) PutV1AuthPasswordWithResponse(ctx context.Context,
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/password/reset/confirm (the `PostV1AuthPasswordResetConfirm` operationId).
-func (c *ClientWithResponses) PostV1AuthPasswordResetConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetConfirmResponse, error) {
+func (c *ClientWithResponses) PostV1AuthPasswordResetConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetConfirmResp, error) {
 	rsp, err := c.PostV1AuthPasswordResetConfirmWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthPasswordResetConfirmResponse(rsp)
+	return ParsePostV1AuthPasswordResetConfirmResp(rsp)
 }
 
 // PostV1AuthPasswordResetConfirmWithResponse Confirm a password reset
@@ -11258,12 +12373,12 @@ func (c *ClientWithResponses) PostV1AuthPasswordResetConfirmWithBodyWithResponse
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/password/reset/confirm (the `PostV1AuthPasswordResetConfirm` operationId).
-func (c *ClientWithResponses) PostV1AuthPasswordResetConfirmWithResponse(ctx context.Context, body PostV1AuthPasswordResetConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetConfirmResponse, error) {
+func (c *ClientWithResponses) PostV1AuthPasswordResetConfirmWithResponse(ctx context.Context, body PostV1AuthPasswordResetConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetConfirmResp, error) {
 	rsp, err := c.PostV1AuthPasswordResetConfirm(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthPasswordResetConfirmResponse(rsp)
+	return ParsePostV1AuthPasswordResetConfirmResp(rsp)
 }
 
 // PostV1AuthPasswordResetRequestWithBodyWithResponse Request a password reset
@@ -11273,12 +12388,12 @@ func (c *ClientWithResponses) PostV1AuthPasswordResetConfirmWithResponse(ctx con
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/password/reset/request (the `PostV1AuthPasswordResetRequest` operationId).
-func (c *ClientWithResponses) PostV1AuthPasswordResetRequestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResponse, error) {
+func (c *ClientWithResponses) PostV1AuthPasswordResetRequestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResp, error) {
 	rsp, err := c.PostV1AuthPasswordResetRequestWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthPasswordResetRequestResponse(rsp)
+	return ParsePostV1AuthPasswordResetRequestResp(rsp)
 }
 
 // PostV1AuthPasswordResetRequestWithResponse Request a password reset
@@ -11288,12 +12403,12 @@ func (c *ClientWithResponses) PostV1AuthPasswordResetRequestWithBodyWithResponse
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/password/reset/request (the `PostV1AuthPasswordResetRequest` operationId).
-func (c *ClientWithResponses) PostV1AuthPasswordResetRequestWithResponse(ctx context.Context, body PostV1AuthPasswordResetRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResponse, error) {
+func (c *ClientWithResponses) PostV1AuthPasswordResetRequestWithResponse(ctx context.Context, body PostV1AuthPasswordResetRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResp, error) {
 	rsp, err := c.PostV1AuthPasswordResetRequest(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthPasswordResetRequestResponse(rsp)
+	return ParsePostV1AuthPasswordResetRequestResp(rsp)
 }
 
 // PostV1AuthRefreshWithBodyWithResponse Refresh the PASETO token
@@ -11303,12 +12418,12 @@ func (c *ClientWithResponses) PostV1AuthPasswordResetRequestWithResponse(ctx con
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/refresh (the `PostV1AuthRefresh` operationId).
-func (c *ClientWithResponses) PostV1AuthRefreshWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthRefreshResponse, error) {
+func (c *ClientWithResponses) PostV1AuthRefreshWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthRefreshResp, error) {
 	rsp, err := c.PostV1AuthRefreshWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthRefreshResponse(rsp)
+	return ParsePostV1AuthRefreshResp(rsp)
 }
 
 // PostV1AuthRefreshWithResponse Refresh the PASETO token
@@ -11318,12 +12433,12 @@ func (c *ClientWithResponses) PostV1AuthRefreshWithBodyWithResponse(ctx context.
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/refresh (the `PostV1AuthRefresh` operationId).
-func (c *ClientWithResponses) PostV1AuthRefreshWithResponse(ctx context.Context, body PostV1AuthRefreshJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthRefreshResponse, error) {
+func (c *ClientWithResponses) PostV1AuthRefreshWithResponse(ctx context.Context, body PostV1AuthRefreshJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthRefreshResp, error) {
 	rsp, err := c.PostV1AuthRefresh(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthRefreshResponse(rsp)
+	return ParsePostV1AuthRefreshResp(rsp)
 }
 
 // PostV1AuthRegisterWithBodyWithResponse Register a new account
@@ -11333,12 +12448,12 @@ func (c *ClientWithResponses) PostV1AuthRefreshWithResponse(ctx context.Context,
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/register (the `PostV1AuthRegister` operationId).
-func (c *ClientWithResponses) PostV1AuthRegisterWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthRegisterResponse, error) {
+func (c *ClientWithResponses) PostV1AuthRegisterWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthRegisterResp, error) {
 	rsp, err := c.PostV1AuthRegisterWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthRegisterResponse(rsp)
+	return ParsePostV1AuthRegisterResp(rsp)
 }
 
 // PostV1AuthRegisterWithResponse Register a new account
@@ -11348,12 +12463,12 @@ func (c *ClientWithResponses) PostV1AuthRegisterWithBodyWithResponse(ctx context
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/register (the `PostV1AuthRegister` operationId).
-func (c *ClientWithResponses) PostV1AuthRegisterWithResponse(ctx context.Context, body PostV1AuthRegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthRegisterResponse, error) {
+func (c *ClientWithResponses) PostV1AuthRegisterWithResponse(ctx context.Context, body PostV1AuthRegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthRegisterResp, error) {
 	rsp, err := c.PostV1AuthRegister(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthRegisterResponse(rsp)
+	return ParsePostV1AuthRegisterResp(rsp)
 }
 
 // PostV1AuthResendVerificationWithBodyWithResponse Resend the verification email
@@ -11363,12 +12478,12 @@ func (c *ClientWithResponses) PostV1AuthRegisterWithResponse(ctx context.Context
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/resend-verification (the `PostV1AuthResendVerification` operationId).
-func (c *ClientWithResponses) PostV1AuthResendVerificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResponse, error) {
+func (c *ClientWithResponses) PostV1AuthResendVerificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResp, error) {
 	rsp, err := c.PostV1AuthResendVerificationWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthResendVerificationResponse(rsp)
+	return ParsePostV1AuthResendVerificationResp(rsp)
 }
 
 // PostV1AuthResendVerificationWithResponse Resend the verification email
@@ -11378,12 +12493,12 @@ func (c *ClientWithResponses) PostV1AuthResendVerificationWithBodyWithResponse(c
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/auth/resend-verification (the `PostV1AuthResendVerification` operationId).
-func (c *ClientWithResponses) PostV1AuthResendVerificationWithResponse(ctx context.Context, body PostV1AuthResendVerificationJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResponse, error) {
+func (c *ClientWithResponses) PostV1AuthResendVerificationWithResponse(ctx context.Context, body PostV1AuthResendVerificationJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResp, error) {
 	rsp, err := c.PostV1AuthResendVerification(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1AuthResendVerificationResponse(rsp)
+	return ParsePostV1AuthResendVerificationResp(rsp)
 }
 
 // GetV1AuthVerifyWithResponse Verify email address
@@ -11393,12 +12508,12 @@ func (c *ClientWithResponses) PostV1AuthResendVerificationWithResponse(ctx conte
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/auth/verify (the `GetV1AuthVerify` operationId).
-func (c *ClientWithResponses) GetV1AuthVerifyWithResponse(ctx context.Context, params *GetV1AuthVerifyParams, reqEditors ...RequestEditorFn) (*GetV1AuthVerifyResponse, error) {
+func (c *ClientWithResponses) GetV1AuthVerifyWithResponse(ctx context.Context, params *GetV1AuthVerifyParams, reqEditors ...RequestEditorFn) (*GetV1AuthVerifyResp, error) {
 	rsp, err := c.GetV1AuthVerify(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1AuthVerifyResponse(rsp)
+	return ParseGetV1AuthVerifyResp(rsp)
 }
 
 // PostV1ChatCompletionsWithBodyWithResponse Chat completions (LLM)
@@ -11412,12 +12527,12 @@ func (c *ClientWithResponses) GetV1AuthVerifyWithResponse(ctx context.Context, p
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/chat/completions (the `PostV1ChatCompletions` operationId).
-func (c *ClientWithResponses) PostV1ChatCompletionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1ChatCompletionsResponse, error) {
+func (c *ClientWithResponses) PostV1ChatCompletionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1ChatCompletionsResp, error) {
 	rsp, err := c.PostV1ChatCompletionsWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1ChatCompletionsResponse(rsp)
+	return ParsePostV1ChatCompletionsResp(rsp)
 }
 
 // PostV1ChatCompletionsWithResponse Chat completions (LLM)
@@ -11431,12 +12546,155 @@ func (c *ClientWithResponses) PostV1ChatCompletionsWithBodyWithResponse(ctx cont
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/chat/completions (the `PostV1ChatCompletions` operationId).
-func (c *ClientWithResponses) PostV1ChatCompletionsWithResponse(ctx context.Context, body PostV1ChatCompletionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1ChatCompletionsResponse, error) {
+func (c *ClientWithResponses) PostV1ChatCompletionsWithResponse(ctx context.Context, body PostV1ChatCompletionsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1ChatCompletionsResp, error) {
 	rsp, err := c.PostV1ChatCompletions(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1ChatCompletionsResponse(rsp)
+	return ParsePostV1ChatCompletionsResp(rsp)
+}
+
+// ListDevicesWithResponse List the caller's devices
+//
+// Returns the current user's registered devices (no `user_id` per item — they are all the caller's).
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/devices (the `ListDevices` operationId).
+func (c *ClientWithResponses) ListDevicesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListDevicesResp, error) {
+	rsp, err := c.ListDevices(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListDevicesResp(rsp)
+}
+
+// RegisterDeviceWithBodyWithResponse Register or refresh a device
+//
+// Registers a client install (or refreshes an existing one, e.g. a new
+// push token). Devices must be authorized before cloud sessions can be
+// provisioned for them — see `/v1/session/connect` (403
+// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices (the `RegisterDevice` operationId).
+func (c *ClientWithResponses) RegisterDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RegisterDeviceResp, error) {
+	rsp, err := c.RegisterDeviceWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRegisterDeviceResp(rsp)
+}
+
+// RegisterDeviceWithResponse Register or refresh a device
+//
+// Registers a client install (or refreshes an existing one, e.g. a new
+// push token). Devices must be authorized before cloud sessions can be
+// provisioned for them — see `/v1/session/connect` (403
+// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices (the `RegisterDevice` operationId).
+func (c *ClientWithResponses) RegisterDeviceWithResponse(ctx context.Context, body RegisterDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*RegisterDeviceResp, error) {
+	rsp, err := c.RegisterDevice(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRegisterDeviceResp(rsp)
+}
+
+// ApproveDeviceWithBodyWithResponse Approve a device via emailed approval token
+//
+// Redeems the high-entropy approval token from the email button URL. The authenticated session user must match the user the token was issued for. Marks the device authorized and consumes both pending secrets (code and token).
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/approve (the `ApproveDevice` operationId).
+func (c *ClientWithResponses) ApproveDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ApproveDeviceResp, error) {
+	rsp, err := c.ApproveDeviceWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseApproveDeviceResp(rsp)
+}
+
+// ApproveDeviceWithResponse Approve a device via emailed approval token
+//
+// Redeems the high-entropy approval token from the email button URL. The authenticated session user must match the user the token was issued for. Marks the device authorized and consumes both pending secrets (code and token).
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/approve (the `ApproveDevice` operationId).
+func (c *ClientWithResponses) ApproveDeviceWithResponse(ctx context.Context, body ApproveDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*ApproveDeviceResp, error) {
+	rsp, err := c.ApproveDevice(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseApproveDeviceResp(rsp)
+}
+
+// AuthorizeDeviceWithBodyWithResponse Request an email auth code + approval link, or verify a code
+//
+// Without `code`: mails the user a 6-digit code (fallback manual entry) AND an approval button linking to the portal device-approve page. Returns 202. With `code`: verifies the code and marks the device authorized. Returns 200.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/authorize (the `AuthorizeDevice` operationId).
+func (c *ClientWithResponses) AuthorizeDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AuthorizeDeviceResp, error) {
+	rsp, err := c.AuthorizeDeviceWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAuthorizeDeviceResp(rsp)
+}
+
+// AuthorizeDeviceWithResponse Request an email auth code + approval link, or verify a code
+//
+// Without `code`: mails the user a 6-digit code (fallback manual entry) AND an approval button linking to the portal device-approve page. Returns 202. With `code`: verifies the code and marks the device authorized. Returns 200.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/authorize (the `AuthorizeDevice` operationId).
+func (c *ClientWithResponses) AuthorizeDeviceWithResponse(ctx context.Context, body AuthorizeDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*AuthorizeDeviceResp, error) {
+	rsp, err := c.AuthorizeDevice(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAuthorizeDeviceResp(rsp)
+}
+
+// GetDeviceAuthorizationStatusWithResponse Poll device authorization state
+//
+// App-polling endpoint for the device auth flow. Returns whether the
+// device is authorized and whether a code/token pair is still
+// outstanding for it.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/devices/authorize/status (the `GetDeviceAuthorizationStatus` operationId).
+func (c *ClientWithResponses) GetDeviceAuthorizationStatusWithResponse(ctx context.Context, params *GetDeviceAuthorizationStatusParams, reqEditors ...RequestEditorFn) (*GetDeviceAuthorizationStatusResp, error) {
+	rsp, err := c.GetDeviceAuthorizationStatus(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDeviceAuthorizationStatusResp(rsp)
+}
+
+// RevokeDeviceWithResponse Revoke a device
+//
+// Revokes a device's authorization and removes it from the user's device list.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v1/devices/{device_id} (the `RevokeDevice` operationId).
+func (c *ClientWithResponses) RevokeDeviceWithResponse(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*RevokeDeviceResp, error) {
+	rsp, err := c.RevokeDevice(ctx, deviceId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRevokeDeviceResp(rsp)
 }
 
 // PostV1EmbedSpeakerWithBodyWithResponse Speaker embedding
@@ -11446,12 +12704,12 @@ func (c *ClientWithResponses) PostV1ChatCompletionsWithResponse(ctx context.Cont
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/embed/speaker (the `PostV1EmbedSpeaker` operationId).
-func (c *ClientWithResponses) PostV1EmbedSpeakerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1EmbedSpeakerResponse, error) {
+func (c *ClientWithResponses) PostV1EmbedSpeakerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1EmbedSpeakerResp, error) {
 	rsp, err := c.PostV1EmbedSpeakerWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1EmbedSpeakerResponse(rsp)
+	return ParsePostV1EmbedSpeakerResp(rsp)
 }
 
 // PostV1EmbedSpeakerWithResponse Speaker embedding
@@ -11461,12 +12719,12 @@ func (c *ClientWithResponses) PostV1EmbedSpeakerWithBodyWithResponse(ctx context
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/embed/speaker (the `PostV1EmbedSpeaker` operationId).
-func (c *ClientWithResponses) PostV1EmbedSpeakerWithResponse(ctx context.Context, body PostV1EmbedSpeakerJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1EmbedSpeakerResponse, error) {
+func (c *ClientWithResponses) PostV1EmbedSpeakerWithResponse(ctx context.Context, body PostV1EmbedSpeakerJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1EmbedSpeakerResp, error) {
 	rsp, err := c.PostV1EmbedSpeaker(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1EmbedSpeakerResponse(rsp)
+	return ParsePostV1EmbedSpeakerResp(rsp)
 }
 
 // PostV1EmbeddingsWithBodyWithResponse Text embeddings
@@ -11476,12 +12734,12 @@ func (c *ClientWithResponses) PostV1EmbedSpeakerWithResponse(ctx context.Context
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/embeddings (the `PostV1Embeddings` operationId).
-func (c *ClientWithResponses) PostV1EmbeddingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1EmbeddingsResponse, error) {
+func (c *ClientWithResponses) PostV1EmbeddingsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1EmbeddingsResp, error) {
 	rsp, err := c.PostV1EmbeddingsWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1EmbeddingsResponse(rsp)
+	return ParsePostV1EmbeddingsResp(rsp)
 }
 
 // PostV1EmbeddingsWithResponse Text embeddings
@@ -11491,12 +12749,12 @@ func (c *ClientWithResponses) PostV1EmbeddingsWithBodyWithResponse(ctx context.C
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/embeddings (the `PostV1Embeddings` operationId).
-func (c *ClientWithResponses) PostV1EmbeddingsWithResponse(ctx context.Context, body PostV1EmbeddingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1EmbeddingsResponse, error) {
+func (c *ClientWithResponses) PostV1EmbeddingsWithResponse(ctx context.Context, body PostV1EmbeddingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1EmbeddingsResp, error) {
 	rsp, err := c.PostV1Embeddings(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1EmbeddingsResponse(rsp)
+	return ParsePostV1EmbeddingsResp(rsp)
 }
 
 // PostV1ImagesGenerationsWithBodyWithResponse Generate images (currently unavailable)
@@ -11514,12 +12772,12 @@ func (c *ClientWithResponses) PostV1EmbeddingsWithResponse(ctx context.Context, 
 // Corresponds with POST /v1/images/generations (the `PostV1ImagesGenerations` operationId).
 //
 // Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-func (c *ClientWithResponses) PostV1ImagesGenerationsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1ImagesGenerationsResponse, error) {
+func (c *ClientWithResponses) PostV1ImagesGenerationsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1ImagesGenerationsResp, error) {
 	rsp, err := c.PostV1ImagesGenerationsWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1ImagesGenerationsResponse(rsp)
+	return ParsePostV1ImagesGenerationsResp(rsp)
 }
 
 // PostV1ImagesGenerationsWithResponse Generate images (currently unavailable)
@@ -11536,12 +12794,12 @@ func (c *ClientWithResponses) PostV1ImagesGenerationsWithBodyWithResponse(ctx co
 //
 // Corresponds with POST /v1/images/generations (the `PostV1ImagesGenerations` operationId).
 // Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
-func (c *ClientWithResponses) PostV1ImagesGenerationsWithResponse(ctx context.Context, body PostV1ImagesGenerationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1ImagesGenerationsResponse, error) {
+func (c *ClientWithResponses) PostV1ImagesGenerationsWithResponse(ctx context.Context, body PostV1ImagesGenerationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1ImagesGenerationsResp, error) {
 	rsp, err := c.PostV1ImagesGenerations(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1ImagesGenerationsResponse(rsp)
+	return ParsePostV1ImagesGenerationsResp(rsp)
 }
 
 // GetV1ModelsWithResponse List available models
@@ -11551,12 +12809,12 @@ func (c *ClientWithResponses) PostV1ImagesGenerationsWithResponse(ctx context.Co
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/models (the `GetV1Models` operationId).
-func (c *ClientWithResponses) GetV1ModelsWithResponse(ctx context.Context, params *GetV1ModelsParams, reqEditors ...RequestEditorFn) (*GetV1ModelsResponse, error) {
+func (c *ClientWithResponses) GetV1ModelsWithResponse(ctx context.Context, params *GetV1ModelsParams, reqEditors ...RequestEditorFn) (*GetV1ModelsResp, error) {
 	rsp, err := c.GetV1Models(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1ModelsResponse(rsp)
+	return ParseGetV1ModelsResp(rsp)
 }
 
 // GetV1OpenapiJsonWithResponse Download this OpenAPI specification (JSON)
@@ -11566,12 +12824,12 @@ func (c *ClientWithResponses) GetV1ModelsWithResponse(ctx context.Context, param
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/openapi.json (the `GetV1OpenapiJson` operationId).
-func (c *ClientWithResponses) GetV1OpenapiJsonWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1OpenapiJsonResponse, error) {
+func (c *ClientWithResponses) GetV1OpenapiJsonWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1OpenapiJsonResp, error) {
 	rsp, err := c.GetV1OpenapiJson(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1OpenapiJsonResponse(rsp)
+	return ParseGetV1OpenapiJsonResp(rsp)
 }
 
 // GetV1OpenapiYamlWithResponse Download this OpenAPI specification (YAML)
@@ -11585,12 +12843,12 @@ func (c *ClientWithResponses) GetV1OpenapiJsonWithResponse(ctx context.Context, 
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/openapi.yaml (the `GetV1OpenapiYaml` operationId).
-func (c *ClientWithResponses) GetV1OpenapiYamlWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1OpenapiYamlResponse, error) {
+func (c *ClientWithResponses) GetV1OpenapiYamlWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1OpenapiYamlResp, error) {
 	rsp, err := c.GetV1OpenapiYaml(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1OpenapiYamlResponse(rsp)
+	return ParseGetV1OpenapiYamlResp(rsp)
 }
 
 // PostV1RerankWithBodyWithResponse Rerank documents by relevance to a query
@@ -11600,12 +12858,12 @@ func (c *ClientWithResponses) GetV1OpenapiYamlWithResponse(ctx context.Context, 
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/rerank (the `PostV1Rerank` operationId).
-func (c *ClientWithResponses) PostV1RerankWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1RerankResponse, error) {
+func (c *ClientWithResponses) PostV1RerankWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1RerankResp, error) {
 	rsp, err := c.PostV1RerankWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1RerankResponse(rsp)
+	return ParsePostV1RerankResp(rsp)
 }
 
 // PostV1RerankWithResponse Rerank documents by relevance to a query
@@ -11615,12 +12873,12 @@ func (c *ClientWithResponses) PostV1RerankWithBodyWithResponse(ctx context.Conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/rerank (the `PostV1Rerank` operationId).
-func (c *ClientWithResponses) PostV1RerankWithResponse(ctx context.Context, body PostV1RerankJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1RerankResponse, error) {
+func (c *ClientWithResponses) PostV1RerankWithResponse(ctx context.Context, body PostV1RerankJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1RerankResp, error) {
 	rsp, err := c.PostV1Rerank(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1RerankResponse(rsp)
+	return ParsePostV1RerankResp(rsp)
 }
 
 // PostV1SessionConnectWithBodyWithResponse Connect a cloud session
@@ -11630,12 +12888,12 @@ func (c *ClientWithResponses) PostV1RerankWithResponse(ctx context.Context, body
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-func (c *ClientWithResponses) PostV1SessionConnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResponse, error) {
+func (c *ClientWithResponses) PostV1SessionConnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResp, error) {
 	rsp, err := c.PostV1SessionConnectWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1SessionConnectResponse(rsp)
+	return ParsePostV1SessionConnectResp(rsp)
 }
 
 // PostV1SessionConnectWithResponse Connect a cloud session
@@ -11645,12 +12903,12 @@ func (c *ClientWithResponses) PostV1SessionConnectWithBodyWithResponse(ctx conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-func (c *ClientWithResponses) PostV1SessionConnectWithResponse(ctx context.Context, body PostV1SessionConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResponse, error) {
+func (c *ClientWithResponses) PostV1SessionConnectWithResponse(ctx context.Context, body PostV1SessionConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResp, error) {
 	rsp, err := c.PostV1SessionConnect(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1SessionConnectResponse(rsp)
+	return ParsePostV1SessionConnectResp(rsp)
 }
 
 // PostV1SessionConnectedWithResponse Report session connected (proxy → broker)
@@ -11660,12 +12918,12 @@ func (c *ClientWithResponses) PostV1SessionConnectWithResponse(ctx context.Conte
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
-func (c *ClientWithResponses) PostV1SessionConnectedWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1SessionConnectedResponse, error) {
+func (c *ClientWithResponses) PostV1SessionConnectedWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1SessionConnectedResp, error) {
 	rsp, err := c.PostV1SessionConnected(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1SessionConnectedResponse(rsp)
+	return ParsePostV1SessionConnectedResp(rsp)
 }
 
 // PostV1SessionDisconnectWithBodyWithResponse Disconnect a cloud session (enter grace period)
@@ -11675,12 +12933,12 @@ func (c *ClientWithResponses) PostV1SessionConnectedWithResponse(ctx context.Con
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-func (c *ClientWithResponses) PostV1SessionDisconnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResponse, error) {
+func (c *ClientWithResponses) PostV1SessionDisconnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResp, error) {
 	rsp, err := c.PostV1SessionDisconnectWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1SessionDisconnectResponse(rsp)
+	return ParsePostV1SessionDisconnectResp(rsp)
 }
 
 // PostV1SessionDisconnectWithResponse Disconnect a cloud session (enter grace period)
@@ -11690,12 +12948,12 @@ func (c *ClientWithResponses) PostV1SessionDisconnectWithBodyWithResponse(ctx co
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-func (c *ClientWithResponses) PostV1SessionDisconnectWithResponse(ctx context.Context, body PostV1SessionDisconnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResponse, error) {
+func (c *ClientWithResponses) PostV1SessionDisconnectWithResponse(ctx context.Context, body PostV1SessionDisconnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResp, error) {
 	rsp, err := c.PostV1SessionDisconnect(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1SessionDisconnectResponse(rsp)
+	return ParsePostV1SessionDisconnectResp(rsp)
 }
 
 // GetV1SubscriptionMeWithResponse Get the current user's subscription
@@ -11705,12 +12963,12 @@ func (c *ClientWithResponses) PostV1SessionDisconnectWithResponse(ctx context.Co
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/subscription/me (the `GetV1SubscriptionMe` operationId).
-func (c *ClientWithResponses) GetV1SubscriptionMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionMeResponse, error) {
+func (c *ClientWithResponses) GetV1SubscriptionMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionMeResp, error) {
 	rsp, err := c.GetV1SubscriptionMe(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1SubscriptionMeResponse(rsp)
+	return ParseGetV1SubscriptionMeResp(rsp)
 }
 
 // GetV1SubscriptionTiersWithResponse List subscription tiers
@@ -11718,12 +12976,12 @@ func (c *ClientWithResponses) GetV1SubscriptionMeWithResponse(ctx context.Contex
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/subscription/tiers (the `GetV1SubscriptionTiers` operationId).
-func (c *ClientWithResponses) GetV1SubscriptionTiersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionTiersResponse, error) {
+func (c *ClientWithResponses) GetV1SubscriptionTiersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionTiersResp, error) {
 	rsp, err := c.GetV1SubscriptionTiers(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1SubscriptionTiersResponse(rsp)
+	return ParseGetV1SubscriptionTiersResp(rsp)
 }
 
 // GetV1VersionsWithResponse List available HL image versions
@@ -11731,12 +12989,12 @@ func (c *ClientWithResponses) GetV1SubscriptionTiersWithResponse(ctx context.Con
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /v1/versions (the `GetV1Versions` operationId).
-func (c *ClientWithResponses) GetV1VersionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1VersionsResponse, error) {
+func (c *ClientWithResponses) GetV1VersionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1VersionsResp, error) {
 	rsp, err := c.GetV1Versions(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetV1VersionsResponse(rsp)
+	return ParseGetV1VersionsResp(rsp)
 }
 
 // PostV1VoiceConvertWithBodyWithResponse Voice conversion
@@ -11746,12 +13004,12 @@ func (c *ClientWithResponses) GetV1VersionsWithResponse(ctx context.Context, req
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/voice/convert (the `PostV1VoiceConvert` operationId).
-func (c *ClientWithResponses) PostV1VoiceConvertWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResponse, error) {
+func (c *ClientWithResponses) PostV1VoiceConvertWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResp, error) {
 	rsp, err := c.PostV1VoiceConvertWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1VoiceConvertResponse(rsp)
+	return ParsePostV1VoiceConvertResp(rsp)
 }
 
 // PostV1VoiceConvertWithResponse Voice conversion
@@ -11761,23 +13019,23 @@ func (c *ClientWithResponses) PostV1VoiceConvertWithBodyWithResponse(ctx context
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with POST /v1/voice/convert (the `PostV1VoiceConvert` operationId).
-func (c *ClientWithResponses) PostV1VoiceConvertWithResponse(ctx context.Context, body PostV1VoiceConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResponse, error) {
+func (c *ClientWithResponses) PostV1VoiceConvertWithResponse(ctx context.Context, body PostV1VoiceConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResp, error) {
 	rsp, err := c.PostV1VoiceConvert(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostV1VoiceConvertResponse(rsp)
+	return ParsePostV1VoiceConvertResp(rsp)
 }
 
-// ParsePostV1AudioConvertResponse parses an HTTP response from a PostV1AudioConvertWithResponse call
-func ParsePostV1AudioConvertResponse(rsp *http.Response) (*PostV1AudioConvertResponse, error) {
+// ParsePostV1AudioConvertResp parses an HTTP response from a PostV1AudioConvertWithResponse call
+func ParsePostV1AudioConvertResp(rsp *http.Response) (*PostV1AudioConvertResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AudioConvertResponse{
+	response := &PostV1AudioConvertResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -11836,7 +13094,7 @@ func ParsePostV1AudioConvertResponse(rsp *http.Response) (*PostV1AudioConvertRes
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1AudioConvertResponse200Headers
+		var headers PostV1AudioConvertResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -11860,7 +13118,7 @@ func ParsePostV1AudioConvertResponse(rsp *http.Response) (*PostV1AudioConvertRes
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1AudioConvertResponse429Headers
+		var headers PostV1AudioConvertResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -11895,15 +13153,15 @@ func ParsePostV1AudioConvertResponse(rsp *http.Response) (*PostV1AudioConvertRes
 	return response, nil
 }
 
-// ParsePostV1AudioSpeechResponse parses an HTTP response from a PostV1AudioSpeechWithResponse call
-func ParsePostV1AudioSpeechResponse(rsp *http.Response) (*PostV1AudioSpeechResponse, error) {
+// ParsePostV1AudioSpeechResp parses an HTTP response from a PostV1AudioSpeechWithResponse call
+func ParsePostV1AudioSpeechResp(rsp *http.Response) (*PostV1AudioSpeechResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AudioSpeechResponse{
+	response := &PostV1AudioSpeechResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -11962,7 +13220,7 @@ func ParsePostV1AudioSpeechResponse(rsp *http.Response) (*PostV1AudioSpeechRespo
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1AudioSpeechResponse200Headers
+		var headers PostV1AudioSpeechResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -11986,7 +13244,7 @@ func ParsePostV1AudioSpeechResponse(rsp *http.Response) (*PostV1AudioSpeechRespo
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1AudioSpeechResponse429Headers
+		var headers PostV1AudioSpeechResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -12021,15 +13279,15 @@ func ParsePostV1AudioSpeechResponse(rsp *http.Response) (*PostV1AudioSpeechRespo
 	return response, nil
 }
 
-// ParsePostV1AudioTranscriptionsResponse parses an HTTP response from a PostV1AudioTranscriptionsWithResponse call
-func ParsePostV1AudioTranscriptionsResponse(rsp *http.Response) (*PostV1AudioTranscriptionsResponse, error) {
+// ParsePostV1AudioTranscriptionsResp parses an HTTP response from a PostV1AudioTranscriptionsWithResponse call
+func ParsePostV1AudioTranscriptionsResp(rsp *http.Response) (*PostV1AudioTranscriptionsResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AudioTranscriptionsResponse{
+	response := &PostV1AudioTranscriptionsResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12088,7 +13346,7 @@ func ParsePostV1AudioTranscriptionsResponse(rsp *http.Response) (*PostV1AudioTra
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1AudioTranscriptionsResponse200Headers
+		var headers PostV1AudioTranscriptionsResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -12112,7 +13370,7 @@ func ParsePostV1AudioTranscriptionsResponse(rsp *http.Response) (*PostV1AudioTra
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1AudioTranscriptionsResponse429Headers
+		var headers PostV1AudioTranscriptionsResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -12147,15 +13405,15 @@ func ParsePostV1AudioTranscriptionsResponse(rsp *http.Response) (*PostV1AudioTra
 	return response, nil
 }
 
-// ParsePostV1AudioVadResponse parses an HTTP response from a PostV1AudioVadWithResponse call
-func ParsePostV1AudioVadResponse(rsp *http.Response) (*PostV1AudioVadResponse, error) {
+// ParsePostV1AudioVadResp parses an HTTP response from a PostV1AudioVadWithResponse call
+func ParsePostV1AudioVadResp(rsp *http.Response) (*PostV1AudioVadResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AudioVadResponse{
+	response := &PostV1AudioVadResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12207,7 +13465,7 @@ func ParsePostV1AudioVadResponse(rsp *http.Response) (*PostV1AudioVadResponse, e
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1AudioVadResponse200Headers
+		var headers PostV1AudioVadResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -12231,7 +13489,7 @@ func ParsePostV1AudioVadResponse(rsp *http.Response) (*PostV1AudioVadResponse, e
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1AudioVadResponse429Headers
+		var headers PostV1AudioVadResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -12266,15 +13524,15 @@ func ParsePostV1AudioVadResponse(rsp *http.Response) (*PostV1AudioVadResponse, e
 	return response, nil
 }
 
-// ParseGetV1AuthApiKeysResponse parses an HTTP response from a GetV1AuthApiKeysWithResponse call
-func ParseGetV1AuthApiKeysResponse(rsp *http.Response) (*GetV1AuthApiKeysResponse, error) {
+// ParseGetV1AuthApiKeysResp parses an HTTP response from a GetV1AuthApiKeysWithResponse call
+func ParseGetV1AuthApiKeysResp(rsp *http.Response) (*GetV1AuthApiKeysResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1AuthApiKeysResponse{
+	response := &GetV1AuthApiKeysResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12299,15 +13557,15 @@ func ParseGetV1AuthApiKeysResponse(rsp *http.Response) (*GetV1AuthApiKeysRespons
 	return response, nil
 }
 
-// ParsePostV1AuthApiKeysResponse parses an HTTP response from a PostV1AuthApiKeysWithResponse call
-func ParsePostV1AuthApiKeysResponse(rsp *http.Response) (*PostV1AuthApiKeysResponse, error) {
+// ParsePostV1AuthApiKeysResp parses an HTTP response from a PostV1AuthApiKeysWithResponse call
+func ParsePostV1AuthApiKeysResp(rsp *http.Response) (*PostV1AuthApiKeysResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthApiKeysResponse{
+	response := &PostV1AuthApiKeysResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12339,15 +13597,15 @@ func ParsePostV1AuthApiKeysResponse(rsp *http.Response) (*PostV1AuthApiKeysRespo
 	return response, nil
 }
 
-// ParseDeleteV1AuthApiKeysIdResponse parses an HTTP response from a DeleteV1AuthApiKeysIdWithResponse call
-func ParseDeleteV1AuthApiKeysIdResponse(rsp *http.Response) (*DeleteV1AuthApiKeysIdResponse, error) {
+// ParseDeleteV1AuthApiKeysIdResp parses an HTTP response from a DeleteV1AuthApiKeysIdWithResponse call
+func ParseDeleteV1AuthApiKeysIdResp(rsp *http.Response) (*DeleteV1AuthApiKeysIdResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteV1AuthApiKeysIdResponse{
+	response := &DeleteV1AuthApiKeysIdResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12368,15 +13626,15 @@ func ParseDeleteV1AuthApiKeysIdResponse(rsp *http.Response) (*DeleteV1AuthApiKey
 	return response, nil
 }
 
-// ParsePostV1AuthAppleResponse parses an HTTP response from a PostV1AuthAppleWithResponse call
-func ParsePostV1AuthAppleResponse(rsp *http.Response) (*PostV1AuthAppleResponse, error) {
+// ParsePostV1AuthAppleResp parses an HTTP response from a PostV1AuthAppleWithResponse call
+func ParsePostV1AuthAppleResp(rsp *http.Response) (*PostV1AuthAppleResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthAppleResponse{
+	response := &PostV1AuthAppleResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12415,15 +13673,15 @@ func ParsePostV1AuthAppleResponse(rsp *http.Response) (*PostV1AuthAppleResponse,
 	return response, nil
 }
 
-// ParsePostV1AuthAppleWebResponse parses an HTTP response from a PostV1AuthAppleWebWithResponse call
-func ParsePostV1AuthAppleWebResponse(rsp *http.Response) (*PostV1AuthAppleWebResponse, error) {
+// ParsePostV1AuthAppleWebResp parses an HTTP response from a PostV1AuthAppleWebWithResponse call
+func ParsePostV1AuthAppleWebResp(rsp *http.Response) (*PostV1AuthAppleWebResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthAppleWebResponse{
+	response := &PostV1AuthAppleWebResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12469,15 +13727,15 @@ func ParsePostV1AuthAppleWebResponse(rsp *http.Response) (*PostV1AuthAppleWebRes
 	return response, nil
 }
 
-// ParsePostV1AuthGoogleResponse parses an HTTP response from a PostV1AuthGoogleWithResponse call
-func ParsePostV1AuthGoogleResponse(rsp *http.Response) (*PostV1AuthGoogleResponse, error) {
+// ParsePostV1AuthGoogleResp parses an HTTP response from a PostV1AuthGoogleWithResponse call
+func ParsePostV1AuthGoogleResp(rsp *http.Response) (*PostV1AuthGoogleResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthGoogleResponse{
+	response := &PostV1AuthGoogleResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12516,15 +13774,15 @@ func ParsePostV1AuthGoogleResponse(rsp *http.Response) (*PostV1AuthGoogleRespons
 	return response, nil
 }
 
-// ParsePostV1AuthGoogleWebResponse parses an HTTP response from a PostV1AuthGoogleWebWithResponse call
-func ParsePostV1AuthGoogleWebResponse(rsp *http.Response) (*PostV1AuthGoogleWebResponse, error) {
+// ParsePostV1AuthGoogleWebResp parses an HTTP response from a PostV1AuthGoogleWebWithResponse call
+func ParsePostV1AuthGoogleWebResp(rsp *http.Response) (*PostV1AuthGoogleWebResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthGoogleWebResponse{
+	response := &PostV1AuthGoogleWebResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12563,15 +13821,15 @@ func ParsePostV1AuthGoogleWebResponse(rsp *http.Response) (*PostV1AuthGoogleWebR
 	return response, nil
 }
 
-// ParseDeleteV1AuthLinkAppleResponse parses an HTTP response from a DeleteV1AuthLinkAppleWithResponse call
-func ParseDeleteV1AuthLinkAppleResponse(rsp *http.Response) (*DeleteV1AuthLinkAppleResponse, error) {
+// ParseDeleteV1AuthLinkAppleResp parses an HTTP response from a DeleteV1AuthLinkAppleWithResponse call
+func ParseDeleteV1AuthLinkAppleResp(rsp *http.Response) (*DeleteV1AuthLinkAppleResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteV1AuthLinkAppleResponse{
+	response := &DeleteV1AuthLinkAppleResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12592,15 +13850,15 @@ func ParseDeleteV1AuthLinkAppleResponse(rsp *http.Response) (*DeleteV1AuthLinkAp
 	return response, nil
 }
 
-// ParsePostV1AuthLinkAppleResponse parses an HTTP response from a PostV1AuthLinkAppleWithResponse call
-func ParsePostV1AuthLinkAppleResponse(rsp *http.Response) (*PostV1AuthLinkAppleResponse, error) {
+// ParsePostV1AuthLinkAppleResp parses an HTTP response from a PostV1AuthLinkAppleWithResponse call
+func ParsePostV1AuthLinkAppleResp(rsp *http.Response) (*PostV1AuthLinkAppleResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthLinkAppleResponse{
+	response := &PostV1AuthLinkAppleResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12632,15 +13890,15 @@ func ParsePostV1AuthLinkAppleResponse(rsp *http.Response) (*PostV1AuthLinkAppleR
 	return response, nil
 }
 
-// ParseDeleteV1AuthLinkGoogleResponse parses an HTTP response from a DeleteV1AuthLinkGoogleWithResponse call
-func ParseDeleteV1AuthLinkGoogleResponse(rsp *http.Response) (*DeleteV1AuthLinkGoogleResponse, error) {
+// ParseDeleteV1AuthLinkGoogleResp parses an HTTP response from a DeleteV1AuthLinkGoogleWithResponse call
+func ParseDeleteV1AuthLinkGoogleResp(rsp *http.Response) (*DeleteV1AuthLinkGoogleResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteV1AuthLinkGoogleResponse{
+	response := &DeleteV1AuthLinkGoogleResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12661,15 +13919,15 @@ func ParseDeleteV1AuthLinkGoogleResponse(rsp *http.Response) (*DeleteV1AuthLinkG
 	return response, nil
 }
 
-// ParsePostV1AuthLinkGoogleResponse parses an HTTP response from a PostV1AuthLinkGoogleWithResponse call
-func ParsePostV1AuthLinkGoogleResponse(rsp *http.Response) (*PostV1AuthLinkGoogleResponse, error) {
+// ParsePostV1AuthLinkGoogleResp parses an HTTP response from a PostV1AuthLinkGoogleWithResponse call
+func ParsePostV1AuthLinkGoogleResp(rsp *http.Response) (*PostV1AuthLinkGoogleResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthLinkGoogleResponse{
+	response := &PostV1AuthLinkGoogleResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12701,15 +13959,15 @@ func ParsePostV1AuthLinkGoogleResponse(rsp *http.Response) (*PostV1AuthLinkGoogl
 	return response, nil
 }
 
-// ParsePostV1AuthLoginResponse parses an HTTP response from a PostV1AuthLoginWithResponse call
-func ParsePostV1AuthLoginResponse(rsp *http.Response) (*PostV1AuthLoginResponse, error) {
+// ParsePostV1AuthLoginResp parses an HTTP response from a PostV1AuthLoginWithResponse call
+func ParsePostV1AuthLoginResp(rsp *http.Response) (*PostV1AuthLoginResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthLoginResponse{
+	response := &PostV1AuthLoginResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12748,15 +14006,15 @@ func ParsePostV1AuthLoginResponse(rsp *http.Response) (*PostV1AuthLoginResponse,
 	return response, nil
 }
 
-// ParsePostV1AuthLogoutResponse parses an HTTP response from a PostV1AuthLogoutWithResponse call
-func ParsePostV1AuthLogoutResponse(rsp *http.Response) (*PostV1AuthLogoutResponse, error) {
+// ParsePostV1AuthLogoutResp parses an HTTP response from a PostV1AuthLogoutWithResponse call
+func ParsePostV1AuthLogoutResp(rsp *http.Response) (*PostV1AuthLogoutResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthLogoutResponse{
+	response := &PostV1AuthLogoutResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12781,15 +14039,15 @@ func ParsePostV1AuthLogoutResponse(rsp *http.Response) (*PostV1AuthLogoutRespons
 	return response, nil
 }
 
-// ParseGetV1AuthMeResponse parses an HTTP response from a GetV1AuthMeWithResponse call
-func ParseGetV1AuthMeResponse(rsp *http.Response) (*GetV1AuthMeResponse, error) {
+// ParseGetV1AuthMeResp parses an HTTP response from a GetV1AuthMeWithResponse call
+func ParseGetV1AuthMeResp(rsp *http.Response) (*GetV1AuthMeResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1AuthMeResponse{
+	response := &GetV1AuthMeResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12814,15 +14072,15 @@ func ParseGetV1AuthMeResponse(rsp *http.Response) (*GetV1AuthMeResponse, error) 
 	return response, nil
 }
 
-// ParsePatchV1AuthMeResponse parses an HTTP response from a PatchV1AuthMeWithResponse call
-func ParsePatchV1AuthMeResponse(rsp *http.Response) (*PatchV1AuthMeResponse, error) {
+// ParsePatchV1AuthMeResp parses an HTTP response from a PatchV1AuthMeWithResponse call
+func ParsePatchV1AuthMeResp(rsp *http.Response) (*PatchV1AuthMeResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PatchV1AuthMeResponse{
+	response := &PatchV1AuthMeResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12847,15 +14105,15 @@ func ParsePatchV1AuthMeResponse(rsp *http.Response) (*PatchV1AuthMeResponse, err
 	return response, nil
 }
 
-// ParsePutV1AuthPasswordResponse parses an HTTP response from a PutV1AuthPasswordWithResponse call
-func ParsePutV1AuthPasswordResponse(rsp *http.Response) (*PutV1AuthPasswordResponse, error) {
+// ParsePutV1AuthPasswordResp parses an HTTP response from a PutV1AuthPasswordWithResponse call
+func ParsePutV1AuthPasswordResp(rsp *http.Response) (*PutV1AuthPasswordResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PutV1AuthPasswordResponse{
+	response := &PutV1AuthPasswordResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12880,15 +14138,15 @@ func ParsePutV1AuthPasswordResponse(rsp *http.Response) (*PutV1AuthPasswordRespo
 	return response, nil
 }
 
-// ParsePostV1AuthPasswordResetConfirmResponse parses an HTTP response from a PostV1AuthPasswordResetConfirmWithResponse call
-func ParsePostV1AuthPasswordResetConfirmResponse(rsp *http.Response) (*PostV1AuthPasswordResetConfirmResponse, error) {
+// ParsePostV1AuthPasswordResetConfirmResp parses an HTTP response from a PostV1AuthPasswordResetConfirmWithResponse call
+func ParsePostV1AuthPasswordResetConfirmResp(rsp *http.Response) (*PostV1AuthPasswordResetConfirmResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthPasswordResetConfirmResponse{
+	response := &PostV1AuthPasswordResetConfirmResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12927,15 +14185,15 @@ func ParsePostV1AuthPasswordResetConfirmResponse(rsp *http.Response) (*PostV1Aut
 	return response, nil
 }
 
-// ParsePostV1AuthPasswordResetRequestResponse parses an HTTP response from a PostV1AuthPasswordResetRequestWithResponse call
-func ParsePostV1AuthPasswordResetRequestResponse(rsp *http.Response) (*PostV1AuthPasswordResetRequestResponse, error) {
+// ParsePostV1AuthPasswordResetRequestResp parses an HTTP response from a PostV1AuthPasswordResetRequestWithResponse call
+func ParsePostV1AuthPasswordResetRequestResp(rsp *http.Response) (*PostV1AuthPasswordResetRequestResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthPasswordResetRequestResponse{
+	response := &PostV1AuthPasswordResetRequestResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -12960,15 +14218,15 @@ func ParsePostV1AuthPasswordResetRequestResponse(rsp *http.Response) (*PostV1Aut
 	return response, nil
 }
 
-// ParsePostV1AuthRefreshResponse parses an HTTP response from a PostV1AuthRefreshWithResponse call
-func ParsePostV1AuthRefreshResponse(rsp *http.Response) (*PostV1AuthRefreshResponse, error) {
+// ParsePostV1AuthRefreshResp parses an HTTP response from a PostV1AuthRefreshWithResponse call
+func ParsePostV1AuthRefreshResp(rsp *http.Response) (*PostV1AuthRefreshResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthRefreshResponse{
+	response := &PostV1AuthRefreshResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13000,15 +14258,15 @@ func ParsePostV1AuthRefreshResponse(rsp *http.Response) (*PostV1AuthRefreshRespo
 	return response, nil
 }
 
-// ParsePostV1AuthRegisterResponse parses an HTTP response from a PostV1AuthRegisterWithResponse call
-func ParsePostV1AuthRegisterResponse(rsp *http.Response) (*PostV1AuthRegisterResponse, error) {
+// ParsePostV1AuthRegisterResp parses an HTTP response from a PostV1AuthRegisterWithResponse call
+func ParsePostV1AuthRegisterResp(rsp *http.Response) (*PostV1AuthRegisterResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthRegisterResponse{
+	response := &PostV1AuthRegisterResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13040,15 +14298,15 @@ func ParsePostV1AuthRegisterResponse(rsp *http.Response) (*PostV1AuthRegisterRes
 	return response, nil
 }
 
-// ParsePostV1AuthResendVerificationResponse parses an HTTP response from a PostV1AuthResendVerificationWithResponse call
-func ParsePostV1AuthResendVerificationResponse(rsp *http.Response) (*PostV1AuthResendVerificationResponse, error) {
+// ParsePostV1AuthResendVerificationResp parses an HTTP response from a PostV1AuthResendVerificationWithResponse call
+func ParsePostV1AuthResendVerificationResp(rsp *http.Response) (*PostV1AuthResendVerificationResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1AuthResendVerificationResponse{
+	response := &PostV1AuthResendVerificationResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13086,7 +14344,7 @@ func ParsePostV1AuthResendVerificationResponse(rsp *http.Response) (*PostV1AuthR
 
 	switch {
 	case rsp.StatusCode == 429:
-		var headers PostV1AuthResendVerificationResponse429Headers
+		var headers PostV1AuthResendVerificationResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13121,15 +14379,15 @@ func ParsePostV1AuthResendVerificationResponse(rsp *http.Response) (*PostV1AuthR
 	return response, nil
 }
 
-// ParseGetV1AuthVerifyResponse parses an HTTP response from a GetV1AuthVerifyWithResponse call
-func ParseGetV1AuthVerifyResponse(rsp *http.Response) (*GetV1AuthVerifyResponse, error) {
+// ParseGetV1AuthVerifyResp parses an HTTP response from a GetV1AuthVerifyWithResponse call
+func ParseGetV1AuthVerifyResp(rsp *http.Response) (*GetV1AuthVerifyResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1AuthVerifyResponse{
+	response := &GetV1AuthVerifyResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13168,15 +14426,15 @@ func ParseGetV1AuthVerifyResponse(rsp *http.Response) (*GetV1AuthVerifyResponse,
 	return response, nil
 }
 
-// ParsePostV1ChatCompletionsResponse parses an HTTP response from a PostV1ChatCompletionsWithResponse call
-func ParsePostV1ChatCompletionsResponse(rsp *http.Response) (*PostV1ChatCompletionsResponse, error) {
+// ParsePostV1ChatCompletionsResp parses an HTTP response from a PostV1ChatCompletionsWithResponse call
+func ParsePostV1ChatCompletionsResp(rsp *http.Response) (*PostV1ChatCompletionsResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1ChatCompletionsResponse{
+	response := &PostV1ChatCompletionsResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13235,7 +14493,7 @@ func ParsePostV1ChatCompletionsResponse(rsp *http.Response) (*PostV1ChatCompleti
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1ChatCompletionsResponse200Headers
+		var headers PostV1ChatCompletionsResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13259,7 +14517,7 @@ func ParsePostV1ChatCompletionsResponse(rsp *http.Response) (*PostV1ChatCompleti
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1ChatCompletionsResponse429Headers
+		var headers PostV1ChatCompletionsResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13294,15 +14552,347 @@ func ParsePostV1ChatCompletionsResponse(rsp *http.Response) (*PostV1ChatCompleti
 	return response, nil
 }
 
-// ParsePostV1EmbedSpeakerResponse parses an HTTP response from a PostV1EmbedSpeakerWithResponse call
-func ParsePostV1EmbedSpeakerResponse(rsp *http.Response) (*PostV1EmbedSpeakerResponse, error) {
+// ParseListDevicesResp parses an HTTP response from a ListDevicesWithResponse call
+func ParseListDevicesResp(rsp *http.Response) (*ListDevicesResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1EmbedSpeakerResponse{
+	response := &ListDevicesResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []DeviceListItem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRegisterDeviceResp parses an HTTP response from a RegisterDeviceWithResponse call
+func ParseRegisterDeviceResp(rsp *http.Response) (*RegisterDeviceResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RegisterDeviceResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Device
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseApproveDeviceResp parses an HTTP response from a ApproveDeviceWithResponse call
+func ParseApproveDeviceResp(rsp *http.Response) (*ApproveDeviceResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ApproveDeviceResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ApproveDeviceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers ApproveDeviceResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseAuthorizeDeviceResp parses an HTTP response from a AuthorizeDeviceWithResponse call
+func ParseAuthorizeDeviceResp(rsp *http.Response) (*AuthorizeDeviceResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AuthorizeDeviceResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers AuthorizeDeviceResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetDeviceAuthorizationStatusResp parses an HTTP response from a GetDeviceAuthorizationStatusWithResponse call
+func ParseGetDeviceAuthorizationStatusResp(rsp *http.Response) (*GetDeviceAuthorizationStatusResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDeviceAuthorizationStatusResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeviceAuthorizationStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRevokeDeviceResp parses an HTTP response from a RevokeDeviceWithResponse call
+func ParseRevokeDeviceResp(rsp *http.Response) (*RevokeDeviceResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RevokeDeviceResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1EmbedSpeakerResp parses an HTTP response from a PostV1EmbedSpeakerWithResponse call
+func ParsePostV1EmbedSpeakerResp(rsp *http.Response) (*PostV1EmbedSpeakerResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1EmbedSpeakerResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13354,7 +14944,7 @@ func ParsePostV1EmbedSpeakerResponse(rsp *http.Response) (*PostV1EmbedSpeakerRes
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1EmbedSpeakerResponse200Headers
+		var headers PostV1EmbedSpeakerResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13378,7 +14968,7 @@ func ParsePostV1EmbedSpeakerResponse(rsp *http.Response) (*PostV1EmbedSpeakerRes
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1EmbedSpeakerResponse429Headers
+		var headers PostV1EmbedSpeakerResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13413,15 +15003,15 @@ func ParsePostV1EmbedSpeakerResponse(rsp *http.Response) (*PostV1EmbedSpeakerRes
 	return response, nil
 }
 
-// ParsePostV1EmbeddingsResponse parses an HTTP response from a PostV1EmbeddingsWithResponse call
-func ParsePostV1EmbeddingsResponse(rsp *http.Response) (*PostV1EmbeddingsResponse, error) {
+// ParsePostV1EmbeddingsResp parses an HTTP response from a PostV1EmbeddingsWithResponse call
+func ParsePostV1EmbeddingsResp(rsp *http.Response) (*PostV1EmbeddingsResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1EmbeddingsResponse{
+	response := &PostV1EmbeddingsResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13473,7 +15063,7 @@ func ParsePostV1EmbeddingsResponse(rsp *http.Response) (*PostV1EmbeddingsRespons
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1EmbeddingsResponse200Headers
+		var headers PostV1EmbeddingsResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13497,7 +15087,7 @@ func ParsePostV1EmbeddingsResponse(rsp *http.Response) (*PostV1EmbeddingsRespons
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1EmbeddingsResponse429Headers
+		var headers PostV1EmbeddingsResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13532,15 +15122,15 @@ func ParsePostV1EmbeddingsResponse(rsp *http.Response) (*PostV1EmbeddingsRespons
 	return response, nil
 }
 
-// ParsePostV1ImagesGenerationsResponse parses an HTTP response from a PostV1ImagesGenerationsWithResponse call
-func ParsePostV1ImagesGenerationsResponse(rsp *http.Response) (*PostV1ImagesGenerationsResponse, error) {
+// ParsePostV1ImagesGenerationsResp parses an HTTP response from a PostV1ImagesGenerationsWithResponse call
+func ParsePostV1ImagesGenerationsResp(rsp *http.Response) (*PostV1ImagesGenerationsResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1ImagesGenerationsResponse{
+	response := &PostV1ImagesGenerationsResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13565,15 +15155,15 @@ func ParsePostV1ImagesGenerationsResponse(rsp *http.Response) (*PostV1ImagesGene
 	return response, nil
 }
 
-// ParseGetV1ModelsResponse parses an HTTP response from a GetV1ModelsWithResponse call
-func ParseGetV1ModelsResponse(rsp *http.Response) (*GetV1ModelsResponse, error) {
+// ParseGetV1ModelsResp parses an HTTP response from a GetV1ModelsWithResponse call
+func ParseGetV1ModelsResp(rsp *http.Response) (*GetV1ModelsResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1ModelsResponse{
+	response := &GetV1ModelsResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13591,15 +15181,15 @@ func ParseGetV1ModelsResponse(rsp *http.Response) (*GetV1ModelsResponse, error) 
 	return response, nil
 }
 
-// ParseGetV1OpenapiJsonResponse parses an HTTP response from a GetV1OpenapiJsonWithResponse call
-func ParseGetV1OpenapiJsonResponse(rsp *http.Response) (*GetV1OpenapiJsonResponse, error) {
+// ParseGetV1OpenapiJsonResp parses an HTTP response from a GetV1OpenapiJsonWithResponse call
+func ParseGetV1OpenapiJsonResp(rsp *http.Response) (*GetV1OpenapiJsonResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1OpenapiJsonResponse{
+	response := &GetV1OpenapiJsonResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13617,15 +15207,15 @@ func ParseGetV1OpenapiJsonResponse(rsp *http.Response) (*GetV1OpenapiJsonRespons
 	return response, nil
 }
 
-// ParseGetV1OpenapiYamlResponse parses an HTTP response from a GetV1OpenapiYamlWithResponse call
-func ParseGetV1OpenapiYamlResponse(rsp *http.Response) (*GetV1OpenapiYamlResponse, error) {
+// ParseGetV1OpenapiYamlResp parses an HTTP response from a GetV1OpenapiYamlWithResponse call
+func ParseGetV1OpenapiYamlResp(rsp *http.Response) (*GetV1OpenapiYamlResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1OpenapiYamlResponse{
+	response := &GetV1OpenapiYamlResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13643,15 +15233,15 @@ func ParseGetV1OpenapiYamlResponse(rsp *http.Response) (*GetV1OpenapiYamlRespons
 	return response, nil
 }
 
-// ParsePostV1RerankResponse parses an HTTP response from a PostV1RerankWithResponse call
-func ParsePostV1RerankResponse(rsp *http.Response) (*PostV1RerankResponse, error) {
+// ParsePostV1RerankResp parses an HTTP response from a PostV1RerankWithResponse call
+func ParsePostV1RerankResp(rsp *http.Response) (*PostV1RerankResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1RerankResponse{
+	response := &PostV1RerankResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13703,7 +15293,7 @@ func ParsePostV1RerankResponse(rsp *http.Response) (*PostV1RerankResponse, error
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1RerankResponse200Headers
+		var headers PostV1RerankResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13727,7 +15317,7 @@ func ParsePostV1RerankResponse(rsp *http.Response) (*PostV1RerankResponse, error
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1RerankResponse429Headers
+		var headers PostV1RerankResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13762,15 +15352,15 @@ func ParsePostV1RerankResponse(rsp *http.Response) (*PostV1RerankResponse, error
 	return response, nil
 }
 
-// ParsePostV1SessionConnectResponse parses an HTTP response from a PostV1SessionConnectWithResponse call
-func ParsePostV1SessionConnectResponse(rsp *http.Response) (*PostV1SessionConnectResponse, error) {
+// ParsePostV1SessionConnectResp parses an HTTP response from a PostV1SessionConnectWithResponse call
+func ParsePostV1SessionConnectResp(rsp *http.Response) (*PostV1SessionConnectResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1SessionConnectResponse{
+	response := &PostV1SessionConnectResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13824,7 +15414,7 @@ func ParsePostV1SessionConnectResponse(rsp *http.Response) (*PostV1SessionConnec
 
 	switch {
 	case rsp.StatusCode == 429:
-		var headers PostV1SessionConnectResponse429Headers
+		var headers PostV1SessionConnectResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -13859,15 +15449,15 @@ func ParsePostV1SessionConnectResponse(rsp *http.Response) (*PostV1SessionConnec
 	return response, nil
 }
 
-// ParsePostV1SessionConnectedResponse parses an HTTP response from a PostV1SessionConnectedWithResponse call
-func ParsePostV1SessionConnectedResponse(rsp *http.Response) (*PostV1SessionConnectedResponse, error) {
+// ParsePostV1SessionConnectedResp parses an HTTP response from a PostV1SessionConnectedWithResponse call
+func ParsePostV1SessionConnectedResp(rsp *http.Response) (*PostV1SessionConnectedResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1SessionConnectedResponse{
+	response := &PostV1SessionConnectedResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13892,15 +15482,15 @@ func ParsePostV1SessionConnectedResponse(rsp *http.Response) (*PostV1SessionConn
 	return response, nil
 }
 
-// ParsePostV1SessionDisconnectResponse parses an HTTP response from a PostV1SessionDisconnectWithResponse call
-func ParsePostV1SessionDisconnectResponse(rsp *http.Response) (*PostV1SessionDisconnectResponse, error) {
+// ParsePostV1SessionDisconnectResp parses an HTTP response from a PostV1SessionDisconnectWithResponse call
+func ParsePostV1SessionDisconnectResp(rsp *http.Response) (*PostV1SessionDisconnectResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1SessionDisconnectResponse{
+	response := &PostV1SessionDisconnectResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13925,15 +15515,15 @@ func ParsePostV1SessionDisconnectResponse(rsp *http.Response) (*PostV1SessionDis
 	return response, nil
 }
 
-// ParseGetV1SubscriptionMeResponse parses an HTTP response from a GetV1SubscriptionMeWithResponse call
-func ParseGetV1SubscriptionMeResponse(rsp *http.Response) (*GetV1SubscriptionMeResponse, error) {
+// ParseGetV1SubscriptionMeResp parses an HTTP response from a GetV1SubscriptionMeWithResponse call
+func ParseGetV1SubscriptionMeResp(rsp *http.Response) (*GetV1SubscriptionMeResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1SubscriptionMeResponse{
+	response := &GetV1SubscriptionMeResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13958,15 +15548,15 @@ func ParseGetV1SubscriptionMeResponse(rsp *http.Response) (*GetV1SubscriptionMeR
 	return response, nil
 }
 
-// ParseGetV1SubscriptionTiersResponse parses an HTTP response from a GetV1SubscriptionTiersWithResponse call
-func ParseGetV1SubscriptionTiersResponse(rsp *http.Response) (*GetV1SubscriptionTiersResponse, error) {
+// ParseGetV1SubscriptionTiersResp parses an HTTP response from a GetV1SubscriptionTiersWithResponse call
+func ParseGetV1SubscriptionTiersResp(rsp *http.Response) (*GetV1SubscriptionTiersResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1SubscriptionTiersResponse{
+	response := &GetV1SubscriptionTiersResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -13984,15 +15574,15 @@ func ParseGetV1SubscriptionTiersResponse(rsp *http.Response) (*GetV1Subscription
 	return response, nil
 }
 
-// ParseGetV1VersionsResponse parses an HTTP response from a GetV1VersionsWithResponse call
-func ParseGetV1VersionsResponse(rsp *http.Response) (*GetV1VersionsResponse, error) {
+// ParseGetV1VersionsResp parses an HTTP response from a GetV1VersionsWithResponse call
+func ParseGetV1VersionsResp(rsp *http.Response) (*GetV1VersionsResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetV1VersionsResponse{
+	response := &GetV1VersionsResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -14017,15 +15607,15 @@ func ParseGetV1VersionsResponse(rsp *http.Response) (*GetV1VersionsResponse, err
 	return response, nil
 }
 
-// ParsePostV1VoiceConvertResponse parses an HTTP response from a PostV1VoiceConvertWithResponse call
-func ParsePostV1VoiceConvertResponse(rsp *http.Response) (*PostV1VoiceConvertResponse, error) {
+// ParsePostV1VoiceConvertResp parses an HTTP response from a PostV1VoiceConvertWithResponse call
+func ParsePostV1VoiceConvertResp(rsp *http.Response) (*PostV1VoiceConvertResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostV1VoiceConvertResponse{
+	response := &PostV1VoiceConvertResp{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -14084,7 +15674,7 @@ func ParsePostV1VoiceConvertResponse(rsp *http.Response) (*PostV1VoiceConvertRes
 
 	switch {
 	case rsp.StatusCode == 200:
-		var headers PostV1VoiceConvertResponse200Headers
+		var headers PostV1VoiceConvertResp200Headers
 		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
@@ -14108,7 +15698,7 @@ func ParsePostV1VoiceConvertResponse(rsp *http.Response) (*PostV1VoiceConvertRes
 		}
 		response.Headers200 = &headers
 	case rsp.StatusCode == 429:
-		var headers PostV1VoiceConvertResponse429Headers
+		var headers PostV1VoiceConvertResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {

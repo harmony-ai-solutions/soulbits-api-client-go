@@ -5,3 +5,11 @@ output: gen/client.go
 generate:
   models: true
   client: true
+output-options:
+  # OperationId-derived response wrappers are named <OperationId><Suffix>
+  # (default "Response"). The suffix is set to "Resp" so the wrapper for
+  # approveDevice (ApproveDeviceResp) does not collide with the
+  # ApproveDeviceResponse schema type — oapi-codegen does not dedupe
+  # wrapper names against schema names (see oapi-codegen README:
+  # "response-type-suffix").
+  response-type-suffix: Resp

@@ -93,6 +93,8 @@ tags:
     description: Current user profile + password change.
   - name: Session
     description: Cloud session lifecycle (connect/disconnect) and platform versions.
+  - name: Devices
+    description: Device registration, authorization, and revocation (D-DEV-04 device authorization gate for cloud sessions).
   - name: Subscription
     description: Subscription tiers and the caller's current subscription.
   - name: Models
@@ -386,6 +388,116 @@ components:
           items: { type: string }
         default: { type: string }
         default_image: { type: string }
+
+    # ---- Devices ----
+    Device:
+      type: object
+      required: [device_id, user_id, platform, push_token, authorized, created_at, updated_at]
+      description: |
+        A registered client device. `push_token`, `authorized_at` and
+        `last_seen_at` are nullable until observed by the server.
+      properties:
+        device_id: { type: string, description: Per-install device identity. }
+        user_id: { type: string, format: uuid }
+        platform:
+          type: string
+          enum: [android, ios, web]
+        push_token:
+          type: string
+          nullable: true
+          description: Push notification token for this install; `null` when push is not registered.
+        authorized: { type: boolean }
+        authorized_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          nullable: true
+          description: When the device was authorized; `null` until authorized.
+        last_seen_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          nullable: true
+        created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+        updated_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    DeviceListItem:
+      type: object
+      required: [device_id, platform, push_token, authorized, created_at, updated_at]
+      description: Device list item — same shape as `Device` minus `user_id` (a caller only ever lists their own devices).
+      properties:
+        device_id: { type: string, description: Per-install device identity. }
+        platform:
+          type: string
+          enum: [android, ios, web]
+        push_token:
+          type: string
+          nullable: true
+        authorized: { type: boolean }
+        authorized_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          nullable: true
+        last_seen_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          nullable: true
+        created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+        updated_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    RegisterDeviceRequest:
+      type: object
+      required: [device_id, platform]
+      description: Register (or refresh) a device install. Omit/`null` `push_token` to clear push registration.
+      properties:
+        device_id: { type: string, description: Per-install device identity (client-generated UUID). }
+        platform:
+          type: string
+          enum: [android, ios, web]
+        push_token:
+          type: string
+          nullable: true
+          description: Push notification token for this install.
+
+    AuthorizeDeviceRequest:
+      type: object
+      required: [device_id]
+      description: |
+        Dual-mode request/verify body. Without `code` the server mails the
+        6-digit code plus the approval button link (202). With `code` the
+        server verifies it and marks the device authorized (200).
+      properties:
+        device_id: { type: string }
+        code:
+          type: string
+          pattern: '^[0-9]{6}$'
+          description: 6-digit email auth code. Omit to request the code + approval link.
+
+    ApproveDeviceRequest:
+      type: object
+      required: [token]
+      description: Redeems the high-entropy approval token from the emailed button URL.
+      properties:
+        token:
+          type: string
+          pattern: '^[A-Za-z0-9_-]{43}$'
+          description: High-entropy base64url approval token (43 chars) from the email button URL.
+
+    ApproveDeviceResponse:
+      type: object
+      required: [message, device_id]
+      properties:
+        message: { type: string }
+        device_id: { type: string }
+
+    DeviceAuthorizationStatus:
+      type: object
+      required: [device_id, authorized, authorization_pending]
+      description: Poll state for the device auth flow — the app polls until `authorized` is true.
+      properties:
+        device_id: { type: string }
+        authorized: { type: boolean }
+        authorization_pending:
+          type: boolean
+          description: True while a code/token pair is outstanding for this device.
 
     # ---- Subscription ----
     TierLimits:
@@ -1662,6 +1774,174 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/VersionsResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ---- Devices ----------------------------------------------------------
+  /v1/devices:
+    post:
+      operationId: registerDevice
+      tags: [Devices]
+      summary: Register or refresh a device
+      description: |
+        Registers a client install (or refreshes an existing one, e.g. a new
+        push token). Devices must be authorized before cloud sessions can be
+        provisioned for them — see `/v1/session/connect` (403
+        `device_authorization_required`) and the `/v1/devices/authorize` flow.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterDeviceRequest" }
+      responses:
+        "200":
+          description: Device registered (or refreshed).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Device" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    get:
+      operationId: listDevices
+      tags: [Devices]
+      summary: List the caller's devices
+      description: Returns the current user's registered devices (no `user_id` per item — they are all the caller's).
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Devices registered to the current user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/DeviceListItem" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/devices/{device_id}:
+    delete:
+      operationId: revokeDevice
+      tags: [Devices]
+      summary: Revoke a device
+      description: Revokes a device's authorization and removes it from the user's device list.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema: { type: string }
+          description: Device identifier to revoke.
+      responses:
+        "204":
+          description: Device revoked.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/StandardError" }
+
+  /v1/devices/authorize:
+    post:
+      operationId: authorizeDevice
+      tags: [Devices]
+      summary: Request an email auth code + approval link, or verify a code
+      description: >
+        Without `code`: mails the user a 6-digit code (fallback manual entry)
+        AND an approval button linking to the portal device-approve page.
+        Returns 202. With `code`: verifies the code and marks the device
+        authorized. Returns 200.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AuthorizeDeviceRequest" }
+      responses:
+        "202":
+          description: Auth code + approval link emailed — device authorization pending.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "200":
+          description: Code verified — device authorized.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/StandardError" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/devices/approve:
+    post:
+      operationId: approveDevice
+      tags: [Devices]
+      summary: Approve a device via emailed approval token
+      description: >
+        Redeems the high-entropy approval token from the email button URL.
+        The authenticated session user must match the user the token was
+        issued for. Marks the device authorized and consumes both pending
+        secrets (code and token).
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ApproveDeviceRequest" }
+      responses:
+        "200":
+          description: Device approved and authorized.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApproveDeviceResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/devices/authorize/status:
+    get:
+      operationId: getDeviceAuthorizationStatus
+      tags: [Devices]
+      summary: Poll device authorization state
+      description: |
+        App-polling endpoint for the device auth flow. Returns whether the
+        device is authorized and whether a code/token pair is still
+        outstanding for it.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: device_id
+          in: query
+          required: true
+          schema: { type: string }
+          description: Device identifier to poll.
+      responses:
+        "200":
+          description: Current device authorization state.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeviceAuthorizationStatus" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/StandardError" }
 
   # ---- Subscription -----------------------------------------------------
   /v1/subscription/tiers:
