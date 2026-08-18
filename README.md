@@ -90,6 +90,40 @@ resp, err := client.TTS(ctx, &gen.TTSRequest{
 })
 ```
 
+### Cloud Session Data Purge
+
+`DeleteSessionData` permanently deletes the authenticated user's cloud-side engine
+data (hard-kills any live session, deletes every S3 version, the beat schedule, and
+the DEK). It is idempotent and destructive — the request requires `Confirm: "DELETE"`.
+
+```go
+result, err := client.DeleteSessionData(ctx, soulbits.DeleteSessionDataRequest{
+    Confirm: "DELETE",
+})
+if err != nil {
+    var confReq *soulbits.ConfirmationRequiredError
+    var snapBusy *soulbits.SnapshotBusyError
+    var purgeIn *soulbits.PurgeInProgressError
+    switch {
+    case errors.As(err, &confReq):
+        // 400 — Confirm must be "DELETE".
+    case errors.As(err, &snapBusy):
+        // 409 — snapshot lease busy, retry after snapBusy.RetryAfterMs.
+    case errors.As(err, &purgeIn):
+        // 409 / 200-in_progress — already running, wait purgeIn.RetryAfterMs.
+    default:
+        // Other API errors.
+    }
+} else if result.IsDeleted() {
+    // 200 deleted — data permanently removed.
+} else if result.IsInProgress() {
+    // 200 in_progress — a purge is already running for this user.
+}
+```
+
+While a purge is in flight, `ConnectSession` returns a `*PurgeInProgressError`
+(409 `purge_in_progress`), and the connection poll loop treats that as terminal.
+
 ### Authentication
 
 ```go
