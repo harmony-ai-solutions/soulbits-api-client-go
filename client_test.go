@@ -88,11 +88,11 @@ func TestClientLoginListModelsChat(t *testing.T) {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode([]map[string]interface{}{
 				{
-					"model_id":    "qwen-35-9b",
+					"model_id":     "qwen-35-9b",
 					"display_name": "Qwen 35B",
-					"model_type":  "llm",
-					"min_tier":    "free",
-					"description": "models.descriptions.qwen-35-9b",
+					"model_type":   "llm",
+					"min_tier":     "free",
+					"description":  "models.descriptions.qwen-35-9b",
 				},
 			})
 

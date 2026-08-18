@@ -379,6 +379,29 @@ components:
       properties:
         status: { type: string, enum: [connected] }
 
+    SessionDataDeleteResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [deleted, in_progress]
+        request_id:
+          type: string
+          description: Present with status=in_progress — the request that owns the running purge.
+        objects_deleted:
+          type: integer
+          description: S3 objects (incl. delete markers) removed — present with status=deleted.
+        versions_deleted:
+          type: integer
+          description: S3 object versions permanently removed — present with status=deleted.
+        beats_removed:
+          type: integer
+          description: due:lifecycle ZSET members removed — present with status=deleted.
+        dek_deleted:
+          type: boolean
+          description: Whether the per-user encryption key was deleted — present with status=deleted.
+
     VersionsResponse:
       type: object
       required: [versions, default, default_image]
@@ -1712,6 +1735,15 @@ paths:
                   error:
                     type: string
                     enum: [device_authorization_required]
+        "409":
+          description: A data purge is in progress for this user — connecting is blocked until it completes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, enum: [purge_in_progress] }
+                  retry_after_ms: { type: integer }
         "429": { $ref: "#/components/responses/RateLimited" }
         "503":
           description: Session provisioning failed — see `failure_reason`.
@@ -1759,6 +1791,69 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/SessionConnectedResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/session/data/delete:
+    post:
+      operationId: deleteSessionData
+      tags: [Session]
+      summary: Purge all cloud-side engine data for the authenticated user
+      description: >
+        Hard-kills any live session for the user (force-stop, no graceful
+        snapshot upload), then permanently deletes ALL versions of the user's
+        engine data from the sessions bucket (sync DB + RAG vectors), removes
+        the user's autonomy beat schedule, and deletes the per-user encryption
+        key. Requires typed confirmation. Idempotent — a second call after a
+        completed purge returns zero counts. While a purge is in flight,
+        /v1/session/connect returns 409 purge_in_progress. Protected by the
+        snapshot lease; returns 409 snapshot_busy if the lease is contended.
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [confirm]
+              properties:
+                confirm:
+                  type: string
+                  enum: [DELETE]
+                  description: Typed confirmation guard against accidental calls.
+      responses:
+        "200":
+          description: Purge complete (status=deleted) or already in progress by another request (status=in_progress).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionDataDeleteResponse" }
+        "400":
+          description: Missing or wrong confirmation string.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, enum: [confirmation_required] }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409":
+          description: Snapshot lease busy — retry after retry_after_ms.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, enum: [snapshot_busy] }
+                  retry_after_ms: { type: integer }
+        "429": { $ref: "#/components/responses/RateLimited" }
+        "503":
+          description: Task kill could not be confirmed — the resume sweeper will finish the purge.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, enum: [kill_unconfirmed] }
 
   /v1/versions:
     get:

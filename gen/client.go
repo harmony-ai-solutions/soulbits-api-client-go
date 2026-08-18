@@ -413,6 +413,24 @@ func (e SessionConnectedResponseStatus) Valid() bool {
 	}
 }
 
+// Defines values for SessionDataDeleteResponseStatus.
+const (
+	Deleted    SessionDataDeleteResponseStatus = "deleted"
+	InProgress SessionDataDeleteResponseStatus = "in_progress"
+)
+
+// Valid indicates whether the value is a known member of the SessionDataDeleteResponseStatus enum.
+func (e SessionDataDeleteResponseStatus) Valid() bool {
+	switch e {
+	case Deleted:
+		return true
+	case InProgress:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SessionDisconnectResponseStatus.
 const (
 	GracePeriod SessionDisconnectResponseStatus = "grace_period"
@@ -479,6 +497,81 @@ const (
 func (e PostV1SessionConnect403JSONResponseBodyError) Valid() bool {
 	switch e {
 	case DeviceAuthorizationRequired:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PostV1SessionConnect409JSONResponseBodyError.
+const (
+	PurgeInProgress PostV1SessionConnect409JSONResponseBodyError = "purge_in_progress"
+)
+
+// Valid indicates whether the value is a known member of the PostV1SessionConnect409JSONResponseBodyError enum.
+func (e PostV1SessionConnect409JSONResponseBodyError) Valid() bool {
+	switch e {
+	case PurgeInProgress:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeleteSessionDataJSONBodyConfirm.
+const (
+	DELETE DeleteSessionDataJSONBodyConfirm = "DELETE"
+)
+
+// Valid indicates whether the value is a known member of the DeleteSessionDataJSONBodyConfirm enum.
+func (e DeleteSessionDataJSONBodyConfirm) Valid() bool {
+	switch e {
+	case DELETE:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeleteSessionData400JSONResponseBodyError.
+const (
+	ConfirmationRequired DeleteSessionData400JSONResponseBodyError = "confirmation_required"
+)
+
+// Valid indicates whether the value is a known member of the DeleteSessionData400JSONResponseBodyError enum.
+func (e DeleteSessionData400JSONResponseBodyError) Valid() bool {
+	switch e {
+	case ConfirmationRequired:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeleteSessionData409JSONResponseBodyError.
+const (
+	SnapshotBusy DeleteSessionData409JSONResponseBodyError = "snapshot_busy"
+)
+
+// Valid indicates whether the value is a known member of the DeleteSessionData409JSONResponseBodyError enum.
+func (e DeleteSessionData409JSONResponseBodyError) Valid() bool {
+	switch e {
+	case SnapshotBusy:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeleteSessionData503JSONResponseBodyError.
+const (
+	KillUnconfirmed DeleteSessionData503JSONResponseBodyError = "kill_unconfirmed"
+)
+
+// Valid indicates whether the value is a known member of the DeleteSessionData503JSONResponseBodyError enum.
+func (e DeleteSessionData503JSONResponseBodyError) Valid() bool {
+	switch e {
+	case KillUnconfirmed:
 		return true
 	default:
 		return false
@@ -1064,6 +1157,28 @@ type SessionConnectedResponse struct {
 // SessionConnectedResponseStatus defines model for SessionConnectedResponse.Status.
 type SessionConnectedResponseStatus string
 
+// SessionDataDeleteResponse defines model for SessionDataDeleteResponse.
+type SessionDataDeleteResponse struct {
+	// BeatsRemoved due:lifecycle ZSET members removed — present with status=deleted.
+	BeatsRemoved *int `json:"beats_removed,omitempty"`
+
+	// DekDeleted Whether the per-user encryption key was deleted — present with status=deleted.
+	DekDeleted *bool `json:"dek_deleted,omitempty"`
+
+	// ObjectsDeleted S3 objects (incl. delete markers) removed — present with status=deleted.
+	ObjectsDeleted *int `json:"objects_deleted,omitempty"`
+
+	// RequestId Present with status=in_progress — the request that owns the running purge.
+	RequestId *string                         `json:"request_id,omitempty"`
+	Status    SessionDataDeleteResponseStatus `json:"status"`
+
+	// VersionsDeleted S3 object versions permanently removed — present with status=deleted.
+	VersionsDeleted *int `json:"versions_deleted,omitempty"`
+}
+
+// SessionDataDeleteResponseStatus defines model for SessionDataDeleteResponse.Status.
+type SessionDataDeleteResponseStatus string
+
 // SessionDisconnectResponse defines model for SessionDisconnectResponse.
 type SessionDisconnectResponse struct {
 	// GracePeriodUntil RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
@@ -1477,6 +1592,27 @@ type PostV1SessionConnectJSONBody struct {
 // PostV1SessionConnect403JSONResponseBodyError defines parameters for PostV1SessionConnect.
 type PostV1SessionConnect403JSONResponseBodyError string
 
+// PostV1SessionConnect409JSONResponseBodyError defines parameters for PostV1SessionConnect.
+type PostV1SessionConnect409JSONResponseBodyError string
+
+// DeleteSessionDataJSONBody defines parameters for DeleteSessionData.
+type DeleteSessionDataJSONBody struct {
+	// Confirm Typed confirmation guard against accidental calls.
+	Confirm DeleteSessionDataJSONBodyConfirm `json:"confirm"`
+}
+
+// DeleteSessionDataJSONBodyConfirm defines parameters for DeleteSessionData.
+type DeleteSessionDataJSONBodyConfirm string
+
+// DeleteSessionData400JSONResponseBodyError defines parameters for DeleteSessionData.
+type DeleteSessionData400JSONResponseBodyError string
+
+// DeleteSessionData409JSONResponseBodyError defines parameters for DeleteSessionData.
+type DeleteSessionData409JSONResponseBodyError string
+
+// DeleteSessionData503JSONResponseBodyError defines parameters for DeleteSessionData.
+type DeleteSessionData503JSONResponseBodyError string
+
 // PostV1SessionDisconnectJSONBody defines parameters for PostV1SessionDisconnect.
 type PostV1SessionDisconnectJSONBody struct {
 	Reason    *string             `json:"reason,omitempty"`
@@ -1571,6 +1707,9 @@ type PostV1RerankJSONRequestBody = RerankRequest
 
 // PostV1SessionConnectJSONRequestBody defines body for PostV1SessionConnect for application/json ContentType.
 type PostV1SessionConnectJSONRequestBody PostV1SessionConnectJSONBody
+
+// DeleteSessionDataJSONRequestBody defines body for DeleteSessionData for application/json ContentType.
+type DeleteSessionDataJSONRequestBody DeleteSessionDataJSONBody
 
 // PostV1SessionDisconnectJSONRequestBody defines body for PostV1SessionDisconnect for application/json ContentType.
 type PostV1SessionDisconnectJSONRequestBody PostV1SessionDisconnectJSONBody
@@ -4764,6 +4903,24 @@ type ClientInterface interface {
 	// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
 	PostV1SessionConnected(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteSessionDataWithBody Purge all cloud-side engine data for the authenticated user
+	//
+	// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
+	DeleteSessionDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteSessionData Purge all cloud-side engine data for the authenticated user
+	//
+	// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
+	DeleteSessionData(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostV1SessionDisconnectWithBody Disconnect a cloud session (enter grace period)
 	//
 	// Transitions the session to a 5-minute grace period, then schedules cleanup.
@@ -6169,6 +6326,44 @@ func (c *Client) PostV1SessionConnect(ctx context.Context, body PostV1SessionCon
 // Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
 func (c *Client) PostV1SessionConnected(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV1SessionConnectedRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteSessionDataWithBody Purge all cloud-side engine data for the authenticated user
+//
+// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
+func (c *Client) DeleteSessionDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSessionDataRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteSessionData Purge all cloud-side engine data for the authenticated user
+//
+// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
+func (c *Client) DeleteSessionData(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSessionDataRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -7924,6 +8119,46 @@ func NewPostV1SessionConnectedRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewDeleteSessionDataRequest calls the generic DeleteSessionData builder with application/json body
+func NewDeleteSessionDataRequest(server string, body DeleteSessionDataJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewDeleteSessionDataRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewDeleteSessionDataRequestWithBody constructs an http.Request for the DeleteSessionData method, with any body, and a specified content type
+func NewDeleteSessionDataRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/session/data/delete")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewPostV1SessionDisconnectRequest calls the generic PostV1SessionDisconnect builder with application/json body
 func NewPostV1SessionDisconnectRequest(server string, body PostV1SessionDisconnectJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -8807,6 +9042,24 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
 	PostV1SessionConnectedWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1SessionConnectedResp, error)
+
+	// DeleteSessionDataWithBodyWithResponse Purge all cloud-side engine data for the authenticated user
+	//
+	// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
+	DeleteSessionDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error)
+
+	// DeleteSessionDataWithResponse Purge all cloud-side engine data for the authenticated user
+	//
+	// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
+	DeleteSessionDataWithResponse(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error)
 
 	// PostV1SessionDisconnectWithBodyWithResponse Disconnect a cloud session (enter grace period)
 	//
@@ -11418,6 +11671,11 @@ type PostV1SessionConnectResp struct {
 	JSON403 *struct {
 		Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
 	}
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *struct {
+		Error        *PostV1SessionConnect409JSONResponseBodyError `json:"error,omitempty"`
+		RetryAfterMs *int                                          `json:"retry_after_ms,omitempty"`
+	}
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
 	// JSON503 the response for an HTTP 503 `application/json` response
@@ -11446,6 +11704,14 @@ func (r PostV1SessionConnectResp) GetJSON403() *struct {
 	Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
 } {
 	return r.JSON403
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PostV1SessionConnectResp) GetJSON409() *struct {
+	Error        *PostV1SessionConnect409JSONResponseBodyError `json:"error,omitempty"`
+	RetryAfterMs *int                                          `json:"retry_after_ms,omitempty"`
+} {
+	return r.JSON409
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -11529,6 +11795,106 @@ func (r PostV1SessionConnectedResp) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PostV1SessionConnectedResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// DeleteSessionDataResp429Headers the declared response headers of an HTTP 429 response for DeleteSessionData
+type DeleteSessionDataResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type DeleteSessionDataResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SessionDataDeleteResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *struct {
+		Error *DeleteSessionData400JSONResponseBodyError `json:"error,omitempty"`
+	}
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *struct {
+		Error        *DeleteSessionData409JSONResponseBodyError `json:"error,omitempty"`
+		RetryAfterMs *int                                       `json:"retry_after_ms,omitempty"`
+	}
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *struct {
+		Error *DeleteSessionData503JSONResponseBodyError `json:"error,omitempty"`
+	}
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *DeleteSessionDataResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteSessionDataResp) GetJSON200() *SessionDataDeleteResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteSessionDataResp) GetJSON400() *struct {
+	Error *DeleteSessionData400JSONResponseBodyError `json:"error,omitempty"`
+} {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteSessionDataResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DeleteSessionDataResp) GetJSON409() *struct {
+	Error        *DeleteSessionData409JSONResponseBodyError `json:"error,omitempty"`
+	RetryAfterMs *int                                       `json:"retry_after_ms,omitempty"`
+} {
+	return r.JSON409
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r DeleteSessionDataResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r DeleteSessionDataResp) GetJSON503() *struct {
+	Error *DeleteSessionData503JSONResponseBodyError `json:"error,omitempty"`
+} {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteSessionDataResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteSessionDataResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteSessionDataResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteSessionDataResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -12924,6 +13290,36 @@ func (c *ClientWithResponses) PostV1SessionConnectedWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParsePostV1SessionConnectedResp(rsp)
+}
+
+// DeleteSessionDataWithBodyWithResponse Purge all cloud-side engine data for the authenticated user
+//
+// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
+func (c *ClientWithResponses) DeleteSessionDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error) {
+	rsp, err := c.DeleteSessionDataWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteSessionDataResp(rsp)
+}
+
+// DeleteSessionDataWithResponse Purge all cloud-side engine data for the authenticated user
+//
+// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
+func (c *ClientWithResponses) DeleteSessionDataWithResponse(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error) {
+	rsp, err := c.DeleteSessionData(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteSessionDataResp(rsp)
 }
 
 // PostV1SessionDisconnectWithBodyWithResponse Disconnect a cloud session (enter grace period)
@@ -15396,6 +15792,16 @@ func ParsePostV1SessionConnectResp(rsp *http.Response) (*PostV1SessionConnectRes
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest struct {
+			Error        *PostV1SessionConnect409JSONResponseBodyError `json:"error,omitempty"`
+			RetryAfterMs *int                                          `json:"retry_after_ms,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest RateLimited
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -15477,6 +15883,108 @@ func ParsePostV1SessionConnectedResp(rsp *http.Response) (*PostV1SessionConnecte
 		}
 		response.JSON401 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseDeleteSessionDataResp parses an HTTP response from a DeleteSessionDataWithResponse call
+func ParseDeleteSessionDataResp(rsp *http.Response) (*DeleteSessionDataResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteSessionDataResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SessionDataDeleteResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Error *DeleteSessionData400JSONResponseBodyError `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest struct {
+			Error        *DeleteSessionData409JSONResponseBodyError `json:"error,omitempty"`
+			RetryAfterMs *int                                       `json:"retry_after_ms,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest struct {
+			Error *DeleteSessionData503JSONResponseBodyError `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers DeleteSessionDataResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
 	}
 
 	return response, nil

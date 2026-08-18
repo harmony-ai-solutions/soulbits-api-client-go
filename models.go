@@ -62,16 +62,16 @@ type ModelFilter struct {
 // Validate returns an error if the filter has invalid values.
 func (f *ModelFilter) Validate() error {
 	validTypes := map[gen.ModelEntryModelType]bool{
-		gen.ModelEntryModelTypeLlm:              true,
-		gen.ModelEntryModelTypeTts:              true,
-		gen.ModelEntryModelTypeStt:              true,
-		gen.ModelEntryModelTypeVad:              true,
-		gen.ModelEntryModelTypeImage:            true,
-		gen.ModelEntryModelTypeEmbeddings:       true,
-		gen.ModelEntryModelTypeRerank:           true,
-		gen.ModelEntryModelTypeVoiceEmbed:       true,
-		gen.ModelEntryModelTypeAudioConversion:   true,
-		gen.ModelEntryModelTypeVoiceConversion:   true,
+		gen.ModelEntryModelTypeLlm:             true,
+		gen.ModelEntryModelTypeTts:             true,
+		gen.ModelEntryModelTypeStt:             true,
+		gen.ModelEntryModelTypeVad:             true,
+		gen.ModelEntryModelTypeImage:           true,
+		gen.ModelEntryModelTypeEmbeddings:      true,
+		gen.ModelEntryModelTypeRerank:          true,
+		gen.ModelEntryModelTypeVoiceEmbed:      true,
+		gen.ModelEntryModelTypeAudioConversion: true,
+		gen.ModelEntryModelTypeVoiceConversion: true,
 	}
 	if f.ModelType != "" && !validTypes[f.ModelType] {
 		return fmt.Errorf("invalid model type: %q", f.ModelType)

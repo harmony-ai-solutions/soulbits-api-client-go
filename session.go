@@ -2,6 +2,7 @@ package soulbits
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -102,6 +103,20 @@ func (c *Client) ConnectSession(ctx context.Context, req ConnectSessionRequest) 
 		// D-DEV-04 device authorization gate — terminal, not retryable.
 		return nil, &DeviceAuthRequiredError{}
 
+	case http.StatusConflict:
+		// A data purge is in progress for this user — connecting is blocked
+		// until the purge completes. Terminal, not retryable by the poll loop.
+		if resp.JSON409 != nil && resp.JSON409.Error != nil &&
+			*resp.JSON409.Error == gen.PurgeInProgress {
+			retry := 0
+			if resp.JSON409.RetryAfterMs != nil {
+				retry = *resp.JSON409.RetryAfterMs
+			}
+			return nil, &PurgeInProgressError{RetryAfterMs: retry}
+		}
+		// Unmapped 409 body — fall through to the generic error path.
+		return nil, responseError(resp.Body, resp.HTTPResponse)
+
 	case http.StatusServiceUnavailable:
 		// Session provisioning failed.
 		if resp.JSON503 == nil {
@@ -175,6 +190,13 @@ func (c *Client) ConnectSessionPollWithConfig(ctx context.Context, req ConnectSe
 	for attempt := 0; attempt <= cfg.MaxRetries; attempt++ {
 		result, err := c.ConnectSession(ctx, req)
 		if err != nil {
+			// A *PurgeInProgressError is terminal for the poll loop —
+			// connecting is blocked until the purge completes, so polling
+			// cannot make progress. Return it immediately.
+			var purgeErr *PurgeInProgressError
+			if errors.As(err, &purgeErr) {
+				return nil, err
+			}
 			return nil, err
 		}
 
@@ -216,6 +238,106 @@ func (c *Client) ConnectSessionPollWithConfig(ctx context.Context, req ConnectSe
 	}
 
 	return nil, fmt.Errorf("session provisioning failed after %d retries", cfg.MaxRetries)
+}
+
+// PurgeInProgressError indicates a data purge is active for the user
+// (connect is blocked / delete is mid-flight on another request).
+type PurgeInProgressError struct {
+	// RetryAfterMs is the server-recommended delay before retrying.
+	RetryAfterMs int
+}
+
+func (e *PurgeInProgressError) Error() string { return "purge_in_progress" }
+
+// SnapshotBusyError indicates the snapshot lease was contended — retry shortly.
+type SnapshotBusyError struct {
+	// RetryAfterMs is the server-recommended delay before retrying.
+	RetryAfterMs int
+}
+
+func (e *SnapshotBusyError) Error() string { return "snapshot_busy" }
+
+// ConfirmationRequiredError indicates the purge confirmation string was
+// missing or wrong — DeleteSessionDataRequest.Confirm must be "DELETE".
+type ConfirmationRequiredError struct{}
+
+func (e *ConfirmationRequiredError) Error() string { return "confirmation_required" }
+
+// DeleteSessionDataRequest holds parameters for the data purge.
+type DeleteSessionDataRequest struct {
+	// Confirm is the typed confirmation guard — must be "DELETE".
+	Confirm string
+}
+
+// DeleteSessionDataResult wraps the purge response.
+type DeleteSessionDataResult struct {
+	*gen.SessionDataDeleteResponse
+}
+
+// IsInProgress returns true if a purge is currently running for the user
+// (a concurrent request owns it — the caller may wait or retry later).
+func (r *DeleteSessionDataResult) IsInProgress() bool {
+	return r != nil && r.Status == gen.InProgress
+}
+
+// IsDeleted returns true if the purge completed and the user's cloud-side
+// engine data has been permanently removed.
+func (r *DeleteSessionDataResult) IsDeleted() bool {
+	return r != nil && r.Status == gen.Deleted
+}
+
+// DeleteSessionData purges the user's cloud-side engine data (hard-kills any
+// live session, deletes ALL S3 versions, beat schedule, and DEK).
+// Idempotent; returns *PurgeInProgressError (200 in_progress or 409) and
+// *SnapshotBusyError (409) for typed retry handling.
+func (c *Client) DeleteSessionData(ctx context.Context, req DeleteSessionDataRequest) (*DeleteSessionDataResult, error) {
+	body := gen.DeleteSessionDataJSONRequestBody(gen.DeleteSessionDataJSONBody{
+		Confirm: gen.DeleteSessionDataJSONBodyConfirm(req.Confirm),
+	})
+	resp, err := c.cloudGen.DeleteSessionDataWithResponse(ctx, body)
+	if err != nil {
+		return nil, fmt.Errorf("delete session data request: %w", err)
+	}
+
+	switch resp.HTTPResponse.StatusCode {
+	case http.StatusOK:
+		// Both status values ("deleted" and "in_progress") map to a success
+		// result with a nil error — callers use IsInProgress()/IsDeleted().
+		if resp.JSON200 == nil {
+			return nil, fmt.Errorf("delete session data: 200 response with empty body")
+		}
+		return &DeleteSessionDataResult{
+			SessionDataDeleteResponse: resp.JSON200,
+		}, nil
+
+	case http.StatusBadRequest:
+		// Missing or wrong confirmation string.
+		return nil, &ConfirmationRequiredError{}
+
+	case http.StatusConflict:
+		// Snapshot lease contended (snapshot_busy) or purge mid-flight
+		// (purge_in_progress) — both carry retry_after_ms.
+		if resp.JSON409 == nil || resp.JSON409.Error == nil {
+			return nil, responseError(resp.Body, resp.HTTPResponse)
+		}
+		retry := 0
+		if resp.JSON409.RetryAfterMs != nil {
+			retry = *resp.JSON409.RetryAfterMs
+		}
+		switch *resp.JSON409.Error {
+		case gen.SnapshotBusy:
+			return nil, &SnapshotBusyError{RetryAfterMs: retry}
+		case "purge_in_progress":
+			// Returning this on 409 keeps parity with connect's 409 handling
+			// for callers that issue concurrent purges.
+			return nil, &PurgeInProgressError{RetryAfterMs: retry}
+		}
+		// Unmapped 409 body — fall through to the generic error path.
+		return nil, responseError(resp.Body, resp.HTTPResponse)
+
+	default:
+		return nil, responseError(resp.Body, resp.HTTPResponse)
+	}
 }
 
 // coalesceStr returns the first non-empty string, or the fallback.
