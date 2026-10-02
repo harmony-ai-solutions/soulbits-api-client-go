@@ -251,7 +251,10 @@ components:
       description: |
         Error envelope. The exact field set varies slightly by service:
           * Inference gateway: `{ "error": "<code>", "message": "<text>" }`
-          * Auth-service:      `{ "error": "<message>" }`
+          * Auth-service:      `{ "error": "<message>" }` — errors that need
+            client branching (e.g. the device-auth flow) instead use the
+            gateway shape: `{ "error": "<code>", "message": "<text>" }`
+            with a stable code such as `device_not_registered`.
           * Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
         All variants validate against this schema (extra fields allowed).
       properties:
@@ -274,9 +277,9 @@ components:
         required_tier:
           type: string
           description: Present on 402 — the minimum tier required.
-        soul_credits_available:
+        coins_available:
           type: integer
-          description: Present on 402 — remaining Soul Credits.
+          description: Present on 402 — remaining coins.
         task_id:
           type: string
           description: Present on 504 gateway_timeout — for debugging.
@@ -299,11 +302,14 @@ components:
     # ---- Auth: profile ----
     UserProfile:
       type: object
-      required: [id, email, display_name, email_verified, created_at]
+      required: [id, email, display_name, avatar_url, email_verified, created_at]
       properties:
         id: { type: string, format: uuid }
         email: { type: string, format: email }
         display_name: { type: string }
+        avatar_url:
+          type: string
+          description: User profile picture as a data URL (`data:image/...;base64,...`) or external URL. Empty string when unset.
         email_verified: { type: boolean }
         created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
 
@@ -382,25 +388,99 @@ components:
     SessionDataDeleteResponse:
       type: object
       required: [status]
+      description: >
+        Async purge initiation. The purge runs in the background; poll
+        `GET /v1/session/data/delete/status` for the terminal outcome
+        ("deleted" or "failed").
       properties:
         status:
           type: string
-          enum: [deleted, in_progress]
+          enum: [in_progress]
         request_id:
           type: string
-          description: Present with status=in_progress — the request that owns the running purge.
-        objects_deleted:
-          type: integer
-          description: S3 objects (incl. delete markers) removed — present with status=deleted.
-        versions_deleted:
-          type: integer
-          description: S3 object versions permanently removed — present with status=deleted.
-        beats_removed:
-          type: integer
-          description: due:lifecycle ZSET members removed — present with status=deleted.
-        dek_deleted:
-          type: boolean
-          description: Whether the per-user encryption key was deleted — present with status=deleted.
+          description: Poll identifier — echoed by the status endpoint while the run is in flight.
+
+    SessionDataDeleteStatusResponse:
+      oneOf:
+        - type: object
+          required: [status, phase, request_id, attempts]
+          description: >
+            A purge is active (flag set) — the run is in flight or stalled.
+            Flag presence wins over the terminal tombstone, so a failed run
+            still being retried by the sweeper reports in_progress.
+          properties:
+            status:
+              type: string
+              enum: [in_progress]
+            phase:
+              type: string
+              description: Coarse purge phase (kill, routing, s3, beats, dek, done).
+            request_id:
+              type: string
+            attempts:
+              type: integer
+              description: Sweeper resume attempts so far.
+        - type: object
+          required: [status, request_id, attempts, objects_deleted, versions_deleted, beats_removed, dek_deleted, finished_at]
+          description: Terminal success — all cloud data permanently deleted; the user can connect again.
+          properties:
+            status:
+              type: string
+              enum: [deleted]
+            request_id:
+              type: string
+            attempts:
+              type: integer
+            objects_deleted:
+              type: integer
+              description: S3 objects (incl. delete markers) removed.
+            versions_deleted:
+              type: integer
+              description: S3 object versions permanently removed.
+            beats_removed:
+              type: integer
+              description: due:lifecycle ZSET members removed.
+            dek_deleted:
+              type: boolean
+              description: Whether the per-user encryption key was deleted.
+            finished_at:
+              type: integer
+              description: Unix seconds when the purge finished.
+        - type: object
+          required: [status, request_id, attempts, error, objects_deleted, versions_deleted, beats_removed, dek_deleted, finished_at]
+          description: >
+            Terminal failure — the resume sweeper gave up on the purge; the
+            flag was cleared (user unblocked) but deletion was NOT guaranteed.
+            Retry the delete. Counters are always serialized (zero here).
+          properties:
+            status:
+              type: string
+              enum: [failed]
+            request_id:
+              type: string
+            attempts:
+              type: integer
+            error:
+              type: string
+              description: Failure reason (e.g. "attempt cap reached").
+            objects_deleted:
+              type: integer
+            versions_deleted:
+              type: integer
+            beats_removed:
+              type: integer
+            dek_deleted:
+              type: boolean
+            finished_at:
+              type: integer
+              description: Unix seconds when the purge gave up.
+        - type: object
+          required: [status]
+          description: No purge flag and no terminal result — nothing running or remembered.
+          properties:
+            status:
+              type: string
+              enum: [none]
 
     VersionsResponse:
       type: object
@@ -1487,7 +1567,7 @@ paths:
     patch:
       tags: [Account]
       summary: Update the current user profile
-      description: Partial update — only `display_name` is mutable currently.
+      description: Partial update — `display_name` and `avatar_url` are mutable.
       security:
         - paseto: []
       servers:
@@ -1502,6 +1582,9 @@ paths:
               required: [display_name]
               properties:
                 display_name: { type: string }
+                avatar_url:
+                  type: string
+                  description: Profile picture as a data URL (`data:image/...;base64,...`) or external URL. To remove the picture, send an empty string.
       responses:
         "200":
           description: Updated profile.
@@ -1796,16 +1879,22 @@ paths:
     post:
       operationId: deleteSessionData
       tags: [Session]
-      summary: Purge all cloud-side engine data for the authenticated user
+      summary: Purge all cloud-side engine data for the authenticated user (async)
       description: >
-        Hard-kills any live session for the user (force-stop, no graceful
-        snapshot upload), then permanently deletes ALL versions of the user's
-        engine data from the sessions bucket (sync DB + RAG vectors), removes
-        the user's autonomy beat schedule, and deletes the per-user encryption
-        key. Requires typed confirmation. Idempotent — a second call after a
-        completed purge returns zero counts. While a purge is in flight,
-        /v1/session/connect returns 409 purge_in_progress. Protected by the
-        snapshot lease; returns 409 snapshot_busy if the lease is contended.
+        Starts an asynchronous purge: hard-kills any live session for the
+        user (force-stop, no graceful snapshot upload), then permanently
+        deletes ALL versions of the user's engine data from the sessions
+        bucket (sync DB + RAG vectors), removes the user's autonomy beat
+        schedule, and deletes the per-user encryption key — all in the
+        background. Requires typed confirmation. Returns 202 Accepted
+        immediately with a request_id; poll
+        GET /v1/session/data/delete/status for the terminal outcome
+        ("deleted" with counters, or "failed"). Idempotent — a second call
+        after a completed purge restarts an empty (zero-count) purge. While a
+        purge is in flight, /v1/session/connect returns 409
+        purge_in_progress. The purge holds the snapshot lease before it
+        starts; a contended lease returns 409 snapshot_busy (the client
+        auto-retries).
       servers:
         - url: https://beta.cloud.soulbits.app
         - url: https://cloud.soulbits.app
@@ -1822,8 +1911,13 @@ paths:
                   enum: [DELETE]
                   description: Typed confirmation guard against accidental calls.
       responses:
+        "202":
+          description: Purge accepted and running in the background. Poll GET /v1/session/data/delete/status with the request_id.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionDataDeleteResponse" }
         "200":
-          description: Purge complete (status=deleted) or already in progress by another request (status=in_progress).
+          description: Already in progress by another request — the same in_progress shape as 202.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/SessionDataDeleteResponse" }
@@ -1846,14 +1940,42 @@ paths:
                   error: { type: string, enum: [snapshot_busy] }
                   retry_after_ms: { type: integer }
         "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/session/data/delete/status:
+    get:
+      operationId: getSessionDataDeleteStatus
+      tags: [Session]
+      summary: Poll the status of the authenticated user's data purge
+      description: >
+        Reports the current purge state. 200 always (after auth) with one of
+        four shapes: in_progress (flag set — purge active or stalled, with
+        phase/request_id/attempts), deleted (terminal success, with the S3 /
+        beat / DEK counters from the result tombstone), failed (terminal
+        failure — the sweeper gave up; the user is unblocked but the data was
+        not guaranteed deleted; retry the delete), or none (nothing running or
+        remembered). Flag presence wins over the terminal tombstone: while a
+        failed run is still flagged for the sweeper the report stays
+        in_progress.
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Purge state (in_progress | deleted | failed | none).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionDataDeleteStatusResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
         "503":
-          description: Task kill could not be confirmed — the resume sweeper will finish the purge.
+          description: Purge state temporarily unavailable (Valkey down) — retry.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error: { type: string, enum: [kill_unconfirmed] }
+                  error_code: { type: string, enum: [service_unavailable] }
+                  message: { type: string }
 
   /v1/versions:
     get:
@@ -1940,7 +2062,11 @@ paths:
         "204":
           description: Device revoked.
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/StandardError" }
+        "404":
+          description: 'Device not registered for this user — `error: device_not_registered` (the app re-registers and retries once).'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
 
   /v1/devices/authorize:
     post:
@@ -1975,7 +2101,11 @@ paths:
               schema: { $ref: "#/components/schemas/Message" }
         "400": { $ref: "#/components/responses/StandardError" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/StandardError" }
+        "404":
+          description: 'Device not registered for this user — `error: device_not_registered` (the app re-registers and retries once).'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
         "429": { $ref: "#/components/responses/RateLimited" }
 
   /v1/devices/approve:
@@ -2036,7 +2166,11 @@ paths:
               schema: { $ref: "#/components/schemas/DeviceAuthorizationStatus" }
         "400": { $ref: "#/components/responses/StandardError" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/StandardError" }
+        "404":
+          description: 'Device not registered for this user — `error: device_not_registered` (the app re-registers and retries once).'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
 
   # ---- Subscription -----------------------------------------------------
   /v1/subscription/tiers:
@@ -2442,8 +2576,8 @@ paths:
         and **no image model is present in the catalog**. Requests will fail
         (gateway timeout or 5xx). This endpoint will be re-enabled once an
         image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-        (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-        Credits → 402.
+        (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+        402.
       deprecated: true
       servers:
         - url: https://beta.api.soulbits.app
@@ -2460,7 +2594,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
         "402":
-          description: Quota exceeded (when re-enabled — upgrade or buy Soul Credits).
+          description: Quota exceeded (when re-enabled — upgrade or buy coins).
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }

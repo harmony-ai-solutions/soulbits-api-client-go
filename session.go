@@ -269,27 +269,35 @@ type DeleteSessionDataRequest struct {
 	Confirm string
 }
 
-// DeleteSessionDataResult wraps the purge response.
+// DeleteSessionDataResult wraps the purge initiation response. The purge is
+// asynchronous: this always carries status=in_progress with a request_id —
+// poll DeleteSessionDataStatus for the terminal outcome ("deleted"/"failed").
 type DeleteSessionDataResult struct {
 	*gen.SessionDataDeleteResponse
 }
 
-// IsInProgress returns true if a purge is currently running for the user
-// (a concurrent request owns it — the caller may wait or retry later).
+// IsInProgress returns true — 202/200 from POST /v1/session/data/delete are
+// always in_progress (the purge runs in the background).
 func (r *DeleteSessionDataResult) IsInProgress() bool {
-	return r != nil && r.Status == gen.InProgress
+	return r != nil && r.Status == gen.SessionDataDeleteResponseStatusInProgress
 }
 
-// IsDeleted returns true if the purge completed and the user's cloud-side
-// engine data has been permanently removed.
-func (r *DeleteSessionDataResult) IsDeleted() bool {
-	return r != nil && r.Status == gen.Deleted
+// RequestID returns the purge request_id used to poll the status endpoint,
+// or "" when absent.
+func (r *DeleteSessionDataResult) RequestID() string {
+	if r == nil || r.RequestId == nil {
+		return ""
+	}
+	return *r.RequestId
 }
 
 // DeleteSessionData purges the user's cloud-side engine data (hard-kills any
-// live session, deletes ALL S3 versions, beat schedule, and DEK).
-// Idempotent; returns *PurgeInProgressError (200 in_progress or 409) and
-// *SnapshotBusyError (409) for typed retry handling.
+// live session, deletes ALL S3 versions, beat schedule, and DEK) in the
+// background. Returns immediately with the purge's request_id — the purge is
+// never complete when this returns. Poll DeleteSessionDataStatus for the
+// terminal outcome ("deleted" with counters, or "failed").
+// Returns *ConfirmationRequiredError (400), *SnapshotBusyError (409, retry
+// after RetryAfterMs), or *APIError (401/429/other).
 func (c *Client) DeleteSessionData(ctx context.Context, req DeleteSessionDataRequest) (*DeleteSessionDataResult, error) {
 	body := gen.DeleteSessionDataJSONRequestBody(gen.DeleteSessionDataJSONBody{
 		Confirm: gen.DeleteSessionDataJSONBodyConfirm(req.Confirm),
@@ -300,14 +308,20 @@ func (c *Client) DeleteSessionData(ctx context.Context, req DeleteSessionDataReq
 	}
 
 	switch resp.HTTPResponse.StatusCode {
-	case http.StatusOK:
-		// Both status values ("deleted" and "in_progress") map to a success
-		// result with a nil error — callers use IsInProgress()/IsDeleted().
-		if resp.JSON200 == nil {
-			return nil, fmt.Errorf("delete session data: 200 response with empty body")
+	case http.StatusAccepted, http.StatusOK:
+		// 202 = purge accepted and running; 200 = already in progress by
+		// another request. Both carry the same in_progress shape.
+		var success *gen.SessionDataDeleteResponse
+		if resp.HTTPResponse.StatusCode == http.StatusAccepted {
+			success = resp.JSON202
+		} else {
+			success = resp.JSON200
+		}
+		if success == nil {
+			return nil, fmt.Errorf("delete session data: %d response with empty body", resp.HTTPResponse.StatusCode)
 		}
 		return &DeleteSessionDataResult{
-			SessionDataDeleteResponse: resp.JSON200,
+			SessionDataDeleteResponse: success,
 		}, nil
 
 	case http.StatusBadRequest:
@@ -315,8 +329,7 @@ func (c *Client) DeleteSessionData(ctx context.Context, req DeleteSessionDataReq
 		return nil, &ConfirmationRequiredError{}
 
 	case http.StatusConflict:
-		// Snapshot lease contended (snapshot_busy) or purge mid-flight
-		// (purge_in_progress) — both carry retry_after_ms.
+		// Snapshot lease contended (snapshot_busy) — retry after retry_after_ms.
 		if resp.JSON409 == nil || resp.JSON409.Error == nil {
 			return nil, responseError(resp.Body, resp.HTTPResponse)
 		}
@@ -327,10 +340,6 @@ func (c *Client) DeleteSessionData(ctx context.Context, req DeleteSessionDataReq
 		switch *resp.JSON409.Error {
 		case gen.SnapshotBusy:
 			return nil, &SnapshotBusyError{RetryAfterMs: retry}
-		case "purge_in_progress":
-			// Returning this on 409 keeps parity with connect's 409 handling
-			// for callers that issue concurrent purges.
-			return nil, &PurgeInProgressError{RetryAfterMs: retry}
 		}
 		// Unmapped 409 body — fall through to the generic error path.
 		return nil, responseError(resp.Body, resp.HTTPResponse)
@@ -338,6 +347,119 @@ func (c *Client) DeleteSessionData(ctx context.Context, req DeleteSessionDataReq
 	default:
 		return nil, responseError(resp.Body, resp.HTTPResponse)
 	}
+}
+
+// DeleteSessionDataStatusResult wraps the purge status poll result. Exactly
+// one of the IsInProgress/IsDeleted/IsFailed/IsNone predicates is true.
+type DeleteSessionDataStatusResult struct {
+	*gen.SessionDataDeleteStatusResponse
+}
+
+// IsInProgress returns true when the purge is active (flag set — in flight
+// or stalled). Flag presence wins over the terminal tombstone.
+func (r *DeleteSessionDataStatusResult) IsInProgress() bool {
+	if r == nil || r.SessionDataDeleteStatusResponse == nil {
+		return false
+	}
+	_, ok := r.InProgress()
+	return ok
+}
+
+// IsDeleted returns true when the purge completed — all cloud data
+// permanently deleted. Counters are available via Deleted().
+func (r *DeleteSessionDataStatusResult) IsDeleted() bool {
+	if r == nil || r.SessionDataDeleteStatusResponse == nil {
+		return false
+	}
+	_, ok := r.Deleted()
+	return ok
+}
+
+// IsFailed returns true when the resume sweeper gave up — the user is
+// unblocked but deletion was NOT guaranteed. Retry the delete.
+func (r *DeleteSessionDataStatusResult) IsFailed() bool {
+	if r == nil || r.SessionDataDeleteStatusResponse == nil {
+		return false
+	}
+	_, ok := r.Failed()
+	return ok
+}
+
+// IsNone returns true when nothing is running or remembered.
+func (r *DeleteSessionDataStatusResult) IsNone() bool {
+	if r == nil || r.SessionDataDeleteStatusResponse == nil {
+		return false
+	}
+	_, ok := r.None()
+	return ok
+}
+
+// InProgress returns the active-purge variant (status, phase, request_id,
+// attempts) when the purge is in flight or stalled.
+func (r *DeleteSessionDataStatusResult) InProgress() (*gen.SessionDataDeleteStatusResponse0, bool) {
+	if r == nil || r.SessionDataDeleteStatusResponse == nil {
+		return nil, false
+	}
+	v, err := r.SessionDataDeleteStatusResponse.AsSessionDataDeleteStatusResponse0()
+	if err != nil {
+		return nil, false
+	}
+	return &v, true
+}
+
+// Deleted returns the terminal-success variant with the S3 / beat / DEK
+// counters when the purge completed.
+func (r *DeleteSessionDataStatusResult) Deleted() (*gen.SessionDataDeleteStatusResponse1, bool) {
+	if r == nil || r.SessionDataDeleteStatusResponse == nil {
+		return nil, false
+	}
+	v, err := r.SessionDataDeleteStatusResponse.AsSessionDataDeleteStatusResponse1()
+	if err != nil {
+		return nil, false
+	}
+	return &v, true
+}
+
+// Failed returns the terminal-failure variant with the failure reason and
+// (zeroed) counters when the sweeper gave up.
+func (r *DeleteSessionDataStatusResult) Failed() (*gen.SessionDataDeleteStatusResponse2, bool) {
+	if r == nil || r.SessionDataDeleteStatusResponse == nil {
+		return nil, false
+	}
+	v, err := r.SessionDataDeleteStatusResponse.AsSessionDataDeleteStatusResponse2()
+	if err != nil {
+		return nil, false
+	}
+	return &v, true
+}
+
+// None returns the empty variant when nothing is running or remembered.
+func (r *DeleteSessionDataStatusResult) None() (*gen.SessionDataDeleteStatusResponse3, bool) {
+	if r == nil || r.SessionDataDeleteStatusResponse == nil {
+		return nil, false
+	}
+	v, err := r.SessionDataDeleteStatusResponse.AsSessionDataDeleteStatusResponse3()
+	if err != nil {
+		return nil, false
+	}
+	return &v, true
+}
+
+// DeleteSessionDataStatus polls the status of the authenticated user's data
+// purge. 200 always (after auth) with one of four shapes: in_progress,
+// deleted, failed, or none. Returns *APIError on 401/429/503 (503 = purge
+// state temporarily unavailable; retry).
+func (c *Client) DeleteSessionDataStatus(ctx context.Context) (*DeleteSessionDataStatusResult, error) {
+	resp, err := c.cloudGen.GetSessionDataDeleteStatusWithResponse(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("delete session data status request: %w", err)
+	}
+	if resp.JSON200 == nil {
+		return nil, responseError(resp.Body, resp.HTTPResponse)
+	}
+	return &DeleteSessionDataStatusResult{
+		SessionDataDeleteStatusResponse: resp.JSON200,
+	}, nil
 }
 
 // coalesceStr returns the first non-empty string, or the fallback.

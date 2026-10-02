@@ -92,9 +92,17 @@ resp, err := client.TTS(ctx, &gen.TTSRequest{
 
 ### Cloud Session Data Purge
 
-`DeleteSessionData` permanently deletes the authenticated user's cloud-side engine
-data (hard-kills any live session, deletes every S3 version, the beat schedule, and
-the DEK). It is idempotent and destructive — the request requires `Confirm: "DELETE"`.
+`DeleteSessionData` **starts** a purge of the authenticated user's cloud-side
+engine data: it hard-kills any live session, deletes every S3 version, the beat
+schedule, and the DEK — all in the background. It is idempotent and destructive
+— the request requires `Confirm: "DELETE"`.
+
+The purge is asynchronous: `DeleteSessionData` returns immediately with
+`status=in_progress` and a `request_id` (via `result.RequestID()`), and never
+completes synchronously. Poll `DeleteSessionDataStatus` with that `request_id`
+until the terminal outcome — `status=deleted` (with the S3 / beat / DEK
+counters) or `status=failed` (unblocked, but deletion not guaranteed — retry
+the delete). `status=none` means nothing running or remembered.
 
 ```go
 result, err := client.DeleteSessionData(ctx, soulbits.DeleteSessionDataRequest{
@@ -103,21 +111,19 @@ result, err := client.DeleteSessionData(ctx, soulbits.DeleteSessionDataRequest{
 if err != nil {
     var confReq *soulbits.ConfirmationRequiredError
     var snapBusy *soulbits.SnapshotBusyError
-    var purgeIn *soulbits.PurgeInProgressError
     switch {
     case errors.As(err, &confReq):
         // 400 — Confirm must be "DELETE".
     case errors.As(err, &snapBusy):
         // 409 — snapshot lease busy, retry after snapBusy.RetryAfterMs.
-    case errors.As(err, &purgeIn):
-        // 409 / 200-in_progress — already running, wait purgeIn.RetryAfterMs.
     default:
         // Other API errors.
     }
-} else if result.IsDeleted() {
-    // 200 deleted — data permanently removed.
 } else if result.IsInProgress() {
-    // 200 in_progress — a purge is already running for this user.
+    // 202/200 in_progress — purge accepted, poll for the outcome:
+    status, err := client.DeleteSessionDataStatus(ctx)
+    // status.IsInProgress() / IsDeleted() / IsFailed() / IsNone()
+    // status.Deleted() exposes ObjectsDeleted, VersionsDeleted, BeatsRemoved, DekDeleted.
 }
 ```
 

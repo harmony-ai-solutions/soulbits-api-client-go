@@ -40,19 +40,19 @@ func (e ChatCompletionRequestResponseFormatType) Valid() bool {
 
 // Defines values for ChatCompletionRequestToolChoice0.
 const (
-	Auto     ChatCompletionRequestToolChoice0 = "auto"
-	None     ChatCompletionRequestToolChoice0 = "none"
-	Required ChatCompletionRequestToolChoice0 = "required"
+	ChatCompletionRequestToolChoice0Auto     ChatCompletionRequestToolChoice0 = "auto"
+	ChatCompletionRequestToolChoice0None     ChatCompletionRequestToolChoice0 = "none"
+	ChatCompletionRequestToolChoice0Required ChatCompletionRequestToolChoice0 = "required"
 )
 
 // Valid indicates whether the value is a known member of the ChatCompletionRequestToolChoice0 enum.
 func (e ChatCompletionRequestToolChoice0) Valid() bool {
 	switch e {
-	case Auto:
+	case ChatCompletionRequestToolChoice0Auto:
 		return true
-	case None:
+	case ChatCompletionRequestToolChoice0None:
 		return true
-	case Required:
+	case ChatCompletionRequestToolChoice0Required:
 		return true
 	default:
 		return false
@@ -415,16 +415,73 @@ func (e SessionConnectedResponseStatus) Valid() bool {
 
 // Defines values for SessionDataDeleteResponseStatus.
 const (
-	Deleted    SessionDataDeleteResponseStatus = "deleted"
-	InProgress SessionDataDeleteResponseStatus = "in_progress"
+	SessionDataDeleteResponseStatusInProgress SessionDataDeleteResponseStatus = "in_progress"
 )
 
 // Valid indicates whether the value is a known member of the SessionDataDeleteResponseStatus enum.
 func (e SessionDataDeleteResponseStatus) Valid() bool {
 	switch e {
+	case SessionDataDeleteResponseStatusInProgress:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SessionDataDeleteStatusResponse0Status.
+const (
+	SessionDataDeleteStatusResponse0StatusInProgress SessionDataDeleteStatusResponse0Status = "in_progress"
+)
+
+// Valid indicates whether the value is a known member of the SessionDataDeleteStatusResponse0Status enum.
+func (e SessionDataDeleteStatusResponse0Status) Valid() bool {
+	switch e {
+	case SessionDataDeleteStatusResponse0StatusInProgress:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SessionDataDeleteStatusResponse1Status.
+const (
+	Deleted SessionDataDeleteStatusResponse1Status = "deleted"
+)
+
+// Valid indicates whether the value is a known member of the SessionDataDeleteStatusResponse1Status enum.
+func (e SessionDataDeleteStatusResponse1Status) Valid() bool {
+	switch e {
 	case Deleted:
 		return true
-	case InProgress:
+	default:
+		return false
+	}
+}
+
+// Defines values for SessionDataDeleteStatusResponse2Status.
+const (
+	SessionDataDeleteStatusResponse2StatusFailed SessionDataDeleteStatusResponse2Status = "failed"
+)
+
+// Valid indicates whether the value is a known member of the SessionDataDeleteStatusResponse2Status enum.
+func (e SessionDataDeleteStatusResponse2Status) Valid() bool {
+	switch e {
+	case SessionDataDeleteStatusResponse2StatusFailed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SessionDataDeleteStatusResponse3Status.
+const (
+	SessionDataDeleteStatusResponse3StatusNone SessionDataDeleteStatusResponse3Status = "none"
+)
+
+// Valid indicates whether the value is a known member of the SessionDataDeleteStatusResponse3Status enum.
+func (e SessionDataDeleteStatusResponse3Status) Valid() bool {
+	switch e {
+	case SessionDataDeleteStatusResponse3StatusNone:
 		return true
 	default:
 		return false
@@ -563,15 +620,15 @@ func (e DeleteSessionData409JSONResponseBodyError) Valid() bool {
 	}
 }
 
-// Defines values for DeleteSessionData503JSONResponseBodyError.
+// Defines values for GetSessionDataDeleteStatus503JSONResponseBodyErrorCode.
 const (
-	KillUnconfirmed DeleteSessionData503JSONResponseBodyError = "kill_unconfirmed"
+	ServiceUnavailable GetSessionDataDeleteStatus503JSONResponseBodyErrorCode = "service_unavailable"
 )
 
-// Valid indicates whether the value is a known member of the DeleteSessionData503JSONResponseBodyError enum.
-func (e DeleteSessionData503JSONResponseBodyError) Valid() bool {
+// Valid indicates whether the value is a known member of the GetSessionDataDeleteStatus503JSONResponseBodyErrorCode enum.
+func (e GetSessionDataDeleteStatus503JSONResponseBodyErrorCode) Valid() bool {
 	switch e {
-	case KillUnconfirmed:
+	case ServiceUnavailable:
 		return true
 	default:
 		return false
@@ -906,11 +963,17 @@ type EmbeddingResponseObject string
 
 // Error Error envelope. The exact field set varies slightly by service:
 //   - Inference gateway: `{ "error": "<code>", "message": "<text>" }`
-//   - Auth-service:      `{ "error": "<message>" }`
+//   - Auth-service:      `{ "error": "<message>" }` — errors that need
+//     client branching (e.g. the device-auth flow) instead use the
+//     gateway shape: `{ "error": "<code>", "message": "<text>" }`
+//     with a stable code such as `device_not_registered`.
 //   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
 type Error struct {
+	// CoinsAvailable Present on 402 — remaining coins.
+	CoinsAvailable *int `json:"coins_available,omitempty"`
+
 	// CurrentTier Present on 402 — the user's current tier id.
 	CurrentTier *string `json:"current_tier,omitempty"`
 
@@ -925,9 +988,6 @@ type Error struct {
 
 	// RequiredTier Present on 402 — the minimum tier required.
 	RequiredTier *string `json:"required_tier,omitempty"`
-
-	// SoulCreditsAvailable Present on 402 — remaining Soul Credits.
-	SoulCreditsAvailable *int `json:"soul_credits_available,omitempty"`
 
 	// TaskId Present on 504 gateway_timeout — for debugging.
 	TaskId *string `json:"task_id,omitempty"`
@@ -1157,27 +1217,87 @@ type SessionConnectedResponse struct {
 // SessionConnectedResponseStatus defines model for SessionConnectedResponse.Status.
 type SessionConnectedResponseStatus string
 
-// SessionDataDeleteResponse defines model for SessionDataDeleteResponse.
+// SessionDataDeleteResponse Async purge initiation. The purge runs in the background; poll `GET /v1/session/data/delete/status` for the terminal outcome ("deleted" or "failed").
 type SessionDataDeleteResponse struct {
-	// BeatsRemoved due:lifecycle ZSET members removed — present with status=deleted.
-	BeatsRemoved *int `json:"beats_removed,omitempty"`
-
-	// DekDeleted Whether the per-user encryption key was deleted — present with status=deleted.
-	DekDeleted *bool `json:"dek_deleted,omitempty"`
-
-	// ObjectsDeleted S3 objects (incl. delete markers) removed — present with status=deleted.
-	ObjectsDeleted *int `json:"objects_deleted,omitempty"`
-
-	// RequestId Present with status=in_progress — the request that owns the running purge.
+	// RequestId Poll identifier — echoed by the status endpoint while the run is in flight.
 	RequestId *string                         `json:"request_id,omitempty"`
 	Status    SessionDataDeleteResponseStatus `json:"status"`
-
-	// VersionsDeleted S3 object versions permanently removed — present with status=deleted.
-	VersionsDeleted *int `json:"versions_deleted,omitempty"`
 }
 
 // SessionDataDeleteResponseStatus defines model for SessionDataDeleteResponse.Status.
 type SessionDataDeleteResponseStatus string
+
+// SessionDataDeleteStatusResponse defines model for SessionDataDeleteStatusResponse.
+type SessionDataDeleteStatusResponse struct {
+	union json.RawMessage
+}
+
+// SessionDataDeleteStatusResponse0 A purge is active (flag set) — the run is in flight or stalled. Flag presence wins over the terminal tombstone, so a failed run still being retried by the sweeper reports in_progress.
+type SessionDataDeleteStatusResponse0 struct {
+	// Attempts Sweeper resume attempts so far.
+	Attempts int `json:"attempts"`
+
+	// Phase Coarse purge phase (kill, routing, s3, beats, dek, done).
+	Phase     string                                 `json:"phase"`
+	RequestId string                                 `json:"request_id"`
+	Status    SessionDataDeleteStatusResponse0Status `json:"status"`
+}
+
+// SessionDataDeleteStatusResponse0Status defines model for SessionDataDeleteStatusResponse.0.Status.
+type SessionDataDeleteStatusResponse0Status string
+
+// SessionDataDeleteStatusResponse1 Terminal success — all cloud data permanently deleted; the user can connect again.
+type SessionDataDeleteStatusResponse1 struct {
+	Attempts int `json:"attempts"`
+
+	// BeatsRemoved due:lifecycle ZSET members removed.
+	BeatsRemoved int `json:"beats_removed"`
+
+	// DekDeleted Whether the per-user encryption key was deleted.
+	DekDeleted bool `json:"dek_deleted"`
+
+	// FinishedAt Unix seconds when the purge finished.
+	FinishedAt int `json:"finished_at"`
+
+	// ObjectsDeleted S3 objects (incl. delete markers) removed.
+	ObjectsDeleted int                                    `json:"objects_deleted"`
+	RequestId      string                                 `json:"request_id"`
+	Status         SessionDataDeleteStatusResponse1Status `json:"status"`
+
+	// VersionsDeleted S3 object versions permanently removed.
+	VersionsDeleted int `json:"versions_deleted"`
+}
+
+// SessionDataDeleteStatusResponse1Status defines model for SessionDataDeleteStatusResponse.1.Status.
+type SessionDataDeleteStatusResponse1Status string
+
+// SessionDataDeleteStatusResponse2 Terminal failure — the resume sweeper gave up on the purge; the flag was cleared (user unblocked) but deletion was NOT guaranteed. Retry the delete. Counters are always serialized (zero here).
+type SessionDataDeleteStatusResponse2 struct {
+	Attempts     int  `json:"attempts"`
+	BeatsRemoved int  `json:"beats_removed"`
+	DekDeleted   bool `json:"dek_deleted"`
+
+	// Error Failure reason (e.g. "attempt cap reached").
+	Error string `json:"error"`
+
+	// FinishedAt Unix seconds when the purge gave up.
+	FinishedAt      int                                    `json:"finished_at"`
+	ObjectsDeleted  int                                    `json:"objects_deleted"`
+	RequestId       string                                 `json:"request_id"`
+	Status          SessionDataDeleteStatusResponse2Status `json:"status"`
+	VersionsDeleted int                                    `json:"versions_deleted"`
+}
+
+// SessionDataDeleteStatusResponse2Status defines model for SessionDataDeleteStatusResponse.2.Status.
+type SessionDataDeleteStatusResponse2Status string
+
+// SessionDataDeleteStatusResponse3 No purge flag and no terminal result — nothing running or remembered.
+type SessionDataDeleteStatusResponse3 struct {
+	Status SessionDataDeleteStatusResponse3Status `json:"status"`
+}
+
+// SessionDataDeleteStatusResponse3Status defines model for SessionDataDeleteStatusResponse.3.Status.
+type SessionDataDeleteStatusResponse3Status string
 
 // SessionDisconnectResponse defines model for SessionDisconnectResponse.
 type SessionDisconnectResponse struct {
@@ -1330,6 +1450,9 @@ type TokenResponse struct {
 
 // UserProfile defines model for UserProfile.
 type UserProfile struct {
+	// AvatarUrl User profile picture as a data URL (`data:image/...;base64,...`) or external URL. Empty string when unset.
+	AvatarUrl string `json:"avatar_url"`
+
 	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
 	CreatedAt     RFC3339Timestamp    `json:"created_at"`
 	DisplayName   string              `json:"display_name"`
@@ -1425,7 +1548,10 @@ type OutputModalities = []string
 
 // Forbidden Error envelope. The exact field set varies slightly by service:
 //   - Inference gateway: `{ "error": "<code>", "message": "<text>" }`
-//   - Auth-service:      `{ "error": "<message>" }`
+//   - Auth-service:      `{ "error": "<message>" }` — errors that need
+//     client branching (e.g. the device-auth flow) instead use the
+//     gateway shape: `{ "error": "<code>", "message": "<text>" }`
+//     with a stable code such as `device_not_registered`.
 //   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
@@ -1433,7 +1559,10 @@ type Forbidden = Error
 
 // NotFound Error envelope. The exact field set varies slightly by service:
 //   - Inference gateway: `{ "error": "<code>", "message": "<text>" }`
-//   - Auth-service:      `{ "error": "<message>" }`
+//   - Auth-service:      `{ "error": "<message>" }` — errors that need
+//     client branching (e.g. the device-auth flow) instead use the
+//     gateway shape: `{ "error": "<code>", "message": "<text>" }`
+//     with a stable code such as `device_not_registered`.
 //   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
@@ -1441,7 +1570,10 @@ type NotFound = Error
 
 // RateLimited Error envelope. The exact field set varies slightly by service:
 //   - Inference gateway: `{ "error": "<code>", "message": "<text>" }`
-//   - Auth-service:      `{ "error": "<message>" }`
+//   - Auth-service:      `{ "error": "<message>" }` — errors that need
+//     client branching (e.g. the device-auth flow) instead use the
+//     gateway shape: `{ "error": "<code>", "message": "<text>" }`
+//     with a stable code such as `device_not_registered`.
 //   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
@@ -1449,7 +1581,10 @@ type RateLimited = Error
 
 // StandardError Error envelope. The exact field set varies slightly by service:
 //   - Inference gateway: `{ "error": "<code>", "message": "<text>" }`
-//   - Auth-service:      `{ "error": "<message>" }`
+//   - Auth-service:      `{ "error": "<message>" }` — errors that need
+//     client branching (e.g. the device-auth flow) instead use the
+//     gateway shape: `{ "error": "<code>", "message": "<text>" }`
+//     with a stable code such as `device_not_registered`.
 //   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
@@ -1457,7 +1592,10 @@ type StandardError = Error
 
 // Unauthorized Error envelope. The exact field set varies slightly by service:
 //   - Inference gateway: `{ "error": "<code>", "message": "<text>" }`
-//   - Auth-service:      `{ "error": "<message>" }`
+//   - Auth-service:      `{ "error": "<message>" }` — errors that need
+//     client branching (e.g. the device-auth flow) instead use the
+//     gateway shape: `{ "error": "<code>", "message": "<text>" }`
+//     with a stable code such as `device_not_registered`.
 //   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
@@ -1519,7 +1657,9 @@ type PostV1AuthLogoutJSONBody struct {
 
 // PatchV1AuthMeJSONBody defines parameters for PatchV1AuthMe.
 type PatchV1AuthMeJSONBody struct {
-	DisplayName string `json:"display_name"`
+	// AvatarUrl Profile picture as a data URL (`data:image/...;base64,...`) or external URL. To remove the picture, send an empty string.
+	AvatarUrl   *string `json:"avatar_url,omitempty"`
+	DisplayName string  `json:"display_name"`
 }
 
 // PutV1AuthPasswordJSONBody defines parameters for PutV1AuthPassword.
@@ -1610,8 +1750,8 @@ type DeleteSessionData400JSONResponseBodyError string
 // DeleteSessionData409JSONResponseBodyError defines parameters for DeleteSessionData.
 type DeleteSessionData409JSONResponseBodyError string
 
-// DeleteSessionData503JSONResponseBodyError defines parameters for DeleteSessionData.
-type DeleteSessionData503JSONResponseBodyError string
+// GetSessionDataDeleteStatus503JSONResponseBodyErrorCode defines parameters for GetSessionDataDeleteStatus.
+type GetSessionDataDeleteStatus503JSONResponseBodyErrorCode string
 
 // PostV1SessionDisconnectJSONBody defines parameters for PostV1SessionDisconnect.
 type PostV1SessionDisconnectJSONBody struct {
@@ -2266,6 +2406,14 @@ func (a *Error) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
+	if raw, found := object["coins_available"]; found {
+		err = json.Unmarshal(raw, &a.CoinsAvailable)
+		if err != nil {
+			return fmt.Errorf("error reading 'coins_available': %w", err)
+		}
+		delete(object, "coins_available")
+	}
+
 	if raw, found := object["current_tier"]; found {
 		err = json.Unmarshal(raw, &a.CurrentTier)
 		if err != nil {
@@ -2306,14 +2454,6 @@ func (a *Error) UnmarshalJSON(b []byte) error {
 		delete(object, "required_tier")
 	}
 
-	if raw, found := object["soul_credits_available"]; found {
-		err = json.Unmarshal(raw, &a.SoulCreditsAvailable)
-		if err != nil {
-			return fmt.Errorf("error reading 'soul_credits_available': %w", err)
-		}
-		delete(object, "soul_credits_available")
-	}
-
 	if raw, found := object["task_id"]; found {
 		err = json.Unmarshal(raw, &a.TaskId)
 		if err != nil {
@@ -2349,6 +2489,13 @@ func (a Error) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
+	if a.CoinsAvailable != nil {
+		object["coins_available"], err = json.Marshal(a.CoinsAvailable)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'coins_available': %w", err)
+		}
+	}
+
 	if a.CurrentTier != nil {
 		object["current_tier"], err = json.Marshal(a.CurrentTier)
 		if err != nil {
@@ -2381,13 +2528,6 @@ func (a Error) MarshalJSON() ([]byte, error) {
 		object["required_tier"], err = json.Marshal(a.RequiredTier)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'required_tier': %w", err)
-		}
-	}
-
-	if a.SoulCreditsAvailable != nil {
-		object["soul_credits_available"], err = json.Marshal(a.SoulCreditsAvailable)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'soul_credits_available': %w", err)
 		}
 	}
 
@@ -4176,6 +4316,120 @@ func (t *EmbeddingResponse_Data_Embedding) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsSessionDataDeleteStatusResponse0 returns the union data inside the SessionDataDeleteStatusResponse as a SessionDataDeleteStatusResponse0
+func (t SessionDataDeleteStatusResponse) AsSessionDataDeleteStatusResponse0() (SessionDataDeleteStatusResponse0, error) {
+	var body SessionDataDeleteStatusResponse0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSessionDataDeleteStatusResponse0 overwrites any union data inside the SessionDataDeleteStatusResponse as the provided SessionDataDeleteStatusResponse0
+func (t *SessionDataDeleteStatusResponse) FromSessionDataDeleteStatusResponse0(v SessionDataDeleteStatusResponse0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSessionDataDeleteStatusResponse0 performs a merge with any union data inside the SessionDataDeleteStatusResponse, using the provided SessionDataDeleteStatusResponse0
+func (t *SessionDataDeleteStatusResponse) MergeSessionDataDeleteStatusResponse0(v SessionDataDeleteStatusResponse0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSessionDataDeleteStatusResponse1 returns the union data inside the SessionDataDeleteStatusResponse as a SessionDataDeleteStatusResponse1
+func (t SessionDataDeleteStatusResponse) AsSessionDataDeleteStatusResponse1() (SessionDataDeleteStatusResponse1, error) {
+	var body SessionDataDeleteStatusResponse1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSessionDataDeleteStatusResponse1 overwrites any union data inside the SessionDataDeleteStatusResponse as the provided SessionDataDeleteStatusResponse1
+func (t *SessionDataDeleteStatusResponse) FromSessionDataDeleteStatusResponse1(v SessionDataDeleteStatusResponse1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSessionDataDeleteStatusResponse1 performs a merge with any union data inside the SessionDataDeleteStatusResponse, using the provided SessionDataDeleteStatusResponse1
+func (t *SessionDataDeleteStatusResponse) MergeSessionDataDeleteStatusResponse1(v SessionDataDeleteStatusResponse1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSessionDataDeleteStatusResponse2 returns the union data inside the SessionDataDeleteStatusResponse as a SessionDataDeleteStatusResponse2
+func (t SessionDataDeleteStatusResponse) AsSessionDataDeleteStatusResponse2() (SessionDataDeleteStatusResponse2, error) {
+	var body SessionDataDeleteStatusResponse2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSessionDataDeleteStatusResponse2 overwrites any union data inside the SessionDataDeleteStatusResponse as the provided SessionDataDeleteStatusResponse2
+func (t *SessionDataDeleteStatusResponse) FromSessionDataDeleteStatusResponse2(v SessionDataDeleteStatusResponse2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSessionDataDeleteStatusResponse2 performs a merge with any union data inside the SessionDataDeleteStatusResponse, using the provided SessionDataDeleteStatusResponse2
+func (t *SessionDataDeleteStatusResponse) MergeSessionDataDeleteStatusResponse2(v SessionDataDeleteStatusResponse2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSessionDataDeleteStatusResponse3 returns the union data inside the SessionDataDeleteStatusResponse as a SessionDataDeleteStatusResponse3
+func (t SessionDataDeleteStatusResponse) AsSessionDataDeleteStatusResponse3() (SessionDataDeleteStatusResponse3, error) {
+	var body SessionDataDeleteStatusResponse3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSessionDataDeleteStatusResponse3 overwrites any union data inside the SessionDataDeleteStatusResponse as the provided SessionDataDeleteStatusResponse3
+func (t *SessionDataDeleteStatusResponse) FromSessionDataDeleteStatusResponse3(v SessionDataDeleteStatusResponse3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSessionDataDeleteStatusResponse3 performs a merge with any union data inside the SessionDataDeleteStatusResponse, using the provided SessionDataDeleteStatusResponse3
+func (t *SessionDataDeleteStatusResponse) MergeSessionDataDeleteStatusResponse3(v SessionDataDeleteStatusResponse3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SessionDataDeleteStatusResponse) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SessionDataDeleteStatusResponse) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // RequestEditorFn is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
@@ -4525,7 +4779,7 @@ type ClientInterface interface {
 
 	// PatchV1AuthMeWithBody Update the current user profile
 	//
-	// Partial update — only `display_name` is mutable currently.
+	// Partial update — `display_name` and `avatar_url` are mutable.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -4534,7 +4788,7 @@ type ClientInterface interface {
 
 	// PatchV1AuthMe Update the current user profile
 	//
-	// Partial update — only `display_name` is mutable currently.
+	// Partial update — `display_name` and `avatar_url` are mutable.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -4808,8 +5062,8 @@ type ClientInterface interface {
 	// and **no image model is present in the catalog**. Requests will fail
 	// (gateway timeout or 5xx). This endpoint will be re-enabled once an
 	// image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-	// (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-	// Credits → 402.
+	// (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+	// 402.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -4825,8 +5079,8 @@ type ClientInterface interface {
 	// and **no image model is present in the catalog**. Requests will fail
 	// (gateway timeout or 5xx). This endpoint will be re-enabled once an
 	// image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-	// (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-	// Credits → 402.
+	// (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+	// 402.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -4903,23 +5157,30 @@ type ClientInterface interface {
 	// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
 	PostV1SessionConnected(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// DeleteSessionDataWithBody Purge all cloud-side engine data for the authenticated user
+	// DeleteSessionDataWithBody Purge all cloud-side engine data for the authenticated user (async)
 	//
-	// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+	// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
 	//
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
 	DeleteSessionDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// DeleteSessionData Purge all cloud-side engine data for the authenticated user
+	// DeleteSessionData Purge all cloud-side engine data for the authenticated user (async)
 	//
-	// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+	// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
 	//
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
 	DeleteSessionData(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSessionDataDeleteStatus Poll the status of the authenticated user's data purge
+	//
+	// Reports the current purge state. 200 always (after auth) with one of four shapes: in_progress (flag set — purge active or stalled, with phase/request_id/attempts), deleted (terminal success, with the S3 / beat / DEK counters from the result tombstone), failed (terminal failure — the sweeper gave up; the user is unblocked but the data was not guaranteed deleted; retry the delete), or none (nothing running or remembered). Flag presence wins over the terminal tombstone: while a failed run is still flagged for the sweeper the report stays in_progress.
+	//
+	// Corresponds with GET /v1/session/data/delete/status (the `GetSessionDataDeleteStatus` operationId).
+	GetSessionDataDeleteStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostV1SessionDisconnectWithBody Disconnect a cloud session (enter grace period)
 	//
@@ -5560,7 +5821,7 @@ func (c *Client) GetV1AuthMe(ctx context.Context, reqEditors ...RequestEditorFn)
 
 // PatchV1AuthMeWithBody Update the current user profile
 //
-// Partial update — only `display_name` is mutable currently.
+// Partial update — `display_name` and `avatar_url` are mutable.
 //
 // Takes any type of body and a specified content type.
 //
@@ -5579,7 +5840,7 @@ func (c *Client) PatchV1AuthMeWithBody(ctx context.Context, contentType string, 
 
 // PatchV1AuthMe Update the current user profile
 //
-// Partial update — only `display_name` is mutable currently.
+// Partial update — `display_name` and `avatar_url` are mutable.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -6143,8 +6404,8 @@ func (c *Client) PostV1Embeddings(ctx context.Context, body PostV1EmbeddingsJSON
 // and **no image model is present in the catalog**. Requests will fail
 // (gateway timeout or 5xx). This endpoint will be re-enabled once an
 // image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-// (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-// Credits → 402.
+// (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+// 402.
 //
 // Takes any type of body and a specified content type.
 //
@@ -6169,8 +6430,8 @@ func (c *Client) PostV1ImagesGenerationsWithBody(ctx context.Context, contentTyp
 // and **no image model is present in the catalog**. Requests will fail
 // (gateway timeout or 5xx). This endpoint will be re-enabled once an
 // image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-// (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-// Credits → 402.
+// (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+// 402.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -6336,9 +6597,9 @@ func (c *Client) PostV1SessionConnected(ctx context.Context, reqEditors ...Reque
 	return c.Client.Do(req)
 }
 
-// DeleteSessionDataWithBody Purge all cloud-side engine data for the authenticated user
+// DeleteSessionDataWithBody Purge all cloud-side engine data for the authenticated user (async)
 //
-// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
 //
 // Takes any type of body and a specified content type.
 //
@@ -6355,15 +6616,32 @@ func (c *Client) DeleteSessionDataWithBody(ctx context.Context, contentType stri
 	return c.Client.Do(req)
 }
 
-// DeleteSessionData Purge all cloud-side engine data for the authenticated user
+// DeleteSessionData Purge all cloud-side engine data for the authenticated user (async)
 //
-// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
 //
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
 func (c *Client) DeleteSessionData(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteSessionDataRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetSessionDataDeleteStatus Poll the status of the authenticated user's data purge
+//
+// Reports the current purge state. 200 always (after auth) with one of four shapes: in_progress (flag set — purge active or stalled, with phase/request_id/attempts), deleted (terminal success, with the S3 / beat / DEK counters from the result tombstone), failed (terminal failure — the sweeper gave up; the user is unblocked but the data was not guaranteed deleted; retry the delete), or none (nothing running or remembered). Flag presence wins over the terminal tombstone: while a failed run is still flagged for the sweeper the report stays in_progress.
+//
+// Corresponds with GET /v1/session/data/delete/status (the `GetSessionDataDeleteStatus` operationId).
+func (c *Client) GetSessionDataDeleteStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSessionDataDeleteStatusRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -8159,6 +8437,33 @@ func NewDeleteSessionDataRequestWithBody(server string, contentType string, body
 	return req, nil
 }
 
+// NewGetSessionDataDeleteStatusRequest constructs an http.Request for the GetSessionDataDeleteStatus method
+func NewGetSessionDataDeleteStatusRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/session/data/delete/status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPostV1SessionDisconnectRequest calls the generic PostV1SessionDisconnect builder with application/json body
 func NewPostV1SessionDisconnectRequest(server string, body PostV1SessionDisconnectJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -8649,7 +8954,7 @@ type ClientWithResponsesInterface interface {
 
 	// PatchV1AuthMeWithBodyWithResponse Update the current user profile
 	//
-	// Partial update — only `display_name` is mutable currently.
+	// Partial update — `display_name` and `avatar_url` are mutable.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -8658,7 +8963,7 @@ type ClientWithResponsesInterface interface {
 
 	// PatchV1AuthMeWithResponse Update the current user profile
 	//
-	// Partial update — only `display_name` is mutable currently.
+	// Partial update — `display_name` and `avatar_url` are mutable.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -8940,8 +9245,8 @@ type ClientWithResponsesInterface interface {
 	// and **no image model is present in the catalog**. Requests will fail
 	// (gateway timeout or 5xx). This endpoint will be re-enabled once an
 	// image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-	// (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-	// Credits → 402.
+	// (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+	// 402.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -8957,8 +9262,8 @@ type ClientWithResponsesInterface interface {
 	// and **no image model is present in the catalog**. Requests will fail
 	// (gateway timeout or 5xx). This endpoint will be re-enabled once an
 	// image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-	// (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-	// Credits → 402.
+	// (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+	// 402.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -9043,23 +9348,32 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
 	PostV1SessionConnectedWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1SessionConnectedResp, error)
 
-	// DeleteSessionDataWithBodyWithResponse Purge all cloud-side engine data for the authenticated user
+	// DeleteSessionDataWithBodyWithResponse Purge all cloud-side engine data for the authenticated user (async)
 	//
-	// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+	// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
 	DeleteSessionDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error)
 
-	// DeleteSessionDataWithResponse Purge all cloud-side engine data for the authenticated user
+	// DeleteSessionDataWithResponse Purge all cloud-side engine data for the authenticated user (async)
 	//
-	// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+	// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
 	DeleteSessionDataWithResponse(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error)
+
+	// GetSessionDataDeleteStatusWithResponse Poll the status of the authenticated user's data purge
+	//
+	// Reports the current purge state. 200 always (after auth) with one of four shapes: in_progress (flag set — purge active or stalled, with phase/request_id/attempts), deleted (terminal success, with the S3 / beat / DEK counters from the result tombstone), failed (terminal failure — the sweeper gave up; the user is unblocked but the data was not guaranteed deleted; retry the delete), or none (nothing running or remembered). Flag presence wins over the terminal tombstone: while a failed run is still flagged for the sweeper the report stays in_progress.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/session/data/delete/status (the `GetSessionDataDeleteStatus` operationId).
+	GetSessionDataDeleteStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSessionDataDeleteStatusResp, error)
 
 	// PostV1SessionDisconnectWithBodyWithResponse Disconnect a cloud session (enter grace period)
 	//
@@ -11018,7 +11332,7 @@ type AuthorizeDeviceResp struct {
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *Unauthorized
 	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *StandardError
+	JSON404 *Error
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
 	// Headers429 the parsed response headers for an HTTP 429 response
@@ -11046,7 +11360,7 @@ func (r AuthorizeDeviceResp) GetJSON401() *Unauthorized {
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r AuthorizeDeviceResp) GetJSON404() *StandardError {
+func (r AuthorizeDeviceResp) GetJSON404() *Error {
 	return r.JSON404
 }
 
@@ -11094,7 +11408,7 @@ type GetDeviceAuthorizationStatusResp struct {
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *Unauthorized
 	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *StandardError
+	JSON404 *Error
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
@@ -11113,7 +11427,7 @@ func (r GetDeviceAuthorizationStatusResp) GetJSON401() *Unauthorized {
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r GetDeviceAuthorizationStatusResp) GetJSON404() *StandardError {
+func (r GetDeviceAuthorizationStatusResp) GetJSON404() *Error {
 	return r.JSON404
 }
 
@@ -11152,7 +11466,7 @@ type RevokeDeviceResp struct {
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *Unauthorized
 	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *StandardError
+	JSON404 *Error
 }
 
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
@@ -11161,7 +11475,7 @@ func (r RevokeDeviceResp) GetJSON401() *Unauthorized {
 }
 
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r RevokeDeviceResp) GetJSON404() *StandardError {
+func (r RevokeDeviceResp) GetJSON404() *Error {
 	return r.JSON404
 }
 
@@ -11814,6 +12128,8 @@ type DeleteSessionDataResp struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *SessionDataDeleteResponse
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *SessionDataDeleteResponse
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *struct {
 		Error *DeleteSessionData400JSONResponseBodyError `json:"error,omitempty"`
@@ -11827,10 +12143,6 @@ type DeleteSessionDataResp struct {
 	}
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *RateLimited
-	// JSON503 the response for an HTTP 503 `application/json` response
-	JSON503 *struct {
-		Error *DeleteSessionData503JSONResponseBodyError `json:"error,omitempty"`
-	}
 	// Headers429 the parsed response headers for an HTTP 429 response
 	Headers429 *DeleteSessionDataResp429Headers
 }
@@ -11838,6 +12150,11 @@ type DeleteSessionDataResp struct {
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r DeleteSessionDataResp) GetJSON200() *SessionDataDeleteResponse {
 	return r.JSON200
+}
+
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
+func (r DeleteSessionDataResp) GetJSON202() *SessionDataDeleteResponse {
+	return r.JSON202
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
@@ -11865,13 +12182,6 @@ func (r DeleteSessionDataResp) GetJSON429() *RateLimited {
 	return r.JSON429
 }
 
-// GetJSON503 returns the response for an HTTP 503 `application/json` response
-func (r DeleteSessionDataResp) GetJSON503() *struct {
-	Error *DeleteSessionData503JSONResponseBodyError `json:"error,omitempty"`
-} {
-	return r.JSON503
-}
-
 // GetBody returns the raw response body bytes
 func (r DeleteSessionDataResp) GetBody() []byte {
 	return r.Body
@@ -11895,6 +12205,84 @@ func (r DeleteSessionDataResp) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteSessionDataResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetSessionDataDeleteStatusResp429Headers the declared response headers of an HTTP 429 response for GetSessionDataDeleteStatus
+type GetSessionDataDeleteStatusResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type GetSessionDataDeleteStatusResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SessionDataDeleteStatusResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *struct {
+		ErrorCode *GetSessionDataDeleteStatus503JSONResponseBodyErrorCode `json:"error_code,omitempty"`
+		Message   *string                                                 `json:"message,omitempty"`
+	}
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *GetSessionDataDeleteStatusResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetSessionDataDeleteStatusResp) GetJSON200() *SessionDataDeleteStatusResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetSessionDataDeleteStatusResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r GetSessionDataDeleteStatusResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r GetSessionDataDeleteStatusResp) GetJSON503() *struct {
+	ErrorCode *GetSessionDataDeleteStatus503JSONResponseBodyErrorCode `json:"error_code,omitempty"`
+	Message   *string                                                 `json:"message,omitempty"`
+} {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r GetSessionDataDeleteStatusResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSessionDataDeleteStatusResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSessionDataDeleteStatusResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetSessionDataDeleteStatusResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -12659,7 +13047,7 @@ func (c *ClientWithResponses) GetV1AuthMeWithResponse(ctx context.Context, reqEd
 
 // PatchV1AuthMeWithBodyWithResponse Update the current user profile
 //
-// Partial update — only `display_name` is mutable currently.
+// Partial update — `display_name` and `avatar_url` are mutable.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -12674,7 +13062,7 @@ func (c *ClientWithResponses) PatchV1AuthMeWithBodyWithResponse(ctx context.Cont
 
 // PatchV1AuthMeWithResponse Update the current user profile
 //
-// Partial update — only `display_name` is mutable currently.
+// Partial update — `display_name` and `avatar_url` are mutable.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13130,8 +13518,8 @@ func (c *ClientWithResponses) PostV1EmbeddingsWithResponse(ctx context.Context, 
 // and **no image model is present in the catalog**. Requests will fail
 // (gateway timeout or 5xx). This endpoint will be re-enabled once an
 // image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-// (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-// Credits → 402.
+// (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+// 402.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13153,8 +13541,8 @@ func (c *ClientWithResponses) PostV1ImagesGenerationsWithBodyWithResponse(ctx co
 // and **no image model is present in the catalog**. Requests will fail
 // (gateway timeout or 5xx). This endpoint will be re-enabled once an
 // image backend (ComfyUI on Salad) is deployed. Quota enforcement order
-// (when re-enabled): auth+tier → rate limit → tier daily cap → Soul
-// Credits → 402.
+// (when re-enabled): auth+tier → rate limit → tier daily cap → coins →
+// 402.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13292,9 +13680,9 @@ func (c *ClientWithResponses) PostV1SessionConnectedWithResponse(ctx context.Con
 	return ParsePostV1SessionConnectedResp(rsp)
 }
 
-// DeleteSessionDataWithBodyWithResponse Purge all cloud-side engine data for the authenticated user
+// DeleteSessionDataWithBodyWithResponse Purge all cloud-side engine data for the authenticated user (async)
 //
-// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13307,9 +13695,9 @@ func (c *ClientWithResponses) DeleteSessionDataWithBodyWithResponse(ctx context.
 	return ParseDeleteSessionDataResp(rsp)
 }
 
-// DeleteSessionDataWithResponse Purge all cloud-side engine data for the authenticated user
+// DeleteSessionDataWithResponse Purge all cloud-side engine data for the authenticated user (async)
 //
-// Hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key. Requires typed confirmation. Idempotent — a second call after a completed purge returns zero counts. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. Protected by the snapshot lease; returns 409 snapshot_busy if the lease is contended.
+// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13320,6 +13708,21 @@ func (c *ClientWithResponses) DeleteSessionDataWithResponse(ctx context.Context,
 		return nil, err
 	}
 	return ParseDeleteSessionDataResp(rsp)
+}
+
+// GetSessionDataDeleteStatusWithResponse Poll the status of the authenticated user's data purge
+//
+// Reports the current purge state. 200 always (after auth) with one of four shapes: in_progress (flag set — purge active or stalled, with phase/request_id/attempts), deleted (terminal success, with the S3 / beat / DEK counters from the result tombstone), failed (terminal failure — the sweeper gave up; the user is unblocked but the data was not guaranteed deleted; retry the delete), or none (nothing running or remembered). Flag presence wins over the terminal tombstone: while a failed run is still flagged for the sweeper the report stays in_progress.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/session/data/delete/status (the `GetSessionDataDeleteStatus` operationId).
+func (c *ClientWithResponses) GetSessionDataDeleteStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSessionDataDeleteStatusResp, error) {
+	rsp, err := c.GetSessionDataDeleteStatus(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSessionDataDeleteStatusResp(rsp)
 }
 
 // PostV1SessionDisconnectWithBodyWithResponse Disconnect a cloud session (enter grace period)
@@ -15145,7 +15548,7 @@ func ParseAuthorizeDeviceResp(rsp *http.Response) (*AuthorizeDeviceResp, error) 
 		response.JSON401 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest StandardError
+		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -15233,7 +15636,7 @@ func ParseGetDeviceAuthorizationStatusResp(rsp *http.Response) (*GetDeviceAuthor
 		response.JSON401 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest StandardError
+		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -15269,7 +15672,7 @@ func ParseRevokeDeviceResp(rsp *http.Response) (*RevokeDeviceResp, error) {
 		response.JSON401 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest StandardError
+		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -15909,6 +16312,13 @@ func ParseDeleteSessionDataResp(rsp *http.Response) (*DeleteSessionDataResp, err
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest SessionDataDeleteResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest struct {
 			Error *DeleteSessionData400JSONResponseBodyError `json:"error,omitempty"`
@@ -15942,9 +16352,84 @@ func ParseDeleteSessionDataResp(rsp *http.Response) (*DeleteSessionDataResp, err
 		}
 		response.JSON429 = &dest
 
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers DeleteSessionDataResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetSessionDataDeleteStatusResp parses an HTTP response from a GetSessionDataDeleteStatusWithResponse call
+func ParseGetSessionDataDeleteStatusResp(rsp *http.Response) (*GetSessionDataDeleteStatusResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSessionDataDeleteStatusResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SessionDataDeleteStatusResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
 		var dest struct {
-			Error *DeleteSessionData503JSONResponseBodyError `json:"error,omitempty"`
+			ErrorCode *GetSessionDataDeleteStatus503JSONResponseBodyErrorCode `json:"error_code,omitempty"`
+			Message   *string                                                 `json:"message,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -15955,7 +16440,7 @@ func ParseDeleteSessionDataResp(rsp *http.Response) (*DeleteSessionDataResp, err
 
 	switch {
 	case rsp.StatusCode == 429:
-		var headers DeleteSessionDataResp429Headers
+		var headers GetSessionDataDeleteStatusResp429Headers
 		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
 			var value int
 			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
