@@ -4,7 +4,7 @@ openapi: 3.0.3
 # ============================================================================
 # The single, authoritative machine-readable contract for the entire Soulbits
 # Cloud platform REST surface. Covers two hosts:
-#   * cloud.soulbits.app   — auth, api keys, account, session, subscription
+#   * cloud.soulbits.app   — auth, api keys, account, subscription, platform versions
 #   * api.soulbits.app      — inference gateway (OpenAI-compatible + HSE audio)
 #
 # Version note: this spec targets OpenAPI 3.0.3 (not 3.1) so that both
@@ -15,11 +15,8 @@ openapi: 3.0.3
 # avoided; nullable fields use the 3.0 `nullable: true` keyword throughout.
 # Upgrading to 3.1 later is a mechanical edit if 3.1-only features are needed.
 #
-# The conduct-proxy WebSocket relay (connect.soulbits.app) is intentionally
-# OUT of scope for this spec — it is not a REST surface and OpenAPI cannot
-# describe WebSocket channels. The client libraries are REST-only; consumers
-# that need the conduct-proxy WS (e.g. Harmony Link plugins) implement HL's
-# own protocol directly and do not use these clients for it.
+# The client libraries are REST-only. Any WebSocket/streaming channel is out of
+# scope for this spec — OpenAPI cannot describe WebSocket channels.
 #
 # Source of truth: this file (pkg/openapi/openapi.yaml). It is embedded into
 # the auth-service binary via go:embed and served at GET /v1/openapi.yaml and
@@ -34,15 +31,15 @@ info:
   version: 1.0.0
   description: |
     Unified API for the Soulbits Cloud platform — authentication, API keys,
-    account, subscription, session brokering, and multi-modal inference (LLM,
+    account, subscription, and multi-modal inference (LLM,
     text embeddings, rerank, TTS, STT, VAD, voice embedding, voice/audio
     conversion).
 
     The Soulbits API is a meta-API spanning two REST hosts:
 
       1. **Cloud API** (`cloud.soulbits.app`) — authentication (email/password,
-         Google, Apple), API key management, account profile, session
-         lifecycle, subscription/tier information, and platform versioning.
+         Google, Apple), API key management, account profile,
+         subscription/tier information, and platform versioning.
       2. **Inference API** (`api.soulbits.app`) — OpenAI-compatible chat
          completions and text embeddings, Cohere-compatible rerank, plus the
          Harmony Speech Engine surface (TTS, STT, VAD, speaker embedding,
@@ -76,7 +73,7 @@ info:
 # ---------------------------------------------------------------------------
 servers:
   - url: https://beta.cloud.soulbits.app
-    description: Cloud API (auth, account, keys, session, subscription) — beta
+    description: Cloud API (auth, account, keys, subscription) — beta
   - url: https://cloud.soulbits.app
     description: Cloud API — production
   - url: https://beta.api.soulbits.app
@@ -88,11 +85,11 @@ tags:
   - name: Authentication
     description: Account registration, login, OAuth (Google/Apple), password, email verification, link/unlink.
   - name: API Keys
-    description: Create, list, revoke `sb_cloud_*` API keys (PASETO-authenticated only).
+    description: Create, list, and delete `sb_cloud_*` API keys (PASETO-authenticated only).
   - name: Account
     description: Current user profile + password change.
-  - name: Session
-    description: Cloud session lifecycle (connect/disconnect) and platform versions.
+  - name: Versions
+    description: Platform (Harmony Link image) versions.
   - name: Devices
     description: Device registration, authorization, and revocation (D-DEV-04 device authorization gate for cloud sessions).
   - name: Subscription
@@ -111,6 +108,8 @@ tags:
     description: Image generation (currently unavailable — no worker deployed).
   - name: OpenAPI
     description: Self-service download of this OpenAPI specification.
+  - name: Sync
+    description: Data-blind sync relay — pairing tokens, buffer status, and backup blobs (Phase 7-1/7-5). All payloads are opaque and engine-encrypted.
 
 # ---------------------------------------------------------------------------
 # Security schemes — both are `http bearer`; the server detects `sb_cloud_`
@@ -177,7 +176,7 @@ components:
 
   responses:
     StandardError:
-      description: "Error response. Inference gateway shape: `{\"error\":\"<code>\",\"message\":\"<text>\"}`. Auth-service shape: `{\"error\":\"<message>\"}`. Session-broker shape: `{\"error_code\":\"<code>\",\"message\":\"<text>\"}`."
+      description: "Error response. Inference gateway shape: `{\"error\":\"<code>\",\"message\":\"<text>\"}`. Auth-service shape: `{\"error\":\"<message>\"}`."
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -255,15 +254,14 @@ components:
             client branching (e.g. the device-auth flow) instead use the
             gateway shape: `{ "error": "<code>", "message": "<text>" }`
             with a stable code such as `device_not_registered`.
-          * Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
         All variants validate against this schema (extra fields allowed).
       properties:
         error:
           type: string
-          description: Error code (inference/session) OR message (auth-service).
+          description: Error code (inference) OR message (auth-service).
         error_code:
           type: string
-          description: Error code (session-broker variant).
+          description: Machine-readable error code (where the service emits one).
         message:
           type: string
           description: Human-readable message.
@@ -285,6 +283,95 @@ components:
           description: Present on 504 gateway_timeout — for debugging.
       additionalProperties: true
 
+    # ---- Account: W1 backup-key escrow (phase 2-5) ----
+    BackupKeyPutRequest:
+      type: object
+      required: [wrapped_key]
+      description: |
+        The client-wrapped backup DEK (2-6's W1 wrap), base64-encoded. The
+        backend never sees key material — it escrows the opaque blob under a
+        KMS-managed KEK. Scope is deliberately narrow: blob only, ≤1 KiB
+        decoded; there is no field for anything else.
+      properties:
+        wrapped_key:
+          type: string
+          format: byte
+          description: Base64-encoded, client-wrapped backup-key blob (≤1 KiB decoded).
+
+    BackupKeyResponse:
+      type: object
+      required: [wrapped_key, updated_at]
+      properties:
+        wrapped_key:
+          type: string
+          format: byte
+          description: The escrowed wrapped-key blob, base64-encoded.
+        updated_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    BackupKeyStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [stored, deleted]
+        updated_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    # ---- Account: sync-group key escrow + rotation flag (phase 7-4) ----
+    SyncKeyPutRequest:
+      type: object
+      required: [wrapped_key]
+      description: |
+        The client-wrapped sync-group key (7-2), base64-encoded. The backend
+        never sees key material — it escrows the opaque blob under a KMS-managed
+        KEK. Scope is deliberately narrow: blob only, ≤1 KiB decoded; there is
+        no field for anything else.
+      properties:
+        wrapped_key:
+          type: string
+          format: byte
+          description: Base64-encoded, client-wrapped sync-group-key blob (≤1 KiB decoded).
+
+    SyncKeyResponse:
+      type: object
+      required: [wrapped_key]
+      properties:
+        wrapped_key:
+          type: string
+          format: byte
+          description: The escrowed wrapped sync-group-key blob, base64-encoded.
+
+    SyncKeyStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [stored, deleted]
+        updated_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    SyncRotationPutRequest:
+      type: object
+      required: [required]
+      description: |
+        Sets the account's sync rotation-required flag. The portal sets
+        `required: true` ("Reset sync key"); `required: false` clears it (same as
+        DELETE).
+      properties:
+        required:
+          type: boolean
+
+    SyncRotationStatus:
+      type: object
+      required: [required]
+      description: |
+        Whether a sync-key rotation is pending for the account. Defaults to
+        `false` (no row ⇒ not required).
+      properties:
+        required:
+          type: boolean
+          description: True when the portal has flagged a rotation the app must drive.
+
     # ---- Auth: token response ----
     TokenResponse:
       type: object
@@ -302,7 +389,7 @@ components:
     # ---- Auth: profile ----
     UserProfile:
       type: object
-      required: [id, email, display_name, avatar_url, email_verified, created_at]
+      required: [id, email, display_name, avatar_url, email_verified, created_at, has_password]
       properties:
         id: { type: string, format: uuid }
         email: { type: string, format: email }
@@ -312,6 +399,105 @@ components:
           description: User profile picture as a data URL (`data:image/...;base64,...`) or external URL. Empty string when unset.
         email_verified: { type: boolean }
         created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+        has_password:
+          type: boolean
+          description: |
+            Whether the account has a password set. Accounts created via
+            Google/Apple Sign-In have no password; clients use this to render a
+            "Set Password" flow instead of "Change Password".
+
+            This is also the gate for the two guarded account operations:
+            email change and provider unlink both refuse with
+            `403 password_required` while it is false, because a password-less
+            account's only credential is the provider link.
+        previous_email:
+          type: string
+          format: email
+          nullable: true
+          description: The address the account used before its most recent email change. Absent until one has happened.
+        email_changed_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          nullable: true
+          description: When the most recent email change was committed.
+
+    EmailChangeStatus:
+      type: object
+      required: [pending, awaiting_new_confirmation, awaiting_old_confirmation]
+      properties:
+        pending:
+          type: boolean
+          description: True while a non-expired change is staged.
+        new_email:
+          type: string
+          format: email
+          description: The address being moved to. Omitted when no change is pending.
+        awaiting_new_confirmation:
+          type: boolean
+          description: True between stages 2 and 3 — the new address has not confirmed yet.
+        awaiting_old_confirmation:
+          type: boolean
+          description: True between stages 3 and 5 — the approval email has been sent to the current address.
+        expires_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    LinkedIdentity:
+      type: object
+      required: [provider, created_at]
+      description: One OAuth sign-in method attached to the account.
+      properties:
+        provider:
+          type: string
+          enum: [google, apple]
+        created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    # ---- Auth: active sessions ----
+    SessionListItem:
+      type: object
+      required: [session_id, current, platform, created_at, last_active_at, expires_at]
+      description: |
+        One signed-in session (one device or browser). A session is created per
+        sign-in and survives token rotation, so this list shows every place the
+        account is currently signed in.
+      properties:
+        session_id: { type: string, format: uuid, description: Session identifier (stable across token refreshes). }
+        current:
+          type: boolean
+          description: |
+            True for the session that issued the requesting token. The portal
+            labels it and does not offer to sign it out (use sign out instead).
+        platform:
+          type: string
+          enum: [android, ios, web, unknown]
+          description: Derived from the client User-Agent.
+        user_agent:
+          type: string
+          description: Raw User-Agent recorded for the session. Omitted when unavailable.
+        ip_address:
+          type: string
+          description: Client IP at creation, or the most recent one observed. Omitted when unavailable.
+        created_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+        last_active_at:
+          allOf:
+            - { $ref: "#/components/schemas/RFC3339Timestamp" }
+          description: Most recent activity seen for this session (falls back to `created_at`).
+        expires_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    SessionListResponse:
+      type: object
+      required: [sessions]
+      properties:
+        sessions:
+          type: array
+          items: { $ref: "#/components/schemas/SessionListItem" }
+
+    RevokeAllSessionsResponse:
+      type: object
+      required: [message, sessions_revoked]
+      properties:
+        message: { type: string }
+        sessions_revoked:
+          type: integer
+          description: Number of sessions signed out.
 
     # ---- Auth: API keys ----
     APIKeyCreated:
@@ -332,7 +518,8 @@ components:
 
     APIKeyListItem:
       type: object
-      required: [id, name, prefix, created_at, last_used_at, revoked_at]
+      description: Metadata for one API key. Deleted keys are never returned, so there is no revoked/deleted field.
+      required: [id, name, prefix, created_at, last_used_at]
       properties:
         id: { type: string, format: uuid }
         name: { type: string }
@@ -342,145 +529,6 @@ components:
           allOf:
             - { $ref: "#/components/schemas/RFC3339Timestamp" }
           nullable: true
-        revoked_at:
-          allOf:
-            - { $ref: "#/components/schemas/RFC3339Timestamp" }
-          nullable: true
-
-    # ---- Session ----
-    SessionConnectResponse:
-      type: object
-      required: [session_id, status]
-      properties:
-        session_id: { type: string, format: uuid }
-        proxy_endpoint:
-          type: string
-          description: Conduct proxy WebSocket base URL for this session (e.g. `wss://connect.soulbits.app`). Present when status is `ready` or `active`.
-        status:
-          type: string
-          enum: [provisioning, ready, active, failed]
-        retry_after_ms:
-          type: integer
-          description: Milliseconds to wait before polling again. Present when status is `provisioning`.
-        failure_reason:
-          type: string
-          description: Human-readable failure reason. Present when status is `failed`.
-        image_version:
-          type: string
-          nullable: true
-          description: HL image version assigned from the warm pool.
-
-    SessionDisconnectResponse:
-      type: object
-      required: [status, grace_period_until]
-      properties:
-        status:
-          type: string
-          enum: [grace_period]
-        grace_period_until: { $ref: "#/components/schemas/RFC3339Timestamp" }
-
-    SessionConnectedResponse:
-      type: object
-      required: [status]
-      properties:
-        status: { type: string, enum: [connected] }
-
-    SessionDataDeleteResponse:
-      type: object
-      required: [status]
-      description: >
-        Async purge initiation. The purge runs in the background; poll
-        `GET /v1/session/data/delete/status` for the terminal outcome
-        ("deleted" or "failed").
-      properties:
-        status:
-          type: string
-          enum: [in_progress]
-        request_id:
-          type: string
-          description: Poll identifier — echoed by the status endpoint while the run is in flight.
-
-    SessionDataDeleteStatusResponse:
-      oneOf:
-        - type: object
-          required: [status, phase, request_id, attempts]
-          description: >
-            A purge is active (flag set) — the run is in flight or stalled.
-            Flag presence wins over the terminal tombstone, so a failed run
-            still being retried by the sweeper reports in_progress.
-          properties:
-            status:
-              type: string
-              enum: [in_progress]
-            phase:
-              type: string
-              description: Coarse purge phase (kill, routing, s3, beats, dek, done).
-            request_id:
-              type: string
-            attempts:
-              type: integer
-              description: Sweeper resume attempts so far.
-        - type: object
-          required: [status, request_id, attempts, objects_deleted, versions_deleted, beats_removed, dek_deleted, finished_at]
-          description: Terminal success — all cloud data permanently deleted; the user can connect again.
-          properties:
-            status:
-              type: string
-              enum: [deleted]
-            request_id:
-              type: string
-            attempts:
-              type: integer
-            objects_deleted:
-              type: integer
-              description: S3 objects (incl. delete markers) removed.
-            versions_deleted:
-              type: integer
-              description: S3 object versions permanently removed.
-            beats_removed:
-              type: integer
-              description: due:lifecycle ZSET members removed.
-            dek_deleted:
-              type: boolean
-              description: Whether the per-user encryption key was deleted.
-            finished_at:
-              type: integer
-              description: Unix seconds when the purge finished.
-        - type: object
-          required: [status, request_id, attempts, error, objects_deleted, versions_deleted, beats_removed, dek_deleted, finished_at]
-          description: >
-            Terminal failure — the resume sweeper gave up on the purge; the
-            flag was cleared (user unblocked) but deletion was NOT guaranteed.
-            Retry the delete. Counters are always serialized (zero here).
-          properties:
-            status:
-              type: string
-              enum: [failed]
-            request_id:
-              type: string
-            attempts:
-              type: integer
-            error:
-              type: string
-              description: Failure reason (e.g. "attempt cap reached").
-            objects_deleted:
-              type: integer
-            versions_deleted:
-              type: integer
-            beats_removed:
-              type: integer
-            dek_deleted:
-              type: boolean
-            finished_at:
-              type: integer
-              description: Unix seconds when the purge gave up.
-        - type: object
-          required: [status]
-          description: No purge flag and no terminal result — nothing running or remembered.
-          properties:
-            status:
-              type: string
-              enum: [none]
 
     VersionsResponse:
       type: object
@@ -601,6 +649,158 @@ components:
         authorization_pending:
           type: boolean
           description: True while a code/token pair is outstanding for this device.
+
+    # ---- Sync (Phase 7-1) ----
+    SyncPairingRequest:
+      type: object
+      required: [device_id, dataset_id]
+      description: Mint a short-lived, single-use pairing token binding (user, device, dataset).
+      properties:
+        device_id: { type: string }
+        dataset_id: { type: string, description: The engine's dataset id (one sync group per dataset). }
+
+    SyncPairingResponse:
+      type: object
+      required: [token, dataset_id, device_id, expires_at]
+      properties:
+        token: { type: string, description: Opaque ~128-bit token, shown ONCE. }
+        dataset_id: { type: string }
+        device_id: { type: string }
+        expires_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    # ---- Device enrollment: delegated enrollment grants (Phase 7-15) ----
+    EnrollmentGrantRequest:
+      type: object
+      required: [device_id]
+      description: Mint a short-lived, single-use delegated-enrollment grant from an already-authorized device.
+      properties:
+        device_id:
+          type: string
+          description: The MINTING device (the caller's, already authorized) that vouches for the new device.
+
+    EnrollmentGrantResponse:
+      type: object
+      required: [grant, expires_in]
+      description: The opaque grant is shown ONCE; only its SHA-256 is stored.
+      properties:
+        grant:
+          type: string
+          description: Opaque ≥128-bit single-use grant.
+        expires_in:
+          type: integer
+          description: Grant lifetime in seconds (300 = 5 min).
+
+    DeviceEnrollRequest:
+      type: object
+      required: [grant, device_id]
+      description: |
+        Redeem a delegated-enrollment grant for the enrolled device's OWN
+        device-scoped session. NO account auth — the grant IS the credential.
+        The device is registered authorized because the minting device vouched
+        for it. Enrolled devices are full devices and may themselves mint.
+      properties:
+        grant: { type: string, description: The single-use grant from the enrollment/QR payload. }
+        device_id: { type: string, description: Per-install device identity of the NEW device. }
+        device_name: { type: string, description: Display name of the new device (metadata; no server column). }
+        platform:
+          type: string
+          enum: [android, ios, web]
+          description: Optional; the enrolling device's platform. Defaults to `android` when omitted.
+
+    # ---- Device connect sessions: portal-mediated engine sign-in (Phase 7-15 C2) ----
+    DeviceConnectSessionRequest:
+      type: object
+      required: [device_id]
+      description: >
+        The engine announces itself. Public — the engine is not authenticated
+        yet; the portal signs the user in and approves.
+      properties:
+        device_id:
+          type: string
+          description: Per-install identity of the desktop engine.
+        device_name:
+          type: string
+          description: 'Display name (e.g. "Studio-PC").'
+        platform:
+          type: string
+          enum: [android, ios, web]
+          description: Optional; recorded on the approved device row. Defaults to `web`.
+
+    DeviceConnectSessionResponse:
+      type: object
+      required: [connect_id, session_secret, connect_url, expires_in]
+      description: >
+        `session_secret` is shown ONCE (only its SHA-256 is stored). `connect_url`
+        is the portal URL the engine opens in the system browser.
+      properties:
+        connect_id:
+          type: string
+          description: UUID identifying the connect session.
+        session_secret:
+          type: string
+          description: 43-char base64url 256-bit secret; the Bearer credential for the status poll.
+        connect_url:
+          type: string
+          description: 'Absolute portal URL: <PORTAL_BASE_URL>/connect?request=<connect_id>.'
+        expires_in:
+          type: integer
+          description: Lifetime in seconds (600 = 10 min).
+
+    DeviceConnectStatusResponse:
+      type: object
+      required: [status]
+      description: >
+        `status` is one of `pending|approved|consumed|expired`. The token fields
+        are populated ONLY on the `approved` transition and returned exactly
+        once — the row is marked consumed in the same statement.
+      properties:
+        status: { type: string, enum: [pending, approved, consumed, expired] }
+        token: { type: string, description: 'PASETO session token (approved only, once).' }
+        refresh_token: { type: string, description: 'Opaque refresh token (approved only, once).' }
+        expires_at: { $ref: "#/components/schemas/RFC3339Timestamp" }
+
+    DeviceConnectMetaResponse:
+      type: object
+      required: [device_name, status]
+      description: No-secret metadata read for the portal page (device name + status).
+      properties:
+        device_name: { type: string }
+        status: { type: string, enum: [pending, approved, consumed, expired] }
+
+    DeviceConnectApproveResponse:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [ok] }
+
+    SyncQuotas:
+      type: object
+      description: Per-tier sync-relay quotas.
+      properties:
+        sync_buffer_mb: { type: integer, description: Offline-buffer byte cap (MB). }
+        sync_devices: { type: integer, description: Max devices in one sync group. }
+        backup_storage_mb: { type: integer, description: Backup blob storage cap (MB). }
+
+    SyncStatus:
+      type: object
+      properties:
+        dataset_id: { type: string }
+        device_id: { type: string }
+        connected_devices: { type: integer }
+        buffered_frames: { type: integer }
+        buffered_bytes: { type: integer }
+        buffer_cap_bytes: { type: integer }
+        last_acked_seq: { type: integer }
+        overflow: { type: boolean, description: True when the buffer dropped oldest frames (engine re-baselines). }
+        backup_bytes: { type: integer }
+        quotas: { $ref: "#/components/schemas/SyncQuotas" }
+
+    BackupPutResponse:
+      type: object
+      properties:
+        sha256: { type: string }
+        size: { type: integer }
+        device_id: { type: string }
 
     # ---- Subscription ----
     TierLimits:
@@ -1285,6 +1485,41 @@ paths:
         "400": { $ref: "#/components/responses/StandardError" }
         "401": { $ref: "#/components/responses/StandardError" }
 
+  /v1/auth/device/enroll:
+    post:
+      operationId: enrollDevice
+      tags: [Authentication]
+      summary: Redeem a delegated-enrollment grant for a device session
+      description: >
+        Exchanges a single-use delegated-enrollment grant for the enrolled
+        device's OWN device-scoped session (PASETO + refresh token) — the same
+        token shape every other sign-in path returns. NO account authentication
+        is required: the grant is the credential. The device is registered as
+        authorized because the minting device vouched for it. Enrolled devices
+        are full devices and may themselves mint grants.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DeviceEnrollRequest" }
+      responses:
+        "200":
+          description: Enrolled; device-scoped session issued.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401":
+          description: 'Invalid, expired, or already-used grant — `error: enrollment_grant_invalid`.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
   /v1/auth/verify:
     get:
       tags: [Authentication]
@@ -1564,6 +1799,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/UserProfile" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
     patch:
       tags: [Account]
       summary: Update the current user profile
@@ -1593,11 +1829,361 @@ paths:
               schema: { $ref: "#/components/schemas/UserProfile" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
+  # ---- Email change (five-stage) ---------------------------------------
+  /v1/auth/email/change/request:
+    post:
+      tags: [Account]
+      summary: Start an email change
+      description: |
+        Stage 1–2. Step-up with the account password, then stage a move to
+        `new_email`.
+
+        The change is confirmed from BOTH mailboxes: a token is mailed to the
+        TARGET address first (stage 3), and only after that is a blocking
+        approval token mailed to the CURRENT address naming the target
+        (stage 4). Neither address can complete the change alone.
+
+        Requires a password on the account. Google/Apple-created accounts have
+        none and receive `403 password_required` — they must set a password
+        first (`PUT /v1/auth/password`), after which the normal flow applies.
+        This prevents the email change from silently minting a second credential
+        on an account whose only credential is the provider link.
+
+        New requests invalidate any still-pending one. A 60s per-user cooldown
+        applies (`429`, with `retry_after`).
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, new_email]
+              properties:
+                current_password:
+                  type: string
+                  format: password
+                  description: Current account password (step-up challenge).
+                new_email: { type: string, format: email }
+      responses:
+        "202":
+          description: |
+            Change staged AND the confirmation email was accepted for delivery
+            to the new address. A `202` is a promise that mail is on its way — if
+            the hand-off fails this endpoint returns `500` instead, so clients
+            should only tell the user to check their inbox on success.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400":
+          description: Missing/invalid fields.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401":
+          description: Not authenticated, or the current password is incorrect.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "403":
+          description: API keys cannot change the email, or the account has no password (`password_required`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: The address is already in use (`email_in_use`) or is already the account's address (`same_email`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "429":
+          description: Per-user cooldown still active.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          description: |
+            The change was staged but the confirmation email could not be sent.
+            The request remains resumable (the new address can be confirmed, or
+            the mail re-sent) — the staged token is not consumed here.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/auth/email/change/confirm-new:
+    post:
+      tags: [Account]
+      summary: Confirm the new email address (stage 3)
+      description: |
+        Redeems the single-use token mailed to the TARGET address. On success a
+        blocking approval email is sent to the CURRENT address naming the target.
+
+        Must be called by the authenticated owner of the request — the emailed
+        token is not sufficient on its own.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+      responses:
+        "200":
+          description: New address confirmed; approval email sent to the current address.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "404": { $ref: "#/components/responses/StandardError" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "410": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/email/change/confirm:
+    post:
+      tags: [Account]
+      summary: Approve and commit the email change (stage 5)
+      description: |
+        Redeems the single-use token mailed to the CURRENT address and commits
+        the change. The previous address is retained for audit, and a Valkey
+        cutoff signs out every session (the account owner must sign in again).
+
+        Must be called by the authenticated owner of the request.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+      responses:
+        "200":
+          description: Email changed; all sessions signed out.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "404": { $ref: "#/components/responses/StandardError" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "409":
+          description: The new address has not been confirmed yet, or it was taken in the meantime (`email_in_use`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "410": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/email/change/resend:
+    post:
+      tags: [Account]
+      summary: Re-send the current step's confirmation email
+      description: |
+        Recovery path for "the confirmation email never arrived" (spam, a typo'd
+        forward, or a failed hand-off).
+
+        Re-mints the token for whichever stage the change is CURRENTLY on and
+        re-sends only that one email. It never advances the flow: the approval
+        (stage 4) branch is unreachable until the new address has confirmed, so
+        this cannot be used to skip stage 3. The previously issued link for that
+        stage stops working, as the newest token replaces it.
+
+        Rate-limited to one resend per 60 s (`429` with `retry_after`), matching
+        the per-user cooldown on starting a change.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Confirmation email re-sent for the current stage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "404":
+          description: No pending change (`no_pending_change`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "429":
+          description: Resend cooldown still active.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/auth/email/change/cancel:
+    post:
+      tags: [Account]
+      summary: Cancel a pending email change
+      description: |
+        Abandons a pending change so a different address can be used immediately
+        — the "I typed the wrong address" / "I changed my mind" case — instead of
+        the request blocking a new attempt until it expires.
+
+        Voids BOTH tokens (including any link already delivered), because it sets
+        the same single-use tombstone every confirmation lookup guards on.
+        Idempotent: cancelling when nothing is pending returns 200.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Cancelled (or nothing was pending).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/email/change/status:
+    get:
+      tags: [Account]
+      summary: Current email-change state
+      description: Reports whether a pending change exists and which step it awaits, so the portal can resume after a reload.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Pending-change state.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EmailChangeStatus" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+
+  # ---- Active sessions -------------------------------------------------
+  /v1/auth/sessions:
+    get:
+      tags: [Account]
+      summary: List active sessions
+      description: |
+        Every signed-in session for the account — one per device or browser —
+        most recently active first, with the calling session marked `current`.
+
+        Signing out one session (`DELETE /v1/auth/sessions/{session_id}`) kills
+        that session's tokens immediately, not just its refresh token.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Active sessions.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionListResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+    delete:
+      tags: [Account]
+      summary: Sign out everywhere
+      description: |
+        Ends EVERY session for the account, including the calling one. The
+        caller must sign in again afterwards; this is the deliberate "sign out
+        everywhere" action (the same invalidation the email-change flow applies
+        on commit).
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: All sessions ended.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RevokeAllSessionsResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/sessions/{session_id}:
+    delete:
+      tags: [Account]
+      summary: Sign out one session
+      description: |
+        Ends a single session — one device or browser. Refused for the calling
+        session (`400 cannot_revoke_current_session`), which must be ended with
+        `POST /v1/auth/logout` so the client knows it has been signed out.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+          description: Session identifier from `GET /v1/auth/sessions`.
+      responses:
+        "204":
+          description: Session ended.
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "404": { $ref: "#/components/responses/StandardError" }
+
+  /v1/auth/identities:
+    get:
+      tags: [Account]
+      summary: List linked sign-in providers
+      description: |
+        Returns the OAuth providers (Google, Apple) attached to the account so
+        the portal can offer a disconnect action. Disconnecting uses
+        `DELETE /v1/auth/link/{google,apple}`, which refuses while the account
+        has no password (lockout guard).
+
+        The synthetic `email` identity from registration is not listed.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Linked providers (possibly empty).
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LinkedIdentity" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+
   /v1/auth/password:
     put:
       tags: [Account]
       summary: Change password
-      description: Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+      description: |
+        Changes the authenticated user's password and writes a Valkey cutoff
+        (forces re-login everywhere). `old_password` is required and verified.
+
+        Accounts created via Google/Apple Sign-In have NO password, so they
+        cannot use this endpoint — setting a FIRST password creates a credential
+        and is gated behind an email-confirmed, session-bound flow
+        (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+        account receives `409 password_setup_required`.
       security:
         - paseto: []
       servers:
@@ -1611,7 +2197,10 @@ paths:
               type: object
               required: [old_password, new_password]
               properties:
-                old_password: { type: string, format: password }
+                old_password:
+                  type: string
+                  format: password
+                  description: Current password. Required and verified.
                 new_password: { type: string, format: password, minLength: 8 }
       responses:
         "200":
@@ -1619,7 +2208,531 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Message" }
+        "400":
+          description: Invalid request — missing/new-password validation failure, or `old_password` omitted.
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "409":
+          description: The account has no password yet (`password_setup_required`) — use the first-password setup flow.
+
+  /v1/auth/password/setup/request:
+    post:
+      tags: [Account]
+      summary: Request first-password setup (OAuth-only accounts)
+      description: |
+        Stages a single-use token and mails it to the account's OWN address. The
+        password is only set when the token is redeemed via
+        `POST /v1/auth/password/setup/confirm` by an authenticated caller, so a
+        stolen session token alone can never create a credential.
+
+        Refused with `409 password_already_set` when the account already has a
+        password (use `PUT /v1/auth/password` instead). Refused with `403` for
+        API-key callers.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "202":
+          description: Setup email sent.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "409":
+          description: The account already has a password (`password_already_set`).
+
+  /v1/auth/password/setup/confirm:
+    post:
+      tags: [Account]
+      summary: Confirm first-password setup
+      description: |
+        Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+        sets the first password. The caller must be authenticated as the request
+        owner (the token is session-bound), so a forwarded or leaked mail alone
+        is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, new_password]
+              properties:
+                token: { type: string }
+                new_password: { type: string, format: password, minLength: 8 }
+      responses:
+        "200":
+          description: Password set.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "404": { $ref: "#/components/responses/StandardError" }
+        "409":
+          description: The account already has a password (`password_already_set`).
+        "410":
+          description: Token expired.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/auth/account:
+    delete:
+      tags: [Account]
+      summary: Request permanent deletion of the current user's account (email-confirmed)
+      description: |
+        STAGES a permanent account deletion — it does NOT delete anything yet.
+        Because deletion is irreversible, it is gated behind proof of control of
+        the account's OWN mailbox: this call validates the typed confirmation
+        (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+        confirmation link to the account address. The deletion commits only when
+        that link is redeemed via `POST /v1/auth/account/confirm` by an
+        authenticated caller, so a stolen session alone cannot destroy the
+        account.
+
+        Step-up (verified when supplied): `current_password` for passworded
+        accounts, or `confirm_email` (the user re-typing the account address) for
+        passwordless Google/Apple accounts. The emailed link is the mandatory
+        hard confirmation for every account.
+
+        On commit, the user's CLOUD data is purged first (live sessions killed,
+        every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+        then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+        keys, refresh tokens, devices, themes, subscriptions, sessions,
+        identities and email/password-reset tokens).
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [confirm]
+              properties:
+                confirm:
+                  type: string
+                  description: Must be exactly `"DELETE"`.
+                current_password:
+                  type: string
+                  description: Step-up password (passworded accounts).
+                confirm_email:
+                  type: string
+                  description: Re-typed account email (passwordless Google/Apple accounts).
+      responses:
+        "202":
+          description: Deletion staged; a confirmation link was emailed to the account address.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400":
+          description: Confirmation missing/incorrect, or `confirm_email` did not match.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot delete the account.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          description: The confirmation email could not be sent.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/auth/account/confirm:
+    post:
+      tags: [Account]
+      summary: Confirm and commit a staged account deletion
+      description: |
+        Redeems the single-use token mailed to the account address and permanently
+        deletes the account. The token is bound to the authenticated caller, so a
+        forwarded or leaked email alone cannot delete the account. The deletion
+        itself is a single synchronous database transaction (every account-scoped
+        row is removed via FK cascade); the deleted user's hosted-backup blobs in
+        s3-sync-backup are purged asynchronously afterwards. Irreversible.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                  description: The single-use token from the confirmation email.
+      responses:
+        "202":
+          description: >
+            Account deleted. The database deletion is committed and final; residual
+            best-effort cleanup (the async S3 purge of the user's hosted-backup
+            blobs) may still be in flight — do not wait or retry for it.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "400":
+          description: Token missing.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot delete the account, or the link belongs to a different account.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: Invalid or already-used confirmation link.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "410":
+          description: The confirmation link has expired.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/account/backup-key:
+    put:
+      tags: [Account]
+      summary: Escrow (or replace) the account's wrapped backup key (W1)
+      description: |
+        Stores a single opaque, client-wrapped backup-key blob for the account
+        (2-6's W1 account escrow). The backend never generates, derives or
+        inspects key material: it escrows the blob under a KMS-managed KEK
+        (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+        so this can never become a bulk-storage endpoint. PASETO (interactive)
+        only; API keys are refused. Re-escrowing replaces the previous blob.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BackupKeyPutRequest" }
+      responses:
+        "200":
+          description: Escrowed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BackupKeyStatus" }
+        "400":
+          description: Missing or non-base64 `wrapped_key`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the backup-key escrow.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "413":
+          description: The decoded wrapped-key blob exceeds the 1 KiB limit.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Escrow unavailable (no KMS configured).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    get:
+      tags: [Account]
+      summary: Fetch the account's escrowed wrapped backup key (W1)
+      description: |
+        Returns the account's escrowed wrapped-key blob for restore (2-6). 404
+        when no key is escrowed. PASETO (interactive) only.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: The escrowed wrapped-key blob.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BackupKeyResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the backup-key escrow.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: No backup key is escrowed for this account.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Escrow unavailable (no KMS configured).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [Account]
+      summary: Drop the account's escrowed backup key (W1)
+      description: |
+        Removes the account's escrowed wrapped-key blob. Idempotent. Used by
+        the account-deletion rework (6-2) and by a user-initiated "reset backup
+        key". PASETO (interactive) only.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Deleted (or already absent).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BackupKeyStatus" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the backup-key escrow.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Escrow unavailable (no KMS configured).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/account/sync-key:
+    put:
+      tags: [Account]
+      summary: Escrow (or replace) the account's wrapped sync-group key (7-4)
+      description: |
+        Stores a single opaque, client-wrapped sync-group-key blob for the
+        account (the second escrow slot beside the backup key, 7-2's sync-group
+        key). The backend never generates, derives or inspects key material: it
+        escrows the blob under a KMS-managed KEK (envelope). Scope is
+        deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+        only; API keys are refused. Re-escrowing replaces the previous blob.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SyncKeyPutRequest" }
+      responses:
+        "200":
+          description: Escrowed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncKeyStatus" }
+        "400":
+          description: Missing or non-base64 `wrapped_key`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the sync key escrow.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "413":
+          description: The decoded wrapped-key blob exceeds the 1 KiB limit.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Escrow unavailable (no KMS configured).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    get:
+      tags: [Account]
+      summary: Fetch the account's escrowed wrapped sync-group key (7-4)
+      description: |
+        Returns the account's escrowed wrapped sync-group-key blob so a joining
+        device can unwrap it (7-2/7-3). 404 when no key is escrowed. PASETO
+        (interactive) only.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: The escrowed wrapped sync-group-key blob.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncKeyResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the sync key escrow.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: No sync key is escrowed for this account.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Escrow unavailable (no KMS configured).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [Account]
+      summary: Drop the account's escrowed sync-group key (7-4)
+      description: |
+        Removes the account's escrowed wrapped sync-group-key blob. Idempotent.
+        Used when all devices are revoked and the group restarts fresh. PASETO
+        (interactive) only.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Deleted (or already absent).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncKeyStatus" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the sync key escrow.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Escrow unavailable (no KMS configured).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/account/sync-rotation-required:
+    get:
+      tags: [Account]
+      summary: Read the account's sync rotation-required flag (7-4)
+      description: |
+        Whether a sync-key rotation is pending. Defaults to `false`. The app
+        polls this and, when true, drives the engine's engine-authoritative
+        rotate and re-escrows the new wrapped key. PASETO (interactive) only.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: The rotation-required flag.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncRotationStatus" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the sync rotation flag.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Rotation flag unavailable.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    put:
+      tags: [Account]
+      summary: Set the account's sync rotation-required flag (7-4)
+      description: |
+        The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+        rotation; `{"required": false}` clears it. The portal never sees key
+        material. PASETO (interactive) only.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SyncRotationPutRequest" }
+      responses:
+        "200":
+          description: Flag updated.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncRotationStatus" }
+        "400":
+          description: Missing `required`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the sync rotation flag.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Rotation flag unavailable.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [Account]
+      summary: Clear the account's sync rotation-required flag (7-4)
+      description: |
+        Clears the flag after the app has rotated the engine key and re-escrowed
+        it. Idempotent. PASETO (interactive) only.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      responses:
+        "200":
+          description: Flag cleared.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncRotationStatus" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: API keys cannot access the sync rotation flag.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503":
+          description: Rotation flag unavailable.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
 
   /v1/auth/link/google:
     post:
@@ -1651,7 +2764,10 @@ paths:
     delete:
       tags: [Authentication]
       summary: Unlink the Google identity
-      description: Lockout guard — refuses if no password is set.
+      description: |
+        Lockout guard — refuses with `403 password_required` if the account has
+        no password, because the provider link would then be its only credential.
+        Set a password first (`PUT /v1/auth/password`).
       security:
         - paseto: []
       servers:
@@ -1692,7 +2808,10 @@ paths:
     delete:
       tags: [Authentication]
       summary: Unlink the Apple identity
-      description: Lockout guard — refuses if no password is set.
+      description: |
+        Lockout guard — refuses with `403 password_required` if the account has
+        no password, because the provider link would then be its only credential.
+        Set a password first (`PUT /v1/auth/password`).
       security:
         - paseto: []
       servers:
@@ -1709,8 +2828,8 @@ paths:
       tags: [API Keys]
       summary: Create an API key
       description: |
-        Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-        API keys CANNOT create/list/revoke other API keys.
+        Returns the full key ONCE. Max 5 keys per user.
+        API keys CANNOT create/list/delete other API keys.
       security:
         - paseto: []
       servers:
@@ -1758,8 +2877,13 @@ paths:
   /v1/auth/api-keys/{id}:
     delete:
       tags: [API Keys]
-      summary: Revoke an API key
-      description: Idempotent (already-revoked returns 204). Writes a negative Valkey cache entry so revocation is effective within milliseconds.
+      summary: Delete an API key
+      description: |
+        Permanently deletes an API key. The key disappears from the list, can never
+        authenticate again, and no longer counts towards the 5-key limit. Idempotent
+        (deleting an unknown or already-deleted key returns 204). Purges the positive
+        auth-cache entry and writes a negative Valkey cache entry so the key stops
+        working within milliseconds.
       security:
         - paseto: []
       servers:
@@ -1769,217 +2893,12 @@ paths:
         - $ref: "#/components/parameters/ApiKeyId"
       responses:
         "204":
-          description: Revoked (or was already revoked).
+          description: Deleted (or the key did not exist / was already deleted).
         "401": { $ref: "#/components/responses/Unauthorized" }
-
-  # ---- Session ----------------------------------------------------------
-  /v1/session/connect:
-    post:
-      tags: [Session]
-      summary: Connect a cloud session
-      description: Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-      servers:
-        - url: https://beta.cloud.soulbits.app
-        - url: https://cloud.soulbits.app
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                version: { type: string, description: Optional HL image version. }
-                device_id:
-                  type: string
-                  description: >
-                    Per-install device identity for the D-DEV-04 authorization
-                    gate. The broker refuses to provision for unauthorized
-                    devices (403 device_authorization_required). Absent on first
-                    connect triggers the email auth-code flow.
-      responses:
-        "200":
-          description: Session is ready — the client can open a WebSocket to the `proxy_endpoint`.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SessionConnectResponse" }
-        "202":
-          description: Session is provisioning — retry after `retry_after_ms` milliseconds.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SessionConnectResponse" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403":
-          description: Device authorization required — the connecting device must complete the email auth-code flow before a session can be provisioned.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    enum: [device_authorization_required]
-        "409":
-          description: A data purge is in progress for this user — connecting is blocked until it completes.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error: { type: string, enum: [purge_in_progress] }
-                  retry_after_ms: { type: integer }
-        "429": { $ref: "#/components/responses/RateLimited" }
-        "503":
-          description: Session provisioning failed — see `failure_reason`.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SessionConnectResponse" }
-
-  /v1/session/disconnect:
-    post:
-      tags: [Session]
-      summary: Disconnect a cloud session (enter grace period)
-      description: Transitions the session to a 5-minute grace period, then schedules cleanup.
-      servers:
-        - url: https://beta.cloud.soulbits.app
-        - url: https://cloud.soulbits.app
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                session_id: { type: string, format: uuid }
-                reason: { type: string }
-      responses:
-        "200":
-          description: Grace period entered.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SessionDisconnectResponse" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-
-  /v1/session/connected:
-    post:
-      tags: [Session]
-      summary: Report session connected (proxy → broker)
-      description: Called by the conduct proxy when the WebSocket upgrade completes; cancels the connect timeout.
-      servers:
-        - url: https://beta.cloud.soulbits.app
-        - url: https://cloud.soulbits.app
-      responses:
-        "200":
-          description: Connected acknowledged.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SessionConnectedResponse" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-
-  /v1/session/data/delete:
-    post:
-      operationId: deleteSessionData
-      tags: [Session]
-      summary: Purge all cloud-side engine data for the authenticated user (async)
-      description: >
-        Starts an asynchronous purge: hard-kills any live session for the
-        user (force-stop, no graceful snapshot upload), then permanently
-        deletes ALL versions of the user's engine data from the sessions
-        bucket (sync DB + RAG vectors), removes the user's autonomy beat
-        schedule, and deletes the per-user encryption key — all in the
-        background. Requires typed confirmation. Returns 202 Accepted
-        immediately with a request_id; poll
-        GET /v1/session/data/delete/status for the terminal outcome
-        ("deleted" with counters, or "failed"). Idempotent — a second call
-        after a completed purge restarts an empty (zero-count) purge. While a
-        purge is in flight, /v1/session/connect returns 409
-        purge_in_progress. The purge holds the snapshot lease before it
-        starts; a contended lease returns 409 snapshot_busy (the client
-        auto-retries).
-      servers:
-        - url: https://beta.cloud.soulbits.app
-        - url: https://cloud.soulbits.app
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [confirm]
-              properties:
-                confirm:
-                  type: string
-                  enum: [DELETE]
-                  description: Typed confirmation guard against accidental calls.
-      responses:
-        "202":
-          description: Purge accepted and running in the background. Poll GET /v1/session/data/delete/status with the request_id.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SessionDataDeleteResponse" }
-        "200":
-          description: Already in progress by another request — the same in_progress shape as 202.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SessionDataDeleteResponse" }
-        "400":
-          description: Missing or wrong confirmation string.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error: { type: string, enum: [confirmation_required] }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "409":
-          description: Snapshot lease busy — retry after retry_after_ms.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error: { type: string, enum: [snapshot_busy] }
-                  retry_after_ms: { type: integer }
-        "429": { $ref: "#/components/responses/RateLimited" }
-
-  /v1/session/data/delete/status:
-    get:
-      operationId: getSessionDataDeleteStatus
-      tags: [Session]
-      summary: Poll the status of the authenticated user's data purge
-      description: >
-        Reports the current purge state. 200 always (after auth) with one of
-        four shapes: in_progress (flag set — purge active or stalled, with
-        phase/request_id/attempts), deleted (terminal success, with the S3 /
-        beat / DEK counters from the result tombstone), failed (terminal
-        failure — the sweeper gave up; the user is unblocked but the data was
-        not guaranteed deleted; retry the delete), or none (nothing running or
-        remembered). Flag presence wins over the terminal tombstone: while a
-        failed run is still flagged for the sweeper the report stays
-        in_progress.
-      servers:
-        - url: https://beta.cloud.soulbits.app
-        - url: https://cloud.soulbits.app
-      responses:
-        "200":
-          description: Purge state (in_progress | deleted | failed | none).
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SessionDataDeleteStatusResponse" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "429": { $ref: "#/components/responses/RateLimited" }
-        "503":
-          description: Purge state temporarily unavailable (Valkey down) — retry.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error_code: { type: string, enum: [service_unavailable] }
-                  message: { type: string }
 
   /v1/versions:
     get:
-      tags: [Session]
+      tags: [Versions]
       summary: List available HL image versions
       servers:
         - url: https://beta.cloud.soulbits.app
@@ -2000,9 +2919,8 @@ paths:
       summary: Register or refresh a device
       description: |
         Registers a client install (or refreshes an existing one, e.g. a new
-        push token). Devices must be authorized before cloud sessions can be
-        provisioned for them — see `/v1/session/connect` (403
-        `device_authorization_required`) and the `/v1/devices/authorize` flow.
+        push token). Devices are authorized via the `/v1/devices/authorize`
+        email auth-code flow.
       security:
         - paseto: []
       servers:
@@ -2171,6 +3089,401 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
+
+  # ---- Sync (Phase 7-1) -------------------------------------------------
+  # The relay is a data-blind transport: it never reads frame/backup payloads
+  # (all engine-encrypted). The WebSocket channel (/v1/sync/ws) is out of scope
+  # for this REST-only spec — see docs/sync-relay-threat-model.md.
+  /v1/devices/sync-pairing:
+    post:
+      operationId: mintSyncPairingToken
+      tags: [Sync]
+      summary: Mint a single-use sync pairing token
+      description: >
+        Mints a short-lived (5 min), single-use token binding (user, device,
+        dataset). The engine presents it to the sync-relay at first connect
+        (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a
+        dataset group. The device must belong to the caller and be authorized.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SyncPairingRequest" }
+      responses:
+        "201":
+          description: Pairing token minted (shown once).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncPairingResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: 'Device not authorized — `error: device_not_authorized`.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: 'Device not registered for this user — `error: device_not_registered`.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---- Device enrollment: delegated enrollment grants (Phase 7-15) ------
+  /v1/devices/enrollment-grants:
+    post:
+      operationId: mintEnrollmentGrant
+      tags: [Devices]
+      summary: Mint a single-use delegated-enrollment grant
+      description: >
+        Mints a short-lived (5 min), single-use grant that lets an
+        already-authorized device (the desktop vouches) enroll a NEW device
+        into the same account. The minting device must belong to the caller
+        and be authorized. The grant is shown ONCE (only its SHA-256 is
+        stored). Requires an interactive session — API keys are refused.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EnrollmentGrantRequest" }
+      responses:
+        "201":
+          description: Enrollment grant minted (shown once).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EnrollmentGrantResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: 'Minting device not authorized — `error: device_not_authorized` (API keys are also refused).'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: 'Device not registered for this user — `error: device_not_registered`.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ---- Device connect sessions: portal-mediated engine sign-in (7-15 C2) ----
+  /v1/devices/connect-session:
+    post:
+      operationId: createDeviceConnectSession
+      tags: [Devices]
+      summary: Create a poll-only engine sign-in (connect session)
+      description: >
+        Public (the engine is not authenticated yet). Mints an unguessable
+        connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and
+        returns the portal URL the engine opens in the system browser. The user
+        signs in there and clicks Allow; the engine then polls
+        GET /v1/devices/connect-session/{connect_id} with the secret.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DeviceConnectSessionRequest" }
+      responses:
+        "201":
+          description: Connect session created (session_secret shown once).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeviceConnectSessionResponse" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/devices/connect-session/{connect_id}:
+    get:
+      operationId: getDeviceConnectSession
+      tags: [Devices]
+      summary: Poll a connect session (auth = the session_secret)
+      description: >
+        The engine polls this with `Authorization: Bearer <session_secret>`. A
+        pending session returns `{"status":"pending"}`; an approved one returns
+        the token pair EXACTLY ONCE (`{"status":"approved","token":…,
+        "refresh_token":…,"expires_at":…}`) and is marked consumed; later polls
+        return `{"status":"consumed"}`; an expired session returns
+        `{"status":"expired"}`.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: connect_id
+          in: path
+          required: true
+          schema: { type: string }
+          description: The connect_id from the create response.
+      responses:
+        "200":
+          description: Current connect-session state (token pair only on the approved transition).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeviceConnectStatusResponse" }
+        "401":
+          description: 'Missing or wrong session secret — `error: authentication required` / `invalid session secret`.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/devices/connect-session/{connect_id}/meta:
+    get:
+      operationId: getDeviceConnectSessionMeta
+      tags: [Devices]
+      summary: Read connect-session metadata (no secret)
+      description: >
+        No-secret read for the portal page: the device name to render plus the
+        current status. The connect_id is a 128-bit unguessable UUID.
+      security: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: connect_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Device name + status.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeviceConnectMetaResponse" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/devices/connect-session/{connect_id}/approve:
+    post:
+      operationId: approveDeviceConnectSession
+      tags: [Devices]
+      summary: Approve a connect session (the portal Allow click)
+      description: >
+        Portal (interactive) auth ONLY — API keys are refused. The Allow click is
+        the consent: it registers the device authorized=true and stores the
+        freshly issued token pair (encrypted) for one-time retrieval by the
+        engine's poll. Idempotent once approved.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: connect_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Approved ({"status":"ok"}).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeviceConnectApproveResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: 'API keys are refused — `error: API keys cannot approve connect sessions`.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "410":
+          description: 'Connect session expired — `error: connect_session_expired`.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/sync/pairing/consume:
+    post:
+      operationId: consumeSyncPairingToken
+      tags: [Sync]
+      summary: Redeem a single-use sync pairing token
+      description: >
+        Atomically consumes a pairing token and joins the caller's device to the
+        dataset group (enforcing the tier `sync_devices` limit). A token can be
+        consumed exactly once.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+                device_id: { type: string }
+      responses:
+        "200":
+          description: Pairing token consumed; the device joined the dataset group.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataset_id: { type: string }
+                  device_id: { type: string }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/StandardError" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /v1/sync/status:
+    get:
+      operationId: getSyncStatus
+      tags: [Sync]
+      summary: Get the caller's sync buffer + quota status
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: dataset_id
+          in: query
+          required: true
+          schema: { type: string }
+        - name: device_id
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Buffer/quota status.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncStatus" }
+        "400": { $ref: "#/components/responses/StandardError" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/backup/objects/{sha256}:
+    put:
+      operationId: putBackupObject
+      tags: [Sync]
+      summary: Store an opaque, content-addressed backup object (7-5)
+      description: >
+        Body is an opaque, already-encrypted AEAD blob. The relay verifies only
+        the SHA-256 address (integrity), never the content. Enforces the tier
+        `backup_storage_mb` cap.
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: sha256
+          in: path
+          required: true
+          schema: { type: string }
+          description: Lowercase hex SHA-256 of the object body.
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
+      responses:
+        "200":
+          description: Object stored.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BackupPutResponse" }
+        "400":
+          description: 'Invalid sha256 or checksum mismatch — `error: invalid_sha256` / `checksum_mismatch`.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "413": { $ref: "#/components/responses/StandardError" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+    get:
+      operationId: getBackupObject
+      tags: [Sync]
+      summary: Fetch an opaque backup object by its SHA-256
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: sha256
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: The object body (application/octet-stream).
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/StandardError" }
+
+  /v1/backup/manifest/{device}:
+    put:
+      operationId: putBackupManifest
+      tags: [Sync]
+      summary: Store an opaque per-device backup manifest (7-5)
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: device
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
+      responses:
+        "200":
+          description: Manifest stored.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BackupPutResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "413": { $ref: "#/components/responses/StandardError" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+    get:
+      operationId: getBackupManifest
+      tags: [Sync]
+      summary: Fetch an opaque per-device backup manifest
+      security:
+        - paseto: []
+      servers:
+        - url: https://beta.cloud.soulbits.app
+        - url: https://cloud.soulbits.app
+      parameters:
+        - name: device
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: The manifest body (application/octet-stream).
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/StandardError" }
 
   # ---- Subscription -----------------------------------------------------
   /v1/subscription/tiers:

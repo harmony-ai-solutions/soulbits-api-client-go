@@ -20,6 +20,24 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for BackupKeyStatusStatus.
+const (
+	BackupKeyStatusStatusDeleted BackupKeyStatusStatus = "deleted"
+	BackupKeyStatusStatusStored  BackupKeyStatusStatus = "stored"
+)
+
+// Valid indicates whether the value is a known member of the BackupKeyStatusStatus enum.
+func (e BackupKeyStatusStatus) Valid() bool {
+	switch e {
+	case BackupKeyStatusStatusDeleted:
+		return true
+	case BackupKeyStatusStatusStored:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ChatCompletionRequestResponseFormatType.
 const (
 	ChatCompletionRequestResponseFormatTypeJsonObject ChatCompletionRequestResponseFormatType = "json_object"
@@ -40,19 +58,19 @@ func (e ChatCompletionRequestResponseFormatType) Valid() bool {
 
 // Defines values for ChatCompletionRequestToolChoice0.
 const (
-	ChatCompletionRequestToolChoice0Auto     ChatCompletionRequestToolChoice0 = "auto"
-	ChatCompletionRequestToolChoice0None     ChatCompletionRequestToolChoice0 = "none"
-	ChatCompletionRequestToolChoice0Required ChatCompletionRequestToolChoice0 = "required"
+	Auto     ChatCompletionRequestToolChoice0 = "auto"
+	None     ChatCompletionRequestToolChoice0 = "none"
+	Required ChatCompletionRequestToolChoice0 = "required"
 )
 
 // Valid indicates whether the value is a known member of the ChatCompletionRequestToolChoice0 enum.
 func (e ChatCompletionRequestToolChoice0) Valid() bool {
 	switch e {
-	case ChatCompletionRequestToolChoice0Auto:
+	case Auto:
 		return true
-	case ChatCompletionRequestToolChoice0None:
+	case None:
 		return true
-	case ChatCompletionRequestToolChoice0Required:
+	case Required:
 		return true
 	default:
 		return false
@@ -137,6 +155,111 @@ func (e DevicePlatform) Valid() bool {
 	case DevicePlatformIos:
 		return true
 	case DevicePlatformWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeviceConnectApproveResponseStatus.
+const (
+	Ok DeviceConnectApproveResponseStatus = "ok"
+)
+
+// Valid indicates whether the value is a known member of the DeviceConnectApproveResponseStatus enum.
+func (e DeviceConnectApproveResponseStatus) Valid() bool {
+	switch e {
+	case Ok:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeviceConnectMetaResponseStatus.
+const (
+	DeviceConnectMetaResponseStatusApproved DeviceConnectMetaResponseStatus = "approved"
+	DeviceConnectMetaResponseStatusConsumed DeviceConnectMetaResponseStatus = "consumed"
+	DeviceConnectMetaResponseStatusExpired  DeviceConnectMetaResponseStatus = "expired"
+	DeviceConnectMetaResponseStatusPending  DeviceConnectMetaResponseStatus = "pending"
+)
+
+// Valid indicates whether the value is a known member of the DeviceConnectMetaResponseStatus enum.
+func (e DeviceConnectMetaResponseStatus) Valid() bool {
+	switch e {
+	case DeviceConnectMetaResponseStatusApproved:
+		return true
+	case DeviceConnectMetaResponseStatusConsumed:
+		return true
+	case DeviceConnectMetaResponseStatusExpired:
+		return true
+	case DeviceConnectMetaResponseStatusPending:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeviceConnectSessionRequestPlatform.
+const (
+	DeviceConnectSessionRequestPlatformAndroid DeviceConnectSessionRequestPlatform = "android"
+	DeviceConnectSessionRequestPlatformIos     DeviceConnectSessionRequestPlatform = "ios"
+	DeviceConnectSessionRequestPlatformWeb     DeviceConnectSessionRequestPlatform = "web"
+)
+
+// Valid indicates whether the value is a known member of the DeviceConnectSessionRequestPlatform enum.
+func (e DeviceConnectSessionRequestPlatform) Valid() bool {
+	switch e {
+	case DeviceConnectSessionRequestPlatformAndroid:
+		return true
+	case DeviceConnectSessionRequestPlatformIos:
+		return true
+	case DeviceConnectSessionRequestPlatformWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeviceConnectStatusResponseStatus.
+const (
+	DeviceConnectStatusResponseStatusApproved DeviceConnectStatusResponseStatus = "approved"
+	DeviceConnectStatusResponseStatusConsumed DeviceConnectStatusResponseStatus = "consumed"
+	DeviceConnectStatusResponseStatusExpired  DeviceConnectStatusResponseStatus = "expired"
+	DeviceConnectStatusResponseStatusPending  DeviceConnectStatusResponseStatus = "pending"
+)
+
+// Valid indicates whether the value is a known member of the DeviceConnectStatusResponseStatus enum.
+func (e DeviceConnectStatusResponseStatus) Valid() bool {
+	switch e {
+	case DeviceConnectStatusResponseStatusApproved:
+		return true
+	case DeviceConnectStatusResponseStatusConsumed:
+		return true
+	case DeviceConnectStatusResponseStatusExpired:
+		return true
+	case DeviceConnectStatusResponseStatusPending:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeviceEnrollRequestPlatform.
+const (
+	DeviceEnrollRequestPlatformAndroid DeviceEnrollRequestPlatform = "android"
+	DeviceEnrollRequestPlatformIos     DeviceEnrollRequestPlatform = "ios"
+	DeviceEnrollRequestPlatformWeb     DeviceEnrollRequestPlatform = "web"
+)
+
+// Valid indicates whether the value is a known member of the DeviceEnrollRequestPlatform enum.
+func (e DeviceEnrollRequestPlatform) Valid() bool {
+	switch e {
+	case DeviceEnrollRequestPlatformAndroid:
+		return true
+	case DeviceEnrollRequestPlatformIos:
+		return true
+	case DeviceEnrollRequestPlatformWeb:
 		return true
 	default:
 		return false
@@ -248,6 +371,24 @@ func (e ImageGenerationRequestSize) Valid() bool {
 	case N256x256:
 		return true
 	case N512x512:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LinkedIdentityProvider.
+const (
+	Apple  LinkedIdentityProvider = "apple"
+	Google LinkedIdentityProvider = "google"
+)
+
+// Valid indicates whether the value is a known member of the LinkedIdentityProvider enum.
+func (e LinkedIdentityProvider) Valid() bool {
+	switch e {
+	case Apple:
+		return true
+	case Google:
 		return true
 	default:
 		return false
@@ -374,129 +515,24 @@ func (e RerankResponseObject) Valid() bool {
 	}
 }
 
-// Defines values for SessionConnectResponseStatus.
+// Defines values for SessionListItemPlatform.
 const (
-	SessionConnectResponseStatusActive       SessionConnectResponseStatus = "active"
-	SessionConnectResponseStatusFailed       SessionConnectResponseStatus = "failed"
-	SessionConnectResponseStatusProvisioning SessionConnectResponseStatus = "provisioning"
-	SessionConnectResponseStatusReady        SessionConnectResponseStatus = "ready"
+	SessionListItemPlatformAndroid SessionListItemPlatform = "android"
+	SessionListItemPlatformIos     SessionListItemPlatform = "ios"
+	SessionListItemPlatformUnknown SessionListItemPlatform = "unknown"
+	SessionListItemPlatformWeb     SessionListItemPlatform = "web"
 )
 
-// Valid indicates whether the value is a known member of the SessionConnectResponseStatus enum.
-func (e SessionConnectResponseStatus) Valid() bool {
+// Valid indicates whether the value is a known member of the SessionListItemPlatform enum.
+func (e SessionListItemPlatform) Valid() bool {
 	switch e {
-	case SessionConnectResponseStatusActive:
+	case SessionListItemPlatformAndroid:
 		return true
-	case SessionConnectResponseStatusFailed:
+	case SessionListItemPlatformIos:
 		return true
-	case SessionConnectResponseStatusProvisioning:
+	case SessionListItemPlatformUnknown:
 		return true
-	case SessionConnectResponseStatusReady:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for SessionConnectedResponseStatus.
-const (
-	Connected SessionConnectedResponseStatus = "connected"
-)
-
-// Valid indicates whether the value is a known member of the SessionConnectedResponseStatus enum.
-func (e SessionConnectedResponseStatus) Valid() bool {
-	switch e {
-	case Connected:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for SessionDataDeleteResponseStatus.
-const (
-	SessionDataDeleteResponseStatusInProgress SessionDataDeleteResponseStatus = "in_progress"
-)
-
-// Valid indicates whether the value is a known member of the SessionDataDeleteResponseStatus enum.
-func (e SessionDataDeleteResponseStatus) Valid() bool {
-	switch e {
-	case SessionDataDeleteResponseStatusInProgress:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for SessionDataDeleteStatusResponse0Status.
-const (
-	SessionDataDeleteStatusResponse0StatusInProgress SessionDataDeleteStatusResponse0Status = "in_progress"
-)
-
-// Valid indicates whether the value is a known member of the SessionDataDeleteStatusResponse0Status enum.
-func (e SessionDataDeleteStatusResponse0Status) Valid() bool {
-	switch e {
-	case SessionDataDeleteStatusResponse0StatusInProgress:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for SessionDataDeleteStatusResponse1Status.
-const (
-	Deleted SessionDataDeleteStatusResponse1Status = "deleted"
-)
-
-// Valid indicates whether the value is a known member of the SessionDataDeleteStatusResponse1Status enum.
-func (e SessionDataDeleteStatusResponse1Status) Valid() bool {
-	switch e {
-	case Deleted:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for SessionDataDeleteStatusResponse2Status.
-const (
-	SessionDataDeleteStatusResponse2StatusFailed SessionDataDeleteStatusResponse2Status = "failed"
-)
-
-// Valid indicates whether the value is a known member of the SessionDataDeleteStatusResponse2Status enum.
-func (e SessionDataDeleteStatusResponse2Status) Valid() bool {
-	switch e {
-	case SessionDataDeleteStatusResponse2StatusFailed:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for SessionDataDeleteStatusResponse3Status.
-const (
-	SessionDataDeleteStatusResponse3StatusNone SessionDataDeleteStatusResponse3Status = "none"
-)
-
-// Valid indicates whether the value is a known member of the SessionDataDeleteStatusResponse3Status enum.
-func (e SessionDataDeleteStatusResponse3Status) Valid() bool {
-	switch e {
-	case SessionDataDeleteStatusResponse3StatusNone:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for SessionDisconnectResponseStatus.
-const (
-	GracePeriod SessionDisconnectResponseStatus = "grace_period"
-)
-
-// Valid indicates whether the value is a known member of the SessionDisconnectResponseStatus enum.
-func (e SessionDisconnectResponseStatus) Valid() bool {
-	switch e {
-	case GracePeriod:
+	case SessionListItemPlatformWeb:
 		return true
 	default:
 		return false
@@ -505,22 +541,40 @@ func (e SessionDisconnectResponseStatus) Valid() bool {
 
 // Defines values for SubscriptionMeStatus.
 const (
-	SubscriptionMeStatusActive   SubscriptionMeStatus = "active"
-	SubscriptionMeStatusCanceled SubscriptionMeStatus = "canceled"
-	SubscriptionMeStatusPastDue  SubscriptionMeStatus = "past_due"
-	SubscriptionMeStatusTrialing SubscriptionMeStatus = "trialing"
+	Active   SubscriptionMeStatus = "active"
+	Canceled SubscriptionMeStatus = "canceled"
+	PastDue  SubscriptionMeStatus = "past_due"
+	Trialing SubscriptionMeStatus = "trialing"
 )
 
 // Valid indicates whether the value is a known member of the SubscriptionMeStatus enum.
 func (e SubscriptionMeStatus) Valid() bool {
 	switch e {
-	case SubscriptionMeStatusActive:
+	case Active:
 		return true
-	case SubscriptionMeStatusCanceled:
+	case Canceled:
 		return true
-	case SubscriptionMeStatusPastDue:
+	case PastDue:
 		return true
-	case SubscriptionMeStatusTrialing:
+	case Trialing:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SyncKeyStatusStatus.
+const (
+	SyncKeyStatusStatusDeleted SyncKeyStatusStatus = "deleted"
+	SyncKeyStatusStatusStored  SyncKeyStatusStatus = "stored"
+)
+
+// Valid indicates whether the value is a known member of the SyncKeyStatusStatus enum.
+func (e SyncKeyStatusStatus) Valid() bool {
+	switch e {
+	case SyncKeyStatusStatusDeleted:
+		return true
+	case SyncKeyStatusStatusStored:
 		return true
 	default:
 		return false
@@ -545,96 +599,6 @@ func (e TTSRequestMode) Valid() bool {
 	}
 }
 
-// Defines values for PostV1SessionConnect403JSONResponseBodyError.
-const (
-	DeviceAuthorizationRequired PostV1SessionConnect403JSONResponseBodyError = "device_authorization_required"
-)
-
-// Valid indicates whether the value is a known member of the PostV1SessionConnect403JSONResponseBodyError enum.
-func (e PostV1SessionConnect403JSONResponseBodyError) Valid() bool {
-	switch e {
-	case DeviceAuthorizationRequired:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for PostV1SessionConnect409JSONResponseBodyError.
-const (
-	PurgeInProgress PostV1SessionConnect409JSONResponseBodyError = "purge_in_progress"
-)
-
-// Valid indicates whether the value is a known member of the PostV1SessionConnect409JSONResponseBodyError enum.
-func (e PostV1SessionConnect409JSONResponseBodyError) Valid() bool {
-	switch e {
-	case PurgeInProgress:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for DeleteSessionDataJSONBodyConfirm.
-const (
-	DELETE DeleteSessionDataJSONBodyConfirm = "DELETE"
-)
-
-// Valid indicates whether the value is a known member of the DeleteSessionDataJSONBodyConfirm enum.
-func (e DeleteSessionDataJSONBodyConfirm) Valid() bool {
-	switch e {
-	case DELETE:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for DeleteSessionData400JSONResponseBodyError.
-const (
-	ConfirmationRequired DeleteSessionData400JSONResponseBodyError = "confirmation_required"
-)
-
-// Valid indicates whether the value is a known member of the DeleteSessionData400JSONResponseBodyError enum.
-func (e DeleteSessionData400JSONResponseBodyError) Valid() bool {
-	switch e {
-	case ConfirmationRequired:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for DeleteSessionData409JSONResponseBodyError.
-const (
-	SnapshotBusy DeleteSessionData409JSONResponseBodyError = "snapshot_busy"
-)
-
-// Valid indicates whether the value is a known member of the DeleteSessionData409JSONResponseBodyError enum.
-func (e DeleteSessionData409JSONResponseBodyError) Valid() bool {
-	switch e {
-	case SnapshotBusy:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for GetSessionDataDeleteStatus503JSONResponseBodyErrorCode.
-const (
-	ServiceUnavailable GetSessionDataDeleteStatus503JSONResponseBodyErrorCode = "service_unavailable"
-)
-
-// Valid indicates whether the value is a known member of the GetSessionDataDeleteStatus503JSONResponseBodyErrorCode enum.
-func (e GetSessionDataDeleteStatus503JSONResponseBodyErrorCode) Valid() bool {
-	switch e {
-	case ServiceUnavailable:
-		return true
-	default:
-		return false
-	}
-}
-
 // APIKeyCreated Returned ONLY at creation time. The `key` field is shown once — store it securely.
 type APIKeyCreated struct {
 	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
@@ -649,7 +613,7 @@ type APIKeyCreated struct {
 	Prefix string `json:"prefix"`
 }
 
-// APIKeyListItem defines model for APIKeyListItem.
+// APIKeyListItem Metadata for one API key. Deleted keys are never returned, so there is no revoked/deleted field.
 type APIKeyListItem struct {
 	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
 	CreatedAt  RFC3339Timestamp   `json:"created_at"`
@@ -658,8 +622,7 @@ type APIKeyListItem struct {
 	Name       string             `json:"name"`
 
 	// Prefix First 12 chars (raw key never returned).
-	Prefix    string            `json:"prefix"`
-	RevokedAt *RFC3339Timestamp `json:"revoked_at"`
+	Prefix string `json:"prefix"`
 }
 
 // ApproveDeviceRequest Redeems the high-entropy approval token from the emailed button URL.
@@ -706,6 +669,42 @@ type AuthorizeDeviceRequest struct {
 	// Code 6-digit email auth code. Omit to request the code + approval link.
 	Code     *string `json:"code,omitempty"`
 	DeviceId string  `json:"device_id"`
+}
+
+// BackupKeyPutRequest The client-wrapped backup DEK (2-6's W1 wrap), base64-encoded. The
+// backend never sees key material — it escrows the opaque blob under a
+// KMS-managed KEK. Scope is deliberately narrow: blob only, ≤1 KiB
+// decoded; there is no field for anything else.
+type BackupKeyPutRequest struct {
+	// WrappedKey Base64-encoded, client-wrapped backup-key blob (≤1 KiB decoded).
+	WrappedKey []byte `json:"wrapped_key"`
+}
+
+// BackupKeyResponse defines model for BackupKeyResponse.
+type BackupKeyResponse struct {
+	// UpdatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	UpdatedAt RFC3339Timestamp `json:"updated_at"`
+
+	// WrappedKey The escrowed wrapped-key blob, base64-encoded.
+	WrappedKey []byte `json:"wrapped_key"`
+}
+
+// BackupKeyStatus defines model for BackupKeyStatus.
+type BackupKeyStatus struct {
+	Status BackupKeyStatusStatus `json:"status"`
+
+	// UpdatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	UpdatedAt *RFC3339Timestamp `json:"updated_at,omitempty"`
+}
+
+// BackupKeyStatusStatus defines model for BackupKeyStatus.Status.
+type BackupKeyStatusStatus string
+
+// BackupPutResponse defines model for BackupPutResponse.
+type BackupPutResponse struct {
+	DeviceId *string `json:"device_id,omitempty"`
+	Sha256   *string `json:"sha256,omitempty"`
+	Size     *int    `json:"size,omitempty"`
 }
 
 // Base64Audio Base64-encoded audio bytes (sent inside JSON; NOT multipart).
@@ -868,6 +867,90 @@ type DeviceAuthorizationStatus struct {
 	DeviceId             string `json:"device_id"`
 }
 
+// DeviceConnectApproveResponse defines model for DeviceConnectApproveResponse.
+type DeviceConnectApproveResponse struct {
+	Status DeviceConnectApproveResponseStatus `json:"status"`
+}
+
+// DeviceConnectApproveResponseStatus defines model for DeviceConnectApproveResponse.Status.
+type DeviceConnectApproveResponseStatus string
+
+// DeviceConnectMetaResponse No-secret metadata read for the portal page (device name + status).
+type DeviceConnectMetaResponse struct {
+	DeviceName string                          `json:"device_name"`
+	Status     DeviceConnectMetaResponseStatus `json:"status"`
+}
+
+// DeviceConnectMetaResponseStatus defines model for DeviceConnectMetaResponse.Status.
+type DeviceConnectMetaResponseStatus string
+
+// DeviceConnectSessionRequest The engine announces itself. Public — the engine is not authenticated yet; the portal signs the user in and approves.
+type DeviceConnectSessionRequest struct {
+	// DeviceId Per-install identity of the desktop engine.
+	DeviceId string `json:"device_id"`
+
+	// DeviceName Display name (e.g. "Studio-PC").
+	DeviceName *string `json:"device_name,omitempty"`
+
+	// Platform Optional; recorded on the approved device row. Defaults to `web`.
+	Platform *DeviceConnectSessionRequestPlatform `json:"platform,omitempty"`
+}
+
+// DeviceConnectSessionRequestPlatform Optional; recorded on the approved device row. Defaults to `web`.
+type DeviceConnectSessionRequestPlatform string
+
+// DeviceConnectSessionResponse `session_secret` is shown ONCE (only its SHA-256 is stored). `connect_url` is the portal URL the engine opens in the system browser.
+type DeviceConnectSessionResponse struct {
+	// ConnectId UUID identifying the connect session.
+	ConnectId string `json:"connect_id"`
+
+	// ConnectUrl Absolute portal URL: <PORTAL_BASE_URL>/connect?request=<connect_id>.
+	ConnectUrl string `json:"connect_url"`
+
+	// ExpiresIn Lifetime in seconds (600 = 10 min).
+	ExpiresIn int `json:"expires_in"`
+
+	// SessionSecret 43-char base64url 256-bit secret; the Bearer credential for the status poll.
+	SessionSecret string `json:"session_secret"`
+}
+
+// DeviceConnectStatusResponse `status` is one of `pending|approved|consumed|expired`. The token fields are populated ONLY on the `approved` transition and returned exactly once — the row is marked consumed in the same statement.
+type DeviceConnectStatusResponse struct {
+	// ExpiresAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	ExpiresAt *RFC3339Timestamp `json:"expires_at,omitempty"`
+
+	// RefreshToken Opaque refresh token (approved only, once).
+	RefreshToken *string                           `json:"refresh_token,omitempty"`
+	Status       DeviceConnectStatusResponseStatus `json:"status"`
+
+	// Token PASETO session token (approved only, once).
+	Token *string `json:"token,omitempty"`
+}
+
+// DeviceConnectStatusResponseStatus defines model for DeviceConnectStatusResponse.Status.
+type DeviceConnectStatusResponseStatus string
+
+// DeviceEnrollRequest Redeem a delegated-enrollment grant for the enrolled device's OWN
+// device-scoped session. NO account auth — the grant IS the credential.
+// The device is registered authorized because the minting device vouched
+// for it. Enrolled devices are full devices and may themselves mint.
+type DeviceEnrollRequest struct {
+	// DeviceId Per-install device identity of the NEW device.
+	DeviceId string `json:"device_id"`
+
+	// DeviceName Display name of the new device (metadata; no server column).
+	DeviceName *string `json:"device_name,omitempty"`
+
+	// Grant The single-use grant from the enrollment/QR payload.
+	Grant string `json:"grant"`
+
+	// Platform Optional; the enrolling device's platform. Defaults to `android` when omitted.
+	Platform *DeviceEnrollRequestPlatform `json:"platform,omitempty"`
+}
+
+// DeviceEnrollRequestPlatform Optional; the enrolling device's platform. Defaults to `android` when omitted.
+type DeviceEnrollRequestPlatform string
+
 // DeviceListItem Device list item — same shape as `Device` minus `user_id` (a caller only ever lists their own devices).
 type DeviceListItem struct {
 	Authorized   bool              `json:"authorized"`
@@ -888,6 +971,24 @@ type DeviceListItem struct {
 
 // DeviceListItemPlatform defines model for DeviceListItem.Platform.
 type DeviceListItemPlatform string
+
+// EmailChangeStatus defines model for EmailChangeStatus.
+type EmailChangeStatus struct {
+	// AwaitingNewConfirmation True between stages 2 and 3 — the new address has not confirmed yet.
+	AwaitingNewConfirmation bool `json:"awaiting_new_confirmation"`
+
+	// AwaitingOldConfirmation True between stages 3 and 5 — the approval email has been sent to the current address.
+	AwaitingOldConfirmation bool `json:"awaiting_old_confirmation"`
+
+	// ExpiresAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	ExpiresAt *RFC3339Timestamp `json:"expires_at,omitempty"`
+
+	// NewEmail The address being moved to. Omitted when no change is pending.
+	NewEmail *openapi_types.Email `json:"new_email,omitempty"`
+
+	// Pending True while a non-expired change is staged.
+	Pending bool `json:"pending"`
+}
 
 // EmbeddingRequest defines model for EmbeddingRequest.
 type EmbeddingRequest struct {
@@ -961,13 +1062,27 @@ type EmbeddingResponseDataObject string
 // EmbeddingResponseObject defines model for EmbeddingResponse.Object.
 type EmbeddingResponseObject string
 
+// EnrollmentGrantRequest Mint a short-lived, single-use delegated-enrollment grant from an already-authorized device.
+type EnrollmentGrantRequest struct {
+	// DeviceId The MINTING device (the caller's, already authorized) that vouches for the new device.
+	DeviceId string `json:"device_id"`
+}
+
+// EnrollmentGrantResponse The opaque grant is shown ONCE; only its SHA-256 is stored.
+type EnrollmentGrantResponse struct {
+	// ExpiresIn Grant lifetime in seconds (300 = 5 min).
+	ExpiresIn int `json:"expires_in"`
+
+	// Grant Opaque ≥128-bit single-use grant.
+	Grant string `json:"grant"`
+}
+
 // Error Error envelope. The exact field set varies slightly by service:
 //   - Inference gateway: `{ "error": "<code>", "message": "<text>" }`
 //   - Auth-service:      `{ "error": "<message>" }` — errors that need
 //     client branching (e.g. the device-auth flow) instead use the
 //     gateway shape: `{ "error": "<code>", "message": "<text>" }`
 //     with a stable code such as `device_not_registered`.
-//   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
 type Error struct {
@@ -977,10 +1092,10 @@ type Error struct {
 	// CurrentTier Present on 402 — the user's current tier id.
 	CurrentTier *string `json:"current_tier,omitempty"`
 
-	// Error Error code (inference/session) OR message (auth-service).
+	// Error Error code (inference) OR message (auth-service).
 	Error *string `json:"error,omitempty"`
 
-	// ErrorCode Error code (session-broker variant).
+	// ErrorCode Machine-readable error code (where the service emits one).
 	ErrorCode *string `json:"error_code,omitempty"`
 
 	// Message Human-readable message.
@@ -1045,6 +1160,16 @@ type ImageGenerationRequest struct {
 
 // ImageGenerationRequestSize defines model for ImageGenerationRequest.Size.
 type ImageGenerationRequestSize string
+
+// LinkedIdentity One OAuth sign-in method attached to the account.
+type LinkedIdentity struct {
+	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	CreatedAt RFC3339Timestamp       `json:"created_at"`
+	Provider  LinkedIdentityProvider `json:"provider"`
+}
+
+// LinkedIdentityProvider defines model for LinkedIdentity.Provider.
+type LinkedIdentityProvider string
 
 // Message defines model for Message.
 type Message struct {
@@ -1157,6 +1282,14 @@ type RerankResponse struct {
 // RerankResponseObject defines model for RerankResponse.Object.
 type RerankResponseObject string
 
+// RevokeAllSessionsResponse defines model for RevokeAllSessionsResponse.
+type RevokeAllSessionsResponse struct {
+	Message string `json:"message"`
+
+	// SessionsRevoked Number of sessions signed out.
+	SessionsRevoked int `json:"sessions_revoked"`
+}
+
 // STTRequest JSON-only (NOT multipart). Audio is base64-encoded inside the JSON body.
 type STTRequest struct {
 	// GetLanguage Return the detected source language tag.
@@ -1189,125 +1322,43 @@ type STTResponse struct {
 	} `json:"timestamps,omitempty"`
 }
 
-// SessionConnectResponse defines model for SessionConnectResponse.
-type SessionConnectResponse struct {
-	// FailureReason Human-readable failure reason. Present when status is `failed`.
-	FailureReason *string `json:"failure_reason,omitempty"`
+// SessionListItem One signed-in session (one device or browser). A session is created per
+// sign-in and survives token rotation, so this list shows every place the
+// account is currently signed in.
+type SessionListItem struct {
+	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	CreatedAt RFC3339Timestamp `json:"created_at"`
 
-	// ImageVersion HL image version assigned from the warm pool.
-	ImageVersion *string `json:"image_version,omitempty"`
+	// Current True for the session that issued the requesting token. The portal
+	// labels it and does not offer to sign it out (use sign out instead).
+	Current bool `json:"current"`
 
-	// ProxyEndpoint Conduct proxy WebSocket base URL for this session (e.g. `wss://connect.soulbits.app`). Present when status is `ready` or `active`.
-	ProxyEndpoint *string `json:"proxy_endpoint,omitempty"`
+	// ExpiresAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	ExpiresAt RFC3339Timestamp `json:"expires_at"`
 
-	// RetryAfterMs Milliseconds to wait before polling again. Present when status is `provisioning`.
-	RetryAfterMs *int                         `json:"retry_after_ms,omitempty"`
-	SessionId    openapi_types.UUID           `json:"session_id"`
-	Status       SessionConnectResponseStatus `json:"status"`
+	// IpAddress Client IP at creation, or the most recent one observed. Omitted when unavailable.
+	IpAddress *string `json:"ip_address,omitempty"`
+
+	// LastActiveAt Most recent activity seen for this session (falls back to `created_at`).
+	LastActiveAt RFC3339Timestamp `json:"last_active_at"`
+
+	// Platform Derived from the client User-Agent.
+	Platform SessionListItemPlatform `json:"platform"`
+
+	// SessionId Session identifier (stable across token refreshes).
+	SessionId openapi_types.UUID `json:"session_id"`
+
+	// UserAgent Raw User-Agent recorded for the session. Omitted when unavailable.
+	UserAgent *string `json:"user_agent,omitempty"`
 }
 
-// SessionConnectResponseStatus defines model for SessionConnectResponse.Status.
-type SessionConnectResponseStatus string
+// SessionListItemPlatform Derived from the client User-Agent.
+type SessionListItemPlatform string
 
-// SessionConnectedResponse defines model for SessionConnectedResponse.
-type SessionConnectedResponse struct {
-	Status SessionConnectedResponseStatus `json:"status"`
+// SessionListResponse defines model for SessionListResponse.
+type SessionListResponse struct {
+	Sessions []SessionListItem `json:"sessions"`
 }
-
-// SessionConnectedResponseStatus defines model for SessionConnectedResponse.Status.
-type SessionConnectedResponseStatus string
-
-// SessionDataDeleteResponse Async purge initiation. The purge runs in the background; poll `GET /v1/session/data/delete/status` for the terminal outcome ("deleted" or "failed").
-type SessionDataDeleteResponse struct {
-	// RequestId Poll identifier — echoed by the status endpoint while the run is in flight.
-	RequestId *string                         `json:"request_id,omitempty"`
-	Status    SessionDataDeleteResponseStatus `json:"status"`
-}
-
-// SessionDataDeleteResponseStatus defines model for SessionDataDeleteResponse.Status.
-type SessionDataDeleteResponseStatus string
-
-// SessionDataDeleteStatusResponse defines model for SessionDataDeleteStatusResponse.
-type SessionDataDeleteStatusResponse struct {
-	union json.RawMessage
-}
-
-// SessionDataDeleteStatusResponse0 A purge is active (flag set) — the run is in flight or stalled. Flag presence wins over the terminal tombstone, so a failed run still being retried by the sweeper reports in_progress.
-type SessionDataDeleteStatusResponse0 struct {
-	// Attempts Sweeper resume attempts so far.
-	Attempts int `json:"attempts"`
-
-	// Phase Coarse purge phase (kill, routing, s3, beats, dek, done).
-	Phase     string                                 `json:"phase"`
-	RequestId string                                 `json:"request_id"`
-	Status    SessionDataDeleteStatusResponse0Status `json:"status"`
-}
-
-// SessionDataDeleteStatusResponse0Status defines model for SessionDataDeleteStatusResponse.0.Status.
-type SessionDataDeleteStatusResponse0Status string
-
-// SessionDataDeleteStatusResponse1 Terminal success — all cloud data permanently deleted; the user can connect again.
-type SessionDataDeleteStatusResponse1 struct {
-	Attempts int `json:"attempts"`
-
-	// BeatsRemoved due:lifecycle ZSET members removed.
-	BeatsRemoved int `json:"beats_removed"`
-
-	// DekDeleted Whether the per-user encryption key was deleted.
-	DekDeleted bool `json:"dek_deleted"`
-
-	// FinishedAt Unix seconds when the purge finished.
-	FinishedAt int `json:"finished_at"`
-
-	// ObjectsDeleted S3 objects (incl. delete markers) removed.
-	ObjectsDeleted int                                    `json:"objects_deleted"`
-	RequestId      string                                 `json:"request_id"`
-	Status         SessionDataDeleteStatusResponse1Status `json:"status"`
-
-	// VersionsDeleted S3 object versions permanently removed.
-	VersionsDeleted int `json:"versions_deleted"`
-}
-
-// SessionDataDeleteStatusResponse1Status defines model for SessionDataDeleteStatusResponse.1.Status.
-type SessionDataDeleteStatusResponse1Status string
-
-// SessionDataDeleteStatusResponse2 Terminal failure — the resume sweeper gave up on the purge; the flag was cleared (user unblocked) but deletion was NOT guaranteed. Retry the delete. Counters are always serialized (zero here).
-type SessionDataDeleteStatusResponse2 struct {
-	Attempts     int  `json:"attempts"`
-	BeatsRemoved int  `json:"beats_removed"`
-	DekDeleted   bool `json:"dek_deleted"`
-
-	// Error Failure reason (e.g. "attempt cap reached").
-	Error string `json:"error"`
-
-	// FinishedAt Unix seconds when the purge gave up.
-	FinishedAt      int                                    `json:"finished_at"`
-	ObjectsDeleted  int                                    `json:"objects_deleted"`
-	RequestId       string                                 `json:"request_id"`
-	Status          SessionDataDeleteStatusResponse2Status `json:"status"`
-	VersionsDeleted int                                    `json:"versions_deleted"`
-}
-
-// SessionDataDeleteStatusResponse2Status defines model for SessionDataDeleteStatusResponse.2.Status.
-type SessionDataDeleteStatusResponse2Status string
-
-// SessionDataDeleteStatusResponse3 No purge flag and no terminal result — nothing running or remembered.
-type SessionDataDeleteStatusResponse3 struct {
-	Status SessionDataDeleteStatusResponse3Status `json:"status"`
-}
-
-// SessionDataDeleteStatusResponse3Status defines model for SessionDataDeleteStatusResponse.3.Status.
-type SessionDataDeleteStatusResponse3Status string
-
-// SessionDisconnectResponse defines model for SessionDisconnectResponse.
-type SessionDisconnectResponse struct {
-	// GracePeriodUntil RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
-	GracePeriodUntil RFC3339Timestamp                `json:"grace_period_until"`
-	Status           SessionDisconnectResponseStatus `json:"status"`
-}
-
-// SessionDisconnectResponseStatus defines model for SessionDisconnectResponse.Status.
-type SessionDisconnectResponseStatus string
 
 // SpeakerEmbedRequest defines model for SpeakerEmbedRequest.
 type SpeakerEmbedRequest struct {
@@ -1357,6 +1408,95 @@ type SubscriptionMe struct {
 
 // SubscriptionMeStatus defines model for SubscriptionMe.Status.
 type SubscriptionMeStatus string
+
+// SyncKeyPutRequest The client-wrapped sync-group key (7-2), base64-encoded. The backend
+// never sees key material — it escrows the opaque blob under a KMS-managed
+// KEK. Scope is deliberately narrow: blob only, ≤1 KiB decoded; there is
+// no field for anything else.
+type SyncKeyPutRequest struct {
+	// WrappedKey Base64-encoded, client-wrapped sync-group-key blob (≤1 KiB decoded).
+	WrappedKey []byte `json:"wrapped_key"`
+}
+
+// SyncKeyResponse defines model for SyncKeyResponse.
+type SyncKeyResponse struct {
+	// WrappedKey The escrowed wrapped sync-group-key blob, base64-encoded.
+	WrappedKey []byte `json:"wrapped_key"`
+}
+
+// SyncKeyStatus defines model for SyncKeyStatus.
+type SyncKeyStatus struct {
+	Status SyncKeyStatusStatus `json:"status"`
+
+	// UpdatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	UpdatedAt *RFC3339Timestamp `json:"updated_at,omitempty"`
+}
+
+// SyncKeyStatusStatus defines model for SyncKeyStatus.Status.
+type SyncKeyStatusStatus string
+
+// SyncPairingRequest Mint a short-lived, single-use pairing token binding (user, device, dataset).
+type SyncPairingRequest struct {
+	// DatasetId The engine's dataset id (one sync group per dataset).
+	DatasetId string `json:"dataset_id"`
+	DeviceId  string `json:"device_id"`
+}
+
+// SyncPairingResponse defines model for SyncPairingResponse.
+type SyncPairingResponse struct {
+	DatasetId string `json:"dataset_id"`
+	DeviceId  string `json:"device_id"`
+
+	// ExpiresAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
+	ExpiresAt RFC3339Timestamp `json:"expires_at"`
+
+	// Token Opaque ~128-bit token
+	Token string `json:"token"`
+}
+
+// SyncQuotas Per-tier sync-relay quotas.
+type SyncQuotas struct {
+	// BackupStorageMb Backup blob storage cap (MB).
+	BackupStorageMb *int `json:"backup_storage_mb,omitempty"`
+
+	// SyncBufferMb Offline-buffer byte cap (MB).
+	SyncBufferMb *int `json:"sync_buffer_mb,omitempty"`
+
+	// SyncDevices Max devices in one sync group.
+	SyncDevices *int `json:"sync_devices,omitempty"`
+}
+
+// SyncRotationPutRequest Sets the account's sync rotation-required flag. The portal sets
+// `required: true` ("Reset sync key"); `required: false` clears it (same as
+// DELETE).
+type SyncRotationPutRequest struct {
+	Required bool `json:"required"`
+}
+
+// SyncRotationStatus Whether a sync-key rotation is pending for the account. Defaults to
+// `false` (no row ⇒ not required).
+type SyncRotationStatus struct {
+	// Required True when the portal has flagged a rotation the app must drive.
+	Required bool `json:"required"`
+}
+
+// SyncStatus defines model for SyncStatus.
+type SyncStatus struct {
+	BackupBytes      *int    `json:"backup_bytes,omitempty"`
+	BufferCapBytes   *int    `json:"buffer_cap_bytes,omitempty"`
+	BufferedBytes    *int    `json:"buffered_bytes,omitempty"`
+	BufferedFrames   *int    `json:"buffered_frames,omitempty"`
+	ConnectedDevices *int    `json:"connected_devices,omitempty"`
+	DatasetId        *string `json:"dataset_id,omitempty"`
+	DeviceId         *string `json:"device_id,omitempty"`
+	LastAckedSeq     *int    `json:"last_acked_seq,omitempty"`
+
+	// Overflow True when the buffer dropped oldest frames (engine re-baselines).
+	Overflow *bool `json:"overflow,omitempty"`
+
+	// Quotas Per-tier sync-relay quotas.
+	Quotas *SyncQuotas `json:"quotas,omitempty"`
+}
 
 // TTSRequest Harmony Speech Engine TTS request. NOT OpenAI-shaped — requires `mode`,
 // audio format via `output_options.format` (not `response_format`), and
@@ -1454,11 +1594,27 @@ type UserProfile struct {
 	AvatarUrl string `json:"avatar_url"`
 
 	// CreatedAt RFC 3339 timestamp (e.g. `2026-06-28T19:00:00Z`).
-	CreatedAt     RFC3339Timestamp    `json:"created_at"`
-	DisplayName   string              `json:"display_name"`
-	Email         openapi_types.Email `json:"email"`
-	EmailVerified bool                `json:"email_verified"`
-	Id            openapi_types.UUID  `json:"id"`
+	CreatedAt   RFC3339Timestamp    `json:"created_at"`
+	DisplayName string              `json:"display_name"`
+	Email       openapi_types.Email `json:"email"`
+
+	// EmailChangedAt When the most recent email change was committed.
+	EmailChangedAt *RFC3339Timestamp `json:"email_changed_at,omitempty"`
+	EmailVerified  bool              `json:"email_verified"`
+
+	// HasPassword Whether the account has a password set. Accounts created via
+	// Google/Apple Sign-In have no password; clients use this to render a
+	// "Set Password" flow instead of "Change Password".
+	//
+	// This is also the gate for the two guarded account operations:
+	// email change and provider unlink both refuse with
+	// `403 password_required` while it is false, because a password-less
+	// account's only credential is the provider link.
+	HasPassword bool               `json:"has_password"`
+	Id          openapi_types.UUID `json:"id"`
+
+	// PreviousEmail The address the account used before its most recent email change. Absent until one has happened.
+	PreviousEmail *openapi_types.Email `json:"previous_email,omitempty"`
 }
 
 // VADRequest defines model for VADRequest.
@@ -1552,7 +1708,6 @@ type OutputModalities = []string
 //     client branching (e.g. the device-auth flow) instead use the
 //     gateway shape: `{ "error": "<code>", "message": "<text>" }`
 //     with a stable code such as `device_not_registered`.
-//   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
 type Forbidden = Error
@@ -1563,7 +1718,6 @@ type Forbidden = Error
 //     client branching (e.g. the device-auth flow) instead use the
 //     gateway shape: `{ "error": "<code>", "message": "<text>" }`
 //     with a stable code such as `device_not_registered`.
-//   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
 type NotFound = Error
@@ -1574,7 +1728,6 @@ type NotFound = Error
 //     client branching (e.g. the device-auth flow) instead use the
 //     gateway shape: `{ "error": "<code>", "message": "<text>" }`
 //     with a stable code such as `device_not_registered`.
-//   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
 type RateLimited = Error
@@ -1585,7 +1738,6 @@ type RateLimited = Error
 //     client branching (e.g. the device-auth flow) instead use the
 //     gateway shape: `{ "error": "<code>", "message": "<text>" }`
 //     with a stable code such as `device_not_registered`.
-//   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
 type StandardError = Error
@@ -1596,10 +1748,27 @@ type StandardError = Error
 //     client branching (e.g. the device-auth flow) instead use the
 //     gateway shape: `{ "error": "<code>", "message": "<text>" }`
 //     with a stable code such as `device_not_registered`.
-//   - Session-broker:    `{ "error_code": "<code>", "message": "<text>" }`
 //
 // All variants validate against this schema (extra fields allowed).
 type Unauthorized = Error
+
+// DeleteV1AuthAccountJSONBody defines parameters for DeleteV1AuthAccount.
+type DeleteV1AuthAccountJSONBody struct {
+	// Confirm Must be exactly `"DELETE"`.
+	Confirm string `json:"confirm"`
+
+	// ConfirmEmail Re-typed account email (passwordless Google/Apple accounts).
+	ConfirmEmail *string `json:"confirm_email,omitempty"`
+
+	// CurrentPassword Step-up password (passworded accounts).
+	CurrentPassword *string `json:"current_password,omitempty"`
+}
+
+// PostV1AuthAccountConfirmJSONBody defines parameters for PostV1AuthAccountConfirm.
+type PostV1AuthAccountConfirmJSONBody struct {
+	// Token The single-use token from the confirmation email.
+	Token string `json:"token"`
+}
 
 // PostV1AuthApiKeysJSONBody defines parameters for PostV1AuthApiKeys.
 type PostV1AuthApiKeysJSONBody struct {
@@ -1617,6 +1786,23 @@ type PostV1AuthAppleWebJSONBody struct {
 	// Code Apple authorization code.
 	Code        string `json:"code"`
 	RedirectUri string `json:"redirect_uri"`
+}
+
+// PostV1AuthEmailChangeConfirmJSONBody defines parameters for PostV1AuthEmailChangeConfirm.
+type PostV1AuthEmailChangeConfirmJSONBody struct {
+	Token string `json:"token"`
+}
+
+// PostV1AuthEmailChangeConfirmNewJSONBody defines parameters for PostV1AuthEmailChangeConfirmNew.
+type PostV1AuthEmailChangeConfirmNewJSONBody struct {
+	Token string `json:"token"`
+}
+
+// PostV1AuthEmailChangeRequestJSONBody defines parameters for PostV1AuthEmailChangeRequest.
+type PostV1AuthEmailChangeRequestJSONBody struct {
+	// CurrentPassword Current account password (step-up challenge).
+	CurrentPassword string              `json:"current_password"`
+	NewEmail        openapi_types.Email `json:"new_email"`
 }
 
 // PostV1AuthGoogleJSONBody defines parameters for PostV1AuthGoogle.
@@ -1665,6 +1851,8 @@ type PatchV1AuthMeJSONBody struct {
 // PutV1AuthPasswordJSONBody defines parameters for PutV1AuthPassword.
 type PutV1AuthPasswordJSONBody struct {
 	NewPassword string `json:"new_password"`
+
+	// OldPassword Current password. Required and verified.
 	OldPassword string `json:"old_password"`
 }
 
@@ -1677,6 +1865,12 @@ type PostV1AuthPasswordResetConfirmJSONBody struct {
 // PostV1AuthPasswordResetRequestJSONBody defines parameters for PostV1AuthPasswordResetRequest.
 type PostV1AuthPasswordResetRequestJSONBody struct {
 	Email openapi_types.Email `json:"email"`
+}
+
+// PostV1AuthPasswordSetupConfirmJSONBody defines parameters for PostV1AuthPasswordSetupConfirm.
+type PostV1AuthPasswordSetupConfirmJSONBody struct {
+	NewPassword string `json:"new_password"`
+	Token       string `json:"token"`
 }
 
 // PostV1AuthRefreshJSONBody defines parameters for PostV1AuthRefresh.
@@ -1720,44 +1914,26 @@ type GetV1ModelsParams struct {
 	OutputModalities *OutputModalities `form:"output_modalities,omitempty" json:"output_modalities,omitempty"`
 }
 
-// PostV1SessionConnectJSONBody defines parameters for PostV1SessionConnect.
-type PostV1SessionConnectJSONBody struct {
-	// DeviceId Per-install device identity for the D-DEV-04 authorization gate. The broker refuses to provision for unauthorized devices (403 device_authorization_required). Absent on first connect triggers the email auth-code flow.
+// ConsumeSyncPairingTokenJSONBody defines parameters for ConsumeSyncPairingToken.
+type ConsumeSyncPairingTokenJSONBody struct {
 	DeviceId *string `json:"device_id,omitempty"`
-
-	// Version Optional HL image version.
-	Version *string `json:"version,omitempty"`
+	Token    string  `json:"token"`
 }
 
-// PostV1SessionConnect403JSONResponseBodyError defines parameters for PostV1SessionConnect.
-type PostV1SessionConnect403JSONResponseBodyError string
-
-// PostV1SessionConnect409JSONResponseBodyError defines parameters for PostV1SessionConnect.
-type PostV1SessionConnect409JSONResponseBodyError string
-
-// DeleteSessionDataJSONBody defines parameters for DeleteSessionData.
-type DeleteSessionDataJSONBody struct {
-	// Confirm Typed confirmation guard against accidental calls.
-	Confirm DeleteSessionDataJSONBodyConfirm `json:"confirm"`
+// GetSyncStatusParams defines parameters for GetSyncStatus.
+type GetSyncStatusParams struct {
+	DatasetId string  `form:"dataset_id" json:"dataset_id"`
+	DeviceId  *string `form:"device_id,omitempty" json:"device_id,omitempty"`
 }
 
-// DeleteSessionDataJSONBodyConfirm defines parameters for DeleteSessionData.
-type DeleteSessionDataJSONBodyConfirm string
+// PutV1AccountBackupKeyJSONRequestBody defines body for PutV1AccountBackupKey for application/json ContentType.
+type PutV1AccountBackupKeyJSONRequestBody = BackupKeyPutRequest
 
-// DeleteSessionData400JSONResponseBodyError defines parameters for DeleteSessionData.
-type DeleteSessionData400JSONResponseBodyError string
+// PutV1AccountSyncKeyJSONRequestBody defines body for PutV1AccountSyncKey for application/json ContentType.
+type PutV1AccountSyncKeyJSONRequestBody = SyncKeyPutRequest
 
-// DeleteSessionData409JSONResponseBodyError defines parameters for DeleteSessionData.
-type DeleteSessionData409JSONResponseBodyError string
-
-// GetSessionDataDeleteStatus503JSONResponseBodyErrorCode defines parameters for GetSessionDataDeleteStatus.
-type GetSessionDataDeleteStatus503JSONResponseBodyErrorCode string
-
-// PostV1SessionDisconnectJSONBody defines parameters for PostV1SessionDisconnect.
-type PostV1SessionDisconnectJSONBody struct {
-	Reason    *string             `json:"reason,omitempty"`
-	SessionId *openapi_types.UUID `json:"session_id,omitempty"`
-}
+// PutV1AccountSyncRotationRequiredJSONRequestBody defines body for PutV1AccountSyncRotationRequired for application/json ContentType.
+type PutV1AccountSyncRotationRequiredJSONRequestBody = SyncRotationPutRequest
 
 // PostV1AudioConvertJSONRequestBody defines body for PostV1AudioConvert for application/json ContentType.
 type PostV1AudioConvertJSONRequestBody = AudioConversionRequest
@@ -1771,6 +1947,12 @@ type PostV1AudioTranscriptionsJSONRequestBody = STTRequest
 // PostV1AudioVadJSONRequestBody defines body for PostV1AudioVad for application/json ContentType.
 type PostV1AudioVadJSONRequestBody = VADRequest
 
+// DeleteV1AuthAccountJSONRequestBody defines body for DeleteV1AuthAccount for application/json ContentType.
+type DeleteV1AuthAccountJSONRequestBody DeleteV1AuthAccountJSONBody
+
+// PostV1AuthAccountConfirmJSONRequestBody defines body for PostV1AuthAccountConfirm for application/json ContentType.
+type PostV1AuthAccountConfirmJSONRequestBody PostV1AuthAccountConfirmJSONBody
+
 // PostV1AuthApiKeysJSONRequestBody defines body for PostV1AuthApiKeys for application/json ContentType.
 type PostV1AuthApiKeysJSONRequestBody PostV1AuthApiKeysJSONBody
 
@@ -1779,6 +1961,18 @@ type PostV1AuthAppleJSONRequestBody PostV1AuthAppleJSONBody
 
 // PostV1AuthAppleWebJSONRequestBody defines body for PostV1AuthAppleWeb for application/json ContentType.
 type PostV1AuthAppleWebJSONRequestBody PostV1AuthAppleWebJSONBody
+
+// EnrollDeviceJSONRequestBody defines body for EnrollDevice for application/json ContentType.
+type EnrollDeviceJSONRequestBody = DeviceEnrollRequest
+
+// PostV1AuthEmailChangeConfirmJSONRequestBody defines body for PostV1AuthEmailChangeConfirm for application/json ContentType.
+type PostV1AuthEmailChangeConfirmJSONRequestBody PostV1AuthEmailChangeConfirmJSONBody
+
+// PostV1AuthEmailChangeConfirmNewJSONRequestBody defines body for PostV1AuthEmailChangeConfirmNew for application/json ContentType.
+type PostV1AuthEmailChangeConfirmNewJSONRequestBody PostV1AuthEmailChangeConfirmNewJSONBody
+
+// PostV1AuthEmailChangeRequestJSONRequestBody defines body for PostV1AuthEmailChangeRequest for application/json ContentType.
+type PostV1AuthEmailChangeRequestJSONRequestBody PostV1AuthEmailChangeRequestJSONBody
 
 // PostV1AuthGoogleJSONRequestBody defines body for PostV1AuthGoogle for application/json ContentType.
 type PostV1AuthGoogleJSONRequestBody PostV1AuthGoogleJSONBody
@@ -1810,6 +2004,9 @@ type PostV1AuthPasswordResetConfirmJSONRequestBody PostV1AuthPasswordResetConfir
 // PostV1AuthPasswordResetRequestJSONRequestBody defines body for PostV1AuthPasswordResetRequest for application/json ContentType.
 type PostV1AuthPasswordResetRequestJSONRequestBody PostV1AuthPasswordResetRequestJSONBody
 
+// PostV1AuthPasswordSetupConfirmJSONRequestBody defines body for PostV1AuthPasswordSetupConfirm for application/json ContentType.
+type PostV1AuthPasswordSetupConfirmJSONRequestBody PostV1AuthPasswordSetupConfirmJSONBody
+
 // PostV1AuthRefreshJSONRequestBody defines body for PostV1AuthRefresh for application/json ContentType.
 type PostV1AuthRefreshJSONRequestBody PostV1AuthRefreshJSONBody
 
@@ -1831,6 +2028,15 @@ type ApproveDeviceJSONRequestBody = ApproveDeviceRequest
 // AuthorizeDeviceJSONRequestBody defines body for AuthorizeDevice for application/json ContentType.
 type AuthorizeDeviceJSONRequestBody = AuthorizeDeviceRequest
 
+// CreateDeviceConnectSessionJSONRequestBody defines body for CreateDeviceConnectSession for application/json ContentType.
+type CreateDeviceConnectSessionJSONRequestBody = DeviceConnectSessionRequest
+
+// MintEnrollmentGrantJSONRequestBody defines body for MintEnrollmentGrant for application/json ContentType.
+type MintEnrollmentGrantJSONRequestBody = EnrollmentGrantRequest
+
+// MintSyncPairingTokenJSONRequestBody defines body for MintSyncPairingToken for application/json ContentType.
+type MintSyncPairingTokenJSONRequestBody = SyncPairingRequest
+
 // PostV1EmbedSpeakerJSONRequestBody defines body for PostV1EmbedSpeaker for application/json ContentType.
 type PostV1EmbedSpeakerJSONRequestBody = SpeakerEmbedRequest
 
@@ -1845,14 +2051,8 @@ type PostV1ImagesGenerationsJSONRequestBody = ImageGenerationRequest
 // PostV1RerankJSONRequestBody defines body for PostV1Rerank for application/json ContentType.
 type PostV1RerankJSONRequestBody = RerankRequest
 
-// PostV1SessionConnectJSONRequestBody defines body for PostV1SessionConnect for application/json ContentType.
-type PostV1SessionConnectJSONRequestBody PostV1SessionConnectJSONBody
-
-// DeleteSessionDataJSONRequestBody defines body for DeleteSessionData for application/json ContentType.
-type DeleteSessionDataJSONRequestBody DeleteSessionDataJSONBody
-
-// PostV1SessionDisconnectJSONRequestBody defines body for PostV1SessionDisconnect for application/json ContentType.
-type PostV1SessionDisconnectJSONRequestBody PostV1SessionDisconnectJSONBody
+// ConsumeSyncPairingTokenJSONRequestBody defines body for ConsumeSyncPairingToken for application/json ContentType.
+type ConsumeSyncPairingTokenJSONRequestBody ConsumeSyncPairingTokenJSONBody
 
 // PostV1VoiceConvertJSONRequestBody defines body for PostV1VoiceConvert for application/json ContentType.
 type PostV1VoiceConvertJSONRequestBody = VoiceConversionRequest
@@ -4316,120 +4516,6 @@ func (t *EmbeddingResponse_Data_Embedding) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsSessionDataDeleteStatusResponse0 returns the union data inside the SessionDataDeleteStatusResponse as a SessionDataDeleteStatusResponse0
-func (t SessionDataDeleteStatusResponse) AsSessionDataDeleteStatusResponse0() (SessionDataDeleteStatusResponse0, error) {
-	var body SessionDataDeleteStatusResponse0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromSessionDataDeleteStatusResponse0 overwrites any union data inside the SessionDataDeleteStatusResponse as the provided SessionDataDeleteStatusResponse0
-func (t *SessionDataDeleteStatusResponse) FromSessionDataDeleteStatusResponse0(v SessionDataDeleteStatusResponse0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeSessionDataDeleteStatusResponse0 performs a merge with any union data inside the SessionDataDeleteStatusResponse, using the provided SessionDataDeleteStatusResponse0
-func (t *SessionDataDeleteStatusResponse) MergeSessionDataDeleteStatusResponse0(v SessionDataDeleteStatusResponse0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsSessionDataDeleteStatusResponse1 returns the union data inside the SessionDataDeleteStatusResponse as a SessionDataDeleteStatusResponse1
-func (t SessionDataDeleteStatusResponse) AsSessionDataDeleteStatusResponse1() (SessionDataDeleteStatusResponse1, error) {
-	var body SessionDataDeleteStatusResponse1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromSessionDataDeleteStatusResponse1 overwrites any union data inside the SessionDataDeleteStatusResponse as the provided SessionDataDeleteStatusResponse1
-func (t *SessionDataDeleteStatusResponse) FromSessionDataDeleteStatusResponse1(v SessionDataDeleteStatusResponse1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeSessionDataDeleteStatusResponse1 performs a merge with any union data inside the SessionDataDeleteStatusResponse, using the provided SessionDataDeleteStatusResponse1
-func (t *SessionDataDeleteStatusResponse) MergeSessionDataDeleteStatusResponse1(v SessionDataDeleteStatusResponse1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsSessionDataDeleteStatusResponse2 returns the union data inside the SessionDataDeleteStatusResponse as a SessionDataDeleteStatusResponse2
-func (t SessionDataDeleteStatusResponse) AsSessionDataDeleteStatusResponse2() (SessionDataDeleteStatusResponse2, error) {
-	var body SessionDataDeleteStatusResponse2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromSessionDataDeleteStatusResponse2 overwrites any union data inside the SessionDataDeleteStatusResponse as the provided SessionDataDeleteStatusResponse2
-func (t *SessionDataDeleteStatusResponse) FromSessionDataDeleteStatusResponse2(v SessionDataDeleteStatusResponse2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeSessionDataDeleteStatusResponse2 performs a merge with any union data inside the SessionDataDeleteStatusResponse, using the provided SessionDataDeleteStatusResponse2
-func (t *SessionDataDeleteStatusResponse) MergeSessionDataDeleteStatusResponse2(v SessionDataDeleteStatusResponse2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsSessionDataDeleteStatusResponse3 returns the union data inside the SessionDataDeleteStatusResponse as a SessionDataDeleteStatusResponse3
-func (t SessionDataDeleteStatusResponse) AsSessionDataDeleteStatusResponse3() (SessionDataDeleteStatusResponse3, error) {
-	var body SessionDataDeleteStatusResponse3
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromSessionDataDeleteStatusResponse3 overwrites any union data inside the SessionDataDeleteStatusResponse as the provided SessionDataDeleteStatusResponse3
-func (t *SessionDataDeleteStatusResponse) FromSessionDataDeleteStatusResponse3(v SessionDataDeleteStatusResponse3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeSessionDataDeleteStatusResponse3 performs a merge with any union data inside the SessionDataDeleteStatusResponse, using the provided SessionDataDeleteStatusResponse3
-func (t *SessionDataDeleteStatusResponse) MergeSessionDataDeleteStatusResponse3(v SessionDataDeleteStatusResponse3) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t SessionDataDeleteStatusResponse) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *SessionDataDeleteStatusResponse) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
 // RequestEditorFn is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
@@ -4503,6 +4589,136 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+
+	// DeleteV1AccountBackupKey Drop the account's escrowed backup key (W1)
+	//
+	// Removes the account's escrowed wrapped-key blob. Idempotent. Used by
+	// the account-deletion rework (6-2) and by a user-initiated "reset backup
+	// key". PASETO (interactive) only.
+	//
+	// Corresponds with DELETE /v1/account/backup-key (the `DeleteV1AccountBackupKey` operationId).
+	DeleteV1AccountBackupKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1AccountBackupKey Fetch the account's escrowed wrapped backup key (W1)
+	//
+	// Returns the account's escrowed wrapped-key blob for restore (2-6). 404
+	// when no key is escrowed. PASETO (interactive) only.
+	//
+	// Corresponds with GET /v1/account/backup-key (the `GetV1AccountBackupKey` operationId).
+	GetV1AccountBackupKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountBackupKeyWithBody Escrow (or replace) the account's wrapped backup key (W1)
+	//
+	// Stores a single opaque, client-wrapped backup-key blob for the account
+	// (2-6's W1 account escrow). The backend never generates, derives or
+	// inspects key material: it escrows the blob under a KMS-managed KEK
+	// (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+	// so this can never become a bulk-storage endpoint. PASETO (interactive)
+	// only; API keys are refused. Re-escrowing replaces the previous blob.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v1/account/backup-key (the `PutV1AccountBackupKey` operationId).
+	PutV1AccountBackupKeyWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountBackupKey Escrow (or replace) the account's wrapped backup key (W1)
+	//
+	// Stores a single opaque, client-wrapped backup-key blob for the account
+	// (2-6's W1 account escrow). The backend never generates, derives or
+	// inspects key material: it escrows the blob under a KMS-managed KEK
+	// (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+	// so this can never become a bulk-storage endpoint. PASETO (interactive)
+	// only; API keys are refused. Re-escrowing replaces the previous blob.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /v1/account/backup-key (the `PutV1AccountBackupKey` operationId).
+	PutV1AccountBackupKey(ctx context.Context, body PutV1AccountBackupKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteV1AccountSyncKey Drop the account's escrowed sync-group key (7-4)
+	//
+	// Removes the account's escrowed wrapped sync-group-key blob. Idempotent.
+	// Used when all devices are revoked and the group restarts fresh. PASETO
+	// (interactive) only.
+	//
+	// Corresponds with DELETE /v1/account/sync-key (the `DeleteV1AccountSyncKey` operationId).
+	DeleteV1AccountSyncKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1AccountSyncKey Fetch the account's escrowed wrapped sync-group key (7-4)
+	//
+	// Returns the account's escrowed wrapped sync-group-key blob so a joining
+	// device can unwrap it (7-2/7-3). 404 when no key is escrowed. PASETO
+	// (interactive) only.
+	//
+	// Corresponds with GET /v1/account/sync-key (the `GetV1AccountSyncKey` operationId).
+	GetV1AccountSyncKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountSyncKeyWithBody Escrow (or replace) the account's wrapped sync-group key (7-4)
+	//
+	// Stores a single opaque, client-wrapped sync-group-key blob for the
+	// account (the second escrow slot beside the backup key, 7-2's sync-group
+	// key). The backend never generates, derives or inspects key material: it
+	// escrows the blob under a KMS-managed KEK (envelope). Scope is
+	// deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+	// only; API keys are refused. Re-escrowing replaces the previous blob.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v1/account/sync-key (the `PutV1AccountSyncKey` operationId).
+	PutV1AccountSyncKeyWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountSyncKey Escrow (or replace) the account's wrapped sync-group key (7-4)
+	//
+	// Stores a single opaque, client-wrapped sync-group-key blob for the
+	// account (the second escrow slot beside the backup key, 7-2's sync-group
+	// key). The backend never generates, derives or inspects key material: it
+	// escrows the blob under a KMS-managed KEK (envelope). Scope is
+	// deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+	// only; API keys are refused. Re-escrowing replaces the previous blob.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /v1/account/sync-key (the `PutV1AccountSyncKey` operationId).
+	PutV1AccountSyncKey(ctx context.Context, body PutV1AccountSyncKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteV1AccountSyncRotationRequired Clear the account's sync rotation-required flag (7-4)
+	//
+	// Clears the flag after the app has rotated the engine key and re-escrowed
+	// it. Idempotent. PASETO (interactive) only.
+	//
+	// Corresponds with DELETE /v1/account/sync-rotation-required (the `DeleteV1AccountSyncRotationRequired` operationId).
+	DeleteV1AccountSyncRotationRequired(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1AccountSyncRotationRequired Read the account's sync rotation-required flag (7-4)
+	//
+	// Whether a sync-key rotation is pending. Defaults to `false`. The app
+	// polls this and, when true, drives the engine's engine-authoritative
+	// rotate and re-escrows the new wrapped key. PASETO (interactive) only.
+	//
+	// Corresponds with GET /v1/account/sync-rotation-required (the `GetV1AccountSyncRotationRequired` operationId).
+	GetV1AccountSyncRotationRequired(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountSyncRotationRequiredWithBody Set the account's sync rotation-required flag (7-4)
+	//
+	// The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+	// rotation; `{"required": false}` clears it. The portal never sees key
+	// material. PASETO (interactive) only.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v1/account/sync-rotation-required (the `PutV1AccountSyncRotationRequired` operationId).
+	PutV1AccountSyncRotationRequiredWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutV1AccountSyncRotationRequired Set the account's sync rotation-required flag (7-4)
+	//
+	// The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+	// rotation; `{"required": false}` clears it. The portal never sees key
+	// material. PASETO (interactive) only.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /v1/account/sync-rotation-required (the `PutV1AccountSyncRotationRequired` operationId).
+	PutV1AccountSyncRotationRequired(ctx context.Context, body PutV1AccountSyncRotationRequiredJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostV1AudioConvertWithBody Audio conversion / enhancement
 	//
@@ -4580,6 +4796,88 @@ type ClientInterface interface {
 	// Corresponds with POST /v1/audio/vad (the `PostV1AudioVad` operationId).
 	PostV1AudioVad(ctx context.Context, body PostV1AudioVadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteV1AuthAccountWithBody Request permanent deletion of the current user's account (email-confirmed)
+	//
+	// STAGES a permanent account deletion — it does NOT delete anything yet.
+	// Because deletion is irreversible, it is gated behind proof of control of
+	// the account's OWN mailbox: this call validates the typed confirmation
+	// (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+	// confirmation link to the account address. The deletion commits only when
+	// that link is redeemed via `POST /v1/auth/account/confirm` by an
+	// authenticated caller, so a stolen session alone cannot destroy the
+	// account.
+	//
+	// Step-up (verified when supplied): `current_password` for passworded
+	// accounts, or `confirm_email` (the user re-typing the account address) for
+	// passwordless Google/Apple accounts. The emailed link is the mandatory
+	// hard confirmation for every account.
+	//
+	// On commit, the user's CLOUD data is purged first (live sessions killed,
+	// every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+	// then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+	// keys, refresh tokens, devices, themes, subscriptions, sessions,
+	// identities and email/password-reset tokens).
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with DELETE /v1/auth/account (the `DeleteV1AuthAccount` operationId).
+	DeleteV1AuthAccountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteV1AuthAccount Request permanent deletion of the current user's account (email-confirmed)
+	//
+	// STAGES a permanent account deletion — it does NOT delete anything yet.
+	// Because deletion is irreversible, it is gated behind proof of control of
+	// the account's OWN mailbox: this call validates the typed confirmation
+	// (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+	// confirmation link to the account address. The deletion commits only when
+	// that link is redeemed via `POST /v1/auth/account/confirm` by an
+	// authenticated caller, so a stolen session alone cannot destroy the
+	// account.
+	//
+	// Step-up (verified when supplied): `current_password` for passworded
+	// accounts, or `confirm_email` (the user re-typing the account address) for
+	// passwordless Google/Apple accounts. The emailed link is the mandatory
+	// hard confirmation for every account.
+	//
+	// On commit, the user's CLOUD data is purged first (live sessions killed,
+	// every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+	// then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+	// keys, refresh tokens, devices, themes, subscriptions, sessions,
+	// identities and email/password-reset tokens).
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with DELETE /v1/auth/account (the `DeleteV1AuthAccount` operationId).
+	DeleteV1AuthAccount(ctx context.Context, body DeleteV1AuthAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthAccountConfirmWithBody Confirm and commit a staged account deletion
+	//
+	// Redeems the single-use token mailed to the account address and permanently
+	// deletes the account. The token is bound to the authenticated caller, so a
+	// forwarded or leaked email alone cannot delete the account. The deletion
+	// itself is a single synchronous database transaction (every account-scoped
+	// row is removed via FK cascade); the deleted user's hosted-backup blobs in
+	// s3-sync-backup are purged asynchronously afterwards. Irreversible.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/auth/account/confirm (the `PostV1AuthAccountConfirm` operationId).
+	PostV1AuthAccountConfirmWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthAccountConfirm Confirm and commit a staged account deletion
+	//
+	// Redeems the single-use token mailed to the account address and permanently
+	// deletes the account. The token is bound to the authenticated caller, so a
+	// forwarded or leaked email alone cannot delete the account. The deletion
+	// itself is a single synchronous database transaction (every account-scoped
+	// row is removed via FK cascade); the deleted user's hosted-backup blobs in
+	// s3-sync-backup are purged asynchronously afterwards. Irreversible.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/auth/account/confirm (the `PostV1AuthAccountConfirm` operationId).
+	PostV1AuthAccountConfirm(ctx context.Context, body PostV1AuthAccountConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetV1AuthApiKeys List API keys
 	//
 	// Returns metadata only — the raw key value is NEVER returned (only the prefix for identification).
@@ -4589,8 +4887,8 @@ type ClientInterface interface {
 
 	// PostV1AuthApiKeysWithBody Create an API key
 	//
-	// Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-	// API keys CANNOT create/list/revoke other API keys.
+	// Returns the full key ONCE. Max 5 keys per user.
+	// API keys CANNOT create/list/delete other API keys.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -4599,17 +4897,21 @@ type ClientInterface interface {
 
 	// PostV1AuthApiKeys Create an API key
 	//
-	// Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-	// API keys CANNOT create/list/revoke other API keys.
+	// Returns the full key ONCE. Max 5 keys per user.
+	// API keys CANNOT create/list/delete other API keys.
 	//
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with POST /v1/auth/api-keys (the `PostV1AuthApiKeys` operationId).
 	PostV1AuthApiKeys(ctx context.Context, body PostV1AuthApiKeysJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// DeleteV1AuthApiKeysId Revoke an API key
+	// DeleteV1AuthApiKeysId Delete an API key
 	//
-	// Idempotent (already-revoked returns 204). Writes a negative Valkey cache entry so revocation is effective within milliseconds.
+	// Permanently deletes an API key. The key disappears from the list, can never
+	// authenticate again, and no longer counts towards the 5-key limit. Idempotent
+	// (deleting an unknown or already-deleted key returns 204). Purges the positive
+	// auth-cache entry and writes a negative Valkey cache entry so the key stops
+	// working within milliseconds.
 	//
 	// Corresponds with DELETE /v1/auth/api-keys/{id} (the `DeleteV1AuthApiKeysId` operationId).
 	DeleteV1AuthApiKeysId(ctx context.Context, id ApiKeyId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4650,6 +4952,161 @@ type ClientInterface interface {
 	// Corresponds with POST /v1/auth/apple/web (the `PostV1AuthAppleWeb` operationId).
 	PostV1AuthAppleWeb(ctx context.Context, body PostV1AuthAppleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// EnrollDeviceWithBody Redeem a delegated-enrollment grant for a device session
+	//
+	// Exchanges a single-use delegated-enrollment grant for the enrolled device's OWN device-scoped session (PASETO + refresh token) — the same token shape every other sign-in path returns. NO account authentication is required: the grant is the credential. The device is registered as authorized because the minting device vouched for it. Enrolled devices are full devices and may themselves mint grants.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/auth/device/enroll (the `EnrollDevice` operationId).
+	EnrollDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// EnrollDevice Redeem a delegated-enrollment grant for a device session
+	//
+	// Exchanges a single-use delegated-enrollment grant for the enrolled device's OWN device-scoped session (PASETO + refresh token) — the same token shape every other sign-in path returns. NO account authentication is required: the grant is the credential. The device is registered as authorized because the minting device vouched for it. Enrolled devices are full devices and may themselves mint grants.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/auth/device/enroll (the `EnrollDevice` operationId).
+	EnrollDevice(ctx context.Context, body EnrollDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthEmailChangeCancel Cancel a pending email change
+	//
+	// Abandons a pending change so a different address can be used immediately
+	// — the "I typed the wrong address" / "I changed my mind" case — instead of
+	// the request blocking a new attempt until it expires.
+	//
+	// Voids BOTH tokens (including any link already delivered), because it sets
+	// the same single-use tombstone every confirmation lookup guards on.
+	// Idempotent: cancelling when nothing is pending returns 200.
+	//
+	// Corresponds with POST /v1/auth/email/change/cancel (the `PostV1AuthEmailChangeCancel` operationId).
+	PostV1AuthEmailChangeCancel(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthEmailChangeConfirmWithBody Approve and commit the email change (stage 5)
+	//
+	// Redeems the single-use token mailed to the CURRENT address and commits
+	// the change. The previous address is retained for audit, and a Valkey
+	// cutoff signs out every session (the account owner must sign in again).
+	//
+	// Must be called by the authenticated owner of the request.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/auth/email/change/confirm (the `PostV1AuthEmailChangeConfirm` operationId).
+	PostV1AuthEmailChangeConfirmWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthEmailChangeConfirm Approve and commit the email change (stage 5)
+	//
+	// Redeems the single-use token mailed to the CURRENT address and commits
+	// the change. The previous address is retained for audit, and a Valkey
+	// cutoff signs out every session (the account owner must sign in again).
+	//
+	// Must be called by the authenticated owner of the request.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/auth/email/change/confirm (the `PostV1AuthEmailChangeConfirm` operationId).
+	PostV1AuthEmailChangeConfirm(ctx context.Context, body PostV1AuthEmailChangeConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthEmailChangeConfirmNewWithBody Confirm the new email address (stage 3)
+	//
+	// Redeems the single-use token mailed to the TARGET address. On success a
+	// blocking approval email is sent to the CURRENT address naming the target.
+	//
+	// Must be called by the authenticated owner of the request — the emailed
+	// token is not sufficient on its own.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/auth/email/change/confirm-new (the `PostV1AuthEmailChangeConfirmNew` operationId).
+	PostV1AuthEmailChangeConfirmNewWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthEmailChangeConfirmNew Confirm the new email address (stage 3)
+	//
+	// Redeems the single-use token mailed to the TARGET address. On success a
+	// blocking approval email is sent to the CURRENT address naming the target.
+	//
+	// Must be called by the authenticated owner of the request — the emailed
+	// token is not sufficient on its own.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/auth/email/change/confirm-new (the `PostV1AuthEmailChangeConfirmNew` operationId).
+	PostV1AuthEmailChangeConfirmNew(ctx context.Context, body PostV1AuthEmailChangeConfirmNewJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthEmailChangeRequestWithBody Start an email change
+	//
+	// Stage 1–2. Step-up with the account password, then stage a move to
+	// `new_email`.
+	//
+	// The change is confirmed from BOTH mailboxes: a token is mailed to the
+	// TARGET address first (stage 3), and only after that is a blocking
+	// approval token mailed to the CURRENT address naming the target
+	// (stage 4). Neither address can complete the change alone.
+	//
+	// Requires a password on the account. Google/Apple-created accounts have
+	// none and receive `403 password_required` — they must set a password
+	// first (`PUT /v1/auth/password`), after which the normal flow applies.
+	// This prevents the email change from silently minting a second credential
+	// on an account whose only credential is the provider link.
+	//
+	// New requests invalidate any still-pending one. A 60s per-user cooldown
+	// applies (`429`, with `retry_after`).
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/auth/email/change/request (the `PostV1AuthEmailChangeRequest` operationId).
+	PostV1AuthEmailChangeRequestWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthEmailChangeRequest Start an email change
+	//
+	// Stage 1–2. Step-up with the account password, then stage a move to
+	// `new_email`.
+	//
+	// The change is confirmed from BOTH mailboxes: a token is mailed to the
+	// TARGET address first (stage 3), and only after that is a blocking
+	// approval token mailed to the CURRENT address naming the target
+	// (stage 4). Neither address can complete the change alone.
+	//
+	// Requires a password on the account. Google/Apple-created accounts have
+	// none and receive `403 password_required` — they must set a password
+	// first (`PUT /v1/auth/password`), after which the normal flow applies.
+	// This prevents the email change from silently minting a second credential
+	// on an account whose only credential is the provider link.
+	//
+	// New requests invalidate any still-pending one. A 60s per-user cooldown
+	// applies (`429`, with `retry_after`).
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/auth/email/change/request (the `PostV1AuthEmailChangeRequest` operationId).
+	PostV1AuthEmailChangeRequest(ctx context.Context, body PostV1AuthEmailChangeRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthEmailChangeResend Re-send the current step's confirmation email
+	//
+	// Recovery path for "the confirmation email never arrived" (spam, a typo'd
+	// forward, or a failed hand-off).
+	//
+	// Re-mints the token for whichever stage the change is CURRENTLY on and
+	// re-sends only that one email. It never advances the flow: the approval
+	// (stage 4) branch is unreachable until the new address has confirmed, so
+	// this cannot be used to skip stage 3. The previously issued link for that
+	// stage stops working, as the newest token replaces it.
+	//
+	// Rate-limited to one resend per 60 s (`429` with `retry_after`), matching
+	// the per-user cooldown on starting a change.
+	//
+	// Corresponds with POST /v1/auth/email/change/resend (the `PostV1AuthEmailChangeResend` operationId).
+	PostV1AuthEmailChangeResend(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1AuthEmailChangeStatus Current email-change state
+	//
+	// Reports whether a pending change exists and which step it awaits, so the portal can resume after a reload.
+	//
+	// Corresponds with GET /v1/auth/email/change/status (the `GetV1AuthEmailChangeStatus` operationId).
+	GetV1AuthEmailChangeStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostV1AuthGoogleWithBody Google Sign-In (native / Android)
 	//
 	// Validates the Google `id_token`. 409 on email conflict (link flow).
@@ -4686,9 +5143,23 @@ type ClientInterface interface {
 	// Corresponds with POST /v1/auth/google/web (the `PostV1AuthGoogleWeb` operationId).
 	PostV1AuthGoogleWeb(ctx context.Context, body PostV1AuthGoogleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetV1AuthIdentities List linked sign-in providers
+	//
+	// Returns the OAuth providers (Google, Apple) attached to the account so
+	// the portal can offer a disconnect action. Disconnecting uses
+	// `DELETE /v1/auth/link/{google,apple}`, which refuses while the account
+	// has no password (lockout guard).
+	//
+	// The synthetic `email` identity from registration is not listed.
+	//
+	// Corresponds with GET /v1/auth/identities (the `GetV1AuthIdentities` operationId).
+	GetV1AuthIdentities(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteV1AuthLinkApple Unlink the Apple identity
 	//
-	// Lockout guard — refuses if no password is set.
+	// Lockout guard — refuses with `403 password_required` if the account has
+	// no password, because the provider link would then be its only credential.
+	// Set a password first (`PUT /v1/auth/password`).
 	//
 	// Corresponds with DELETE /v1/auth/link/apple (the `DeleteV1AuthLinkApple` operationId).
 	DeleteV1AuthLinkApple(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4713,7 +5184,9 @@ type ClientInterface interface {
 
 	// DeleteV1AuthLinkGoogle Unlink the Google identity
 	//
-	// Lockout guard — refuses if no password is set.
+	// Lockout guard — refuses with `403 password_required` if the account has
+	// no password, because the provider link would then be its only credential.
+	// Set a password first (`PUT /v1/auth/password`).
 	//
 	// Corresponds with DELETE /v1/auth/link/google (the `DeleteV1AuthLinkGoogle` operationId).
 	DeleteV1AuthLinkGoogle(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4797,7 +5270,14 @@ type ClientInterface interface {
 
 	// PutV1AuthPasswordWithBody Change password
 	//
-	// Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+	// Changes the authenticated user's password and writes a Valkey cutoff
+	// (forces re-login everywhere). `old_password` is required and verified.
+	//
+	// Accounts created via Google/Apple Sign-In have NO password, so they
+	// cannot use this endpoint — setting a FIRST password creates a credential
+	// and is gated behind an email-confirmed, session-bound flow
+	// (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+	// account receives `409 password_setup_required`.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -4806,7 +5286,14 @@ type ClientInterface interface {
 
 	// PutV1AuthPassword Change password
 	//
-	// Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+	// Changes the authenticated user's password and writes a Valkey cutoff
+	// (forces re-login everywhere). `old_password` is required and verified.
+	//
+	// Accounts created via Google/Apple Sign-In have NO password, so they
+	// cannot use this endpoint — setting a FIRST password creates a credential
+	// and is gated behind an email-confirmed, session-bound flow
+	// (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+	// account receives `409 password_setup_required`.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -4848,6 +5335,44 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /v1/auth/password/reset/request (the `PostV1AuthPasswordResetRequest` operationId).
 	PostV1AuthPasswordResetRequest(ctx context.Context, body PostV1AuthPasswordResetRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthPasswordSetupConfirmWithBody Confirm first-password setup
+	//
+	// Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+	// sets the first password. The caller must be authenticated as the request
+	// owner (the token is session-bound), so a forwarded or leaked mail alone
+	// is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/auth/password/setup/confirm (the `PostV1AuthPasswordSetupConfirm` operationId).
+	PostV1AuthPasswordSetupConfirmWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthPasswordSetupConfirm Confirm first-password setup
+	//
+	// Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+	// sets the first password. The caller must be authenticated as the request
+	// owner (the token is session-bound), so a forwarded or leaked mail alone
+	// is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/auth/password/setup/confirm (the `PostV1AuthPasswordSetupConfirm` operationId).
+	PostV1AuthPasswordSetupConfirm(ctx context.Context, body PostV1AuthPasswordSetupConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostV1AuthPasswordSetupRequest Request first-password setup (OAuth-only accounts)
+	//
+	// Stages a single-use token and mails it to the account's OWN address. The
+	// password is only set when the token is redeemed via
+	// `POST /v1/auth/password/setup/confirm` by an authenticated caller, so a
+	// stolen session token alone can never create a credential.
+	//
+	// Refused with `409 password_already_set` when the account already has a
+	// password (use `PUT /v1/auth/password` instead). Refused with `403` for
+	// API-key callers.
+	//
+	// Corresponds with POST /v1/auth/password/setup/request (the `PostV1AuthPasswordSetupRequest` operationId).
+	PostV1AuthPasswordSetupRequest(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostV1AuthRefreshWithBody Refresh the PASETO token
 	//
@@ -4903,12 +5428,68 @@ type ClientInterface interface {
 	// Corresponds with POST /v1/auth/resend-verification (the `PostV1AuthResendVerification` operationId).
 	PostV1AuthResendVerification(ctx context.Context, body PostV1AuthResendVerificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteV1AuthSessions Sign out everywhere
+	//
+	// Ends EVERY session for the account, including the calling one. The
+	// caller must sign in again afterwards; this is the deliberate "sign out
+	// everywhere" action (the same invalidation the email-change flow applies
+	// on commit).
+	//
+	// Corresponds with DELETE /v1/auth/sessions (the `DeleteV1AuthSessions` operationId).
+	DeleteV1AuthSessions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetV1AuthSessions List active sessions
+	//
+	// Every signed-in session for the account — one per device or browser —
+	// most recently active first, with the calling session marked `current`.
+	//
+	// Signing out one session (`DELETE /v1/auth/sessions/{session_id}`) kills
+	// that session's tokens immediately, not just its refresh token.
+	//
+	// Corresponds with GET /v1/auth/sessions (the `GetV1AuthSessions` operationId).
+	GetV1AuthSessions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteV1AuthSessionsSessionId Sign out one session
+	//
+	// Ends a single session — one device or browser. Refused for the calling
+	// session (`400 cannot_revoke_current_session`), which must be ended with
+	// `POST /v1/auth/logout` so the client knows it has been signed out.
+	//
+	// Corresponds with DELETE /v1/auth/sessions/{session_id} (the `DeleteV1AuthSessionsSessionId` operationId).
+	DeleteV1AuthSessionsSessionId(ctx context.Context, sessionId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetV1AuthVerify Verify email address
 	//
 	// Accepts the token as a URL path segment OR query param. Returns a token pair on success.
 	//
 	// Corresponds with GET /v1/auth/verify (the `GetV1AuthVerify` operationId).
 	GetV1AuthVerify(ctx context.Context, params *GetV1AuthVerifyParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetBackupManifest Fetch an opaque per-device backup manifest
+	//
+	// Corresponds with GET /v1/backup/manifest/{device} (the `GetBackupManifest` operationId).
+	GetBackupManifest(ctx context.Context, device string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutBackupManifestWithBody Store an opaque per-device backup manifest (7-5)
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v1/backup/manifest/{device} (the `PutBackupManifest` operationId).
+	PutBackupManifestWithBody(ctx context.Context, device string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetBackupObject Fetch an opaque backup object by its SHA-256
+	//
+	// Corresponds with GET /v1/backup/objects/{sha256} (the `GetBackupObject` operationId).
+	GetBackupObject(ctx context.Context, sha256 string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutBackupObjectWithBody Store an opaque, content-addressed backup object (7-5)
+	//
+	// Body is an opaque, already-encrypted AEAD blob. The relay verifies only the SHA-256 address (integrity), never the content. Enforces the tier `backup_storage_mb` cap.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /v1/backup/objects/{sha256} (the `PutBackupObject` operationId).
+	PutBackupObjectWithBody(ctx context.Context, sha256 string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostV1ChatCompletionsWithBody Chat completions (LLM)
 	//
@@ -4946,9 +5527,8 @@ type ClientInterface interface {
 	// RegisterDeviceWithBody Register or refresh a device
 	//
 	// Registers a client install (or refreshes an existing one, e.g. a new
-	// push token). Devices must be authorized before cloud sessions can be
-	// provisioned for them — see `/v1/session/connect` (403
-	// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+	// push token). Devices are authorized via the `/v1/devices/authorize`
+	// email auth-code flow.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -4958,9 +5538,8 @@ type ClientInterface interface {
 	// RegisterDevice Register or refresh a device
 	//
 	// Registers a client install (or refreshes an existing one, e.g. a new
-	// push token). Devices must be authorized before cloud sessions can be
-	// provisioned for them — see `/v1/session/connect` (403
-	// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+	// push token). Devices are authorized via the `/v1/devices/authorize`
+	// email auth-code flow.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -5011,6 +5590,81 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /v1/devices/authorize/status (the `GetDeviceAuthorizationStatus` operationId).
 	GetDeviceAuthorizationStatus(ctx context.Context, params *GetDeviceAuthorizationStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateDeviceConnectSessionWithBody Create a poll-only engine sign-in (connect session)
+	//
+	// Public (the engine is not authenticated yet). Mints an unguessable connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and returns the portal URL the engine opens in the system browser. The user signs in there and clicks Allow; the engine then polls GET /v1/devices/connect-session/{connect_id} with the secret.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/devices/connect-session (the `CreateDeviceConnectSession` operationId).
+	CreateDeviceConnectSessionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateDeviceConnectSession Create a poll-only engine sign-in (connect session)
+	//
+	// Public (the engine is not authenticated yet). Mints an unguessable connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and returns the portal URL the engine opens in the system browser. The user signs in there and clicks Allow; the engine then polls GET /v1/devices/connect-session/{connect_id} with the secret.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/devices/connect-session (the `CreateDeviceConnectSession` operationId).
+	CreateDeviceConnectSession(ctx context.Context, body CreateDeviceConnectSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDeviceConnectSession Poll a connect session (auth = the session_secret)
+	//
+	// The engine polls this with `Authorization: Bearer <session_secret>`. A pending session returns `{"status":"pending"}`; an approved one returns the token pair EXACTLY ONCE (`{"status":"approved","token":…, "refresh_token":…,"expires_at":…}`) and is marked consumed; later polls return `{"status":"consumed"}`; an expired session returns `{"status":"expired"}`.
+	//
+	// Corresponds with GET /v1/devices/connect-session/{connect_id} (the `GetDeviceConnectSession` operationId).
+	GetDeviceConnectSession(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ApproveDeviceConnectSession Approve a connect session (the portal Allow click)
+	//
+	// Portal (interactive) auth ONLY — API keys are refused. The Allow click is the consent: it registers the device authorized=true and stores the freshly issued token pair (encrypted) for one-time retrieval by the engine's poll. Idempotent once approved.
+	//
+	// Corresponds with POST /v1/devices/connect-session/{connect_id}/approve (the `ApproveDeviceConnectSession` operationId).
+	ApproveDeviceConnectSession(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDeviceConnectSessionMeta Read connect-session metadata (no secret)
+	//
+	// No-secret read for the portal page: the device name to render plus the current status. The connect_id is a 128-bit unguessable UUID.
+	//
+	// Corresponds with GET /v1/devices/connect-session/{connect_id}/meta (the `GetDeviceConnectSessionMeta` operationId).
+	GetDeviceConnectSessionMeta(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// MintEnrollmentGrantWithBody Mint a single-use delegated-enrollment grant
+	//
+	// Mints a short-lived (5 min), single-use grant that lets an already-authorized device (the desktop vouches) enroll a NEW device into the same account. The minting device must belong to the caller and be authorized. The grant is shown ONCE (only its SHA-256 is stored). Requires an interactive session — API keys are refused.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/devices/enrollment-grants (the `MintEnrollmentGrant` operationId).
+	MintEnrollmentGrantWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// MintEnrollmentGrant Mint a single-use delegated-enrollment grant
+	//
+	// Mints a short-lived (5 min), single-use grant that lets an already-authorized device (the desktop vouches) enroll a NEW device into the same account. The minting device must belong to the caller and be authorized. The grant is shown ONCE (only its SHA-256 is stored). Requires an interactive session — API keys are refused.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/devices/enrollment-grants (the `MintEnrollmentGrant` operationId).
+	MintEnrollmentGrant(ctx context.Context, body MintEnrollmentGrantJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// MintSyncPairingTokenWithBody Mint a single-use sync pairing token
+	//
+	// Mints a short-lived (5 min), single-use token binding (user, device, dataset). The engine presents it to the sync-relay at first connect (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a dataset group. The device must belong to the caller and be authorized.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/devices/sync-pairing (the `MintSyncPairingToken` operationId).
+	MintSyncPairingTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// MintSyncPairingToken Mint a single-use sync pairing token
+	//
+	// Mints a short-lived (5 min), single-use token binding (user, device, dataset). The engine presents it to the sync-relay at first connect (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a dataset group. The device must belong to the caller and be authorized.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/devices/sync-pairing (the `MintSyncPairingToken` operationId).
+	MintSyncPairingToken(ctx context.Context, body MintSyncPairingTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RevokeDevice Revoke a device
 	//
@@ -5132,74 +5786,6 @@ type ClientInterface interface {
 	// Corresponds with POST /v1/rerank (the `PostV1Rerank` operationId).
 	PostV1Rerank(ctx context.Context, body PostV1RerankJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostV1SessionConnectWithBody Connect a cloud session
-	//
-	// Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-	PostV1SessionConnectWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostV1SessionConnect Connect a cloud session
-	//
-	// Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-	PostV1SessionConnect(ctx context.Context, body PostV1SessionConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostV1SessionConnected Report session connected (proxy → broker)
-	//
-	// Called by the conduct proxy when the WebSocket upgrade completes; cancels the connect timeout.
-	//
-	// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
-	PostV1SessionConnected(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteSessionDataWithBody Purge all cloud-side engine data for the authenticated user (async)
-	//
-	// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
-	DeleteSessionDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteSessionData Purge all cloud-side engine data for the authenticated user (async)
-	//
-	// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
-	DeleteSessionData(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetSessionDataDeleteStatus Poll the status of the authenticated user's data purge
-	//
-	// Reports the current purge state. 200 always (after auth) with one of four shapes: in_progress (flag set — purge active or stalled, with phase/request_id/attempts), deleted (terminal success, with the S3 / beat / DEK counters from the result tombstone), failed (terminal failure — the sweeper gave up; the user is unblocked but the data was not guaranteed deleted; retry the delete), or none (nothing running or remembered). Flag presence wins over the terminal tombstone: while a failed run is still flagged for the sweeper the report stays in_progress.
-	//
-	// Corresponds with GET /v1/session/data/delete/status (the `GetSessionDataDeleteStatus` operationId).
-	GetSessionDataDeleteStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostV1SessionDisconnectWithBody Disconnect a cloud session (enter grace period)
-	//
-	// Transitions the session to a 5-minute grace period, then schedules cleanup.
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-	PostV1SessionDisconnectWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostV1SessionDisconnect Disconnect a cloud session (enter grace period)
-	//
-	// Transitions the session to a 5-minute grace period, then schedules cleanup.
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-	PostV1SessionDisconnect(ctx context.Context, body PostV1SessionDisconnectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetV1SubscriptionMe Get the current user's subscription
 	//
 	// Resolves the tier from the auth context; defaults to `free` if no subscription exists.
@@ -5211,6 +5797,29 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /v1/subscription/tiers (the `GetV1SubscriptionTiers` operationId).
 	GetV1SubscriptionTiers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ConsumeSyncPairingTokenWithBody Redeem a single-use sync pairing token
+	//
+	// Atomically consumes a pairing token and joins the caller's device to the dataset group (enforcing the tier `sync_devices` limit). A token can be consumed exactly once.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v1/sync/pairing/consume (the `ConsumeSyncPairingToken` operationId).
+	ConsumeSyncPairingTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ConsumeSyncPairingToken Redeem a single-use sync pairing token
+	//
+	// Atomically consumes a pairing token and joins the caller's device to the dataset group (enforcing the tier `sync_devices` limit). A token can be consumed exactly once.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v1/sync/pairing/consume (the `ConsumeSyncPairingToken` operationId).
+	ConsumeSyncPairingToken(ctx context.Context, body ConsumeSyncPairingTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSyncStatus Get the caller's sync buffer + quota status
+	//
+	// Corresponds with GET /v1/sync/status (the `GetSyncStatus` operationId).
+	GetSyncStatus(ctx context.Context, params *GetSyncStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetV1Versions List available HL image versions
 	//
@@ -5234,6 +5843,256 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /v1/voice/convert (the `PostV1VoiceConvert` operationId).
 	PostV1VoiceConvert(ctx context.Context, body PostV1VoiceConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+// DeleteV1AccountBackupKey Drop the account's escrowed backup key (W1)
+//
+// Removes the account's escrowed wrapped-key blob. Idempotent. Used by
+// the account-deletion rework (6-2) and by a user-initiated "reset backup
+// key". PASETO (interactive) only.
+//
+// Corresponds with DELETE /v1/account/backup-key (the `DeleteV1AccountBackupKey` operationId).
+func (c *Client) DeleteV1AccountBackupKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AccountBackupKeyRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetV1AccountBackupKey Fetch the account's escrowed wrapped backup key (W1)
+//
+// Returns the account's escrowed wrapped-key blob for restore (2-6). 404
+// when no key is escrowed. PASETO (interactive) only.
+//
+// Corresponds with GET /v1/account/backup-key (the `GetV1AccountBackupKey` operationId).
+func (c *Client) GetV1AccountBackupKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountBackupKeyRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutV1AccountBackupKeyWithBody Escrow (or replace) the account's wrapped backup key (W1)
+//
+// Stores a single opaque, client-wrapped backup-key blob for the account
+// (2-6's W1 account escrow). The backend never generates, derives or
+// inspects key material: it escrows the blob under a KMS-managed KEK
+// (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+// so this can never become a bulk-storage endpoint. PASETO (interactive)
+// only; API keys are refused. Re-escrowing replaces the previous blob.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v1/account/backup-key (the `PutV1AccountBackupKey` operationId).
+func (c *Client) PutV1AccountBackupKeyWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountBackupKeyRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutV1AccountBackupKey Escrow (or replace) the account's wrapped backup key (W1)
+//
+// Stores a single opaque, client-wrapped backup-key blob for the account
+// (2-6's W1 account escrow). The backend never generates, derives or
+// inspects key material: it escrows the blob under a KMS-managed KEK
+// (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+// so this can never become a bulk-storage endpoint. PASETO (interactive)
+// only; API keys are refused. Re-escrowing replaces the previous blob.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /v1/account/backup-key (the `PutV1AccountBackupKey` operationId).
+func (c *Client) PutV1AccountBackupKey(ctx context.Context, body PutV1AccountBackupKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountBackupKeyRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteV1AccountSyncKey Drop the account's escrowed sync-group key (7-4)
+//
+// Removes the account's escrowed wrapped sync-group-key blob. Idempotent.
+// Used when all devices are revoked and the group restarts fresh. PASETO
+// (interactive) only.
+//
+// Corresponds with DELETE /v1/account/sync-key (the `DeleteV1AccountSyncKey` operationId).
+func (c *Client) DeleteV1AccountSyncKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AccountSyncKeyRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetV1AccountSyncKey Fetch the account's escrowed wrapped sync-group key (7-4)
+//
+// Returns the account's escrowed wrapped sync-group-key blob so a joining
+// device can unwrap it (7-2/7-3). 404 when no key is escrowed. PASETO
+// (interactive) only.
+//
+// Corresponds with GET /v1/account/sync-key (the `GetV1AccountSyncKey` operationId).
+func (c *Client) GetV1AccountSyncKey(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountSyncKeyRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutV1AccountSyncKeyWithBody Escrow (or replace) the account's wrapped sync-group key (7-4)
+//
+// Stores a single opaque, client-wrapped sync-group-key blob for the
+// account (the second escrow slot beside the backup key, 7-2's sync-group
+// key). The backend never generates, derives or inspects key material: it
+// escrows the blob under a KMS-managed KEK (envelope). Scope is
+// deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+// only; API keys are refused. Re-escrowing replaces the previous blob.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v1/account/sync-key (the `PutV1AccountSyncKey` operationId).
+func (c *Client) PutV1AccountSyncKeyWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountSyncKeyRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutV1AccountSyncKey Escrow (or replace) the account's wrapped sync-group key (7-4)
+//
+// Stores a single opaque, client-wrapped sync-group-key blob for the
+// account (the second escrow slot beside the backup key, 7-2's sync-group
+// key). The backend never generates, derives or inspects key material: it
+// escrows the blob under a KMS-managed KEK (envelope). Scope is
+// deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+// only; API keys are refused. Re-escrowing replaces the previous blob.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /v1/account/sync-key (the `PutV1AccountSyncKey` operationId).
+func (c *Client) PutV1AccountSyncKey(ctx context.Context, body PutV1AccountSyncKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountSyncKeyRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteV1AccountSyncRotationRequired Clear the account's sync rotation-required flag (7-4)
+//
+// Clears the flag after the app has rotated the engine key and re-escrowed
+// it. Idempotent. PASETO (interactive) only.
+//
+// Corresponds with DELETE /v1/account/sync-rotation-required (the `DeleteV1AccountSyncRotationRequired` operationId).
+func (c *Client) DeleteV1AccountSyncRotationRequired(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AccountSyncRotationRequiredRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetV1AccountSyncRotationRequired Read the account's sync rotation-required flag (7-4)
+//
+// Whether a sync-key rotation is pending. Defaults to `false`. The app
+// polls this and, when true, drives the engine's engine-authoritative
+// rotate and re-escrows the new wrapped key. PASETO (interactive) only.
+//
+// Corresponds with GET /v1/account/sync-rotation-required (the `GetV1AccountSyncRotationRequired` operationId).
+func (c *Client) GetV1AccountSyncRotationRequired(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AccountSyncRotationRequiredRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutV1AccountSyncRotationRequiredWithBody Set the account's sync rotation-required flag (7-4)
+//
+// The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+// rotation; `{"required": false}` clears it. The portal never sees key
+// material. PASETO (interactive) only.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v1/account/sync-rotation-required (the `PutV1AccountSyncRotationRequired` operationId).
+func (c *Client) PutV1AccountSyncRotationRequiredWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountSyncRotationRequiredRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutV1AccountSyncRotationRequired Set the account's sync rotation-required flag (7-4)
+//
+// The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+// rotation; `{"required": false}` clears it. The portal never sees key
+// material. PASETO (interactive) only.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /v1/account/sync-rotation-required (the `PutV1AccountSyncRotationRequired` operationId).
+func (c *Client) PutV1AccountSyncRotationRequired(ctx context.Context, body PutV1AccountSyncRotationRequiredJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1AccountSyncRotationRequiredRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 // PostV1AudioConvertWithBody Audio conversion / enhancement
@@ -5392,6 +6251,128 @@ func (c *Client) PostV1AudioVad(ctx context.Context, body PostV1AudioVadJSONRequ
 	return c.Client.Do(req)
 }
 
+// DeleteV1AuthAccountWithBody Request permanent deletion of the current user's account (email-confirmed)
+//
+// STAGES a permanent account deletion — it does NOT delete anything yet.
+// Because deletion is irreversible, it is gated behind proof of control of
+// the account's OWN mailbox: this call validates the typed confirmation
+// (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+// confirmation link to the account address. The deletion commits only when
+// that link is redeemed via `POST /v1/auth/account/confirm` by an
+// authenticated caller, so a stolen session alone cannot destroy the
+// account.
+//
+// Step-up (verified when supplied): `current_password` for passworded
+// accounts, or `confirm_email` (the user re-typing the account address) for
+// passwordless Google/Apple accounts. The emailed link is the mandatory
+// hard confirmation for every account.
+//
+// On commit, the user's CLOUD data is purged first (live sessions killed,
+// every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+// then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+// keys, refresh tokens, devices, themes, subscriptions, sessions,
+// identities and email/password-reset tokens).
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with DELETE /v1/auth/account (the `DeleteV1AuthAccount` operationId).
+func (c *Client) DeleteV1AuthAccountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AuthAccountRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteV1AuthAccount Request permanent deletion of the current user's account (email-confirmed)
+//
+// STAGES a permanent account deletion — it does NOT delete anything yet.
+// Because deletion is irreversible, it is gated behind proof of control of
+// the account's OWN mailbox: this call validates the typed confirmation
+// (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+// confirmation link to the account address. The deletion commits only when
+// that link is redeemed via `POST /v1/auth/account/confirm` by an
+// authenticated caller, so a stolen session alone cannot destroy the
+// account.
+//
+// Step-up (verified when supplied): `current_password` for passworded
+// accounts, or `confirm_email` (the user re-typing the account address) for
+// passwordless Google/Apple accounts. The emailed link is the mandatory
+// hard confirmation for every account.
+//
+// On commit, the user's CLOUD data is purged first (live sessions killed,
+// every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+// then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+// keys, refresh tokens, devices, themes, subscriptions, sessions,
+// identities and email/password-reset tokens).
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with DELETE /v1/auth/account (the `DeleteV1AuthAccount` operationId).
+func (c *Client) DeleteV1AuthAccount(ctx context.Context, body DeleteV1AuthAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AuthAccountRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthAccountConfirmWithBody Confirm and commit a staged account deletion
+//
+// Redeems the single-use token mailed to the account address and permanently
+// deletes the account. The token is bound to the authenticated caller, so a
+// forwarded or leaked email alone cannot delete the account. The deletion
+// itself is a single synchronous database transaction (every account-scoped
+// row is removed via FK cascade); the deleted user's hosted-backup blobs in
+// s3-sync-backup are purged asynchronously afterwards. Irreversible.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/auth/account/confirm (the `PostV1AuthAccountConfirm` operationId).
+func (c *Client) PostV1AuthAccountConfirmWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthAccountConfirmRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthAccountConfirm Confirm and commit a staged account deletion
+//
+// Redeems the single-use token mailed to the account address and permanently
+// deletes the account. The token is bound to the authenticated caller, so a
+// forwarded or leaked email alone cannot delete the account. The deletion
+// itself is a single synchronous database transaction (every account-scoped
+// row is removed via FK cascade); the deleted user's hosted-backup blobs in
+// s3-sync-backup are purged asynchronously afterwards. Irreversible.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/auth/account/confirm (the `PostV1AuthAccountConfirm` operationId).
+func (c *Client) PostV1AuthAccountConfirm(ctx context.Context, body PostV1AuthAccountConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthAccountConfirmRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetV1AuthApiKeys List API keys
 //
 // Returns metadata only — the raw key value is NEVER returned (only the prefix for identification).
@@ -5411,8 +6392,8 @@ func (c *Client) GetV1AuthApiKeys(ctx context.Context, reqEditors ...RequestEdit
 
 // PostV1AuthApiKeysWithBody Create an API key
 //
-// Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-// API keys CANNOT create/list/revoke other API keys.
+// Returns the full key ONCE. Max 5 keys per user.
+// API keys CANNOT create/list/delete other API keys.
 //
 // Takes any type of body and a specified content type.
 //
@@ -5431,8 +6412,8 @@ func (c *Client) PostV1AuthApiKeysWithBody(ctx context.Context, contentType stri
 
 // PostV1AuthApiKeys Create an API key
 //
-// Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-// API keys CANNOT create/list/revoke other API keys.
+// Returns the full key ONCE. Max 5 keys per user.
+// API keys CANNOT create/list/delete other API keys.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -5449,9 +6430,13 @@ func (c *Client) PostV1AuthApiKeys(ctx context.Context, body PostV1AuthApiKeysJS
 	return c.Client.Do(req)
 }
 
-// DeleteV1AuthApiKeysId Revoke an API key
+// DeleteV1AuthApiKeysId Delete an API key
 //
-// Idempotent (already-revoked returns 204). Writes a negative Valkey cache entry so revocation is effective within milliseconds.
+// Permanently deletes an API key. The key disappears from the list, can never
+// authenticate again, and no longer counts towards the 5-key limit. Idempotent
+// (deleting an unknown or already-deleted key returns 204). Purges the positive
+// auth-cache entry and writes a negative Valkey cache entry so the key stops
+// working within milliseconds.
 //
 // Corresponds with DELETE /v1/auth/api-keys/{id} (the `DeleteV1AuthApiKeysId` operationId).
 func (c *Client) DeleteV1AuthApiKeysId(ctx context.Context, id ApiKeyId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5542,6 +6527,271 @@ func (c *Client) PostV1AuthAppleWeb(ctx context.Context, body PostV1AuthAppleWeb
 	return c.Client.Do(req)
 }
 
+// EnrollDeviceWithBody Redeem a delegated-enrollment grant for a device session
+//
+// Exchanges a single-use delegated-enrollment grant for the enrolled device's OWN device-scoped session (PASETO + refresh token) — the same token shape every other sign-in path returns. NO account authentication is required: the grant is the credential. The device is registered as authorized because the minting device vouched for it. Enrolled devices are full devices and may themselves mint grants.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/auth/device/enroll (the `EnrollDevice` operationId).
+func (c *Client) EnrollDeviceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewEnrollDeviceRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// EnrollDevice Redeem a delegated-enrollment grant for a device session
+//
+// Exchanges a single-use delegated-enrollment grant for the enrolled device's OWN device-scoped session (PASETO + refresh token) — the same token shape every other sign-in path returns. NO account authentication is required: the grant is the credential. The device is registered as authorized because the minting device vouched for it. Enrolled devices are full devices and may themselves mint grants.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/auth/device/enroll (the `EnrollDevice` operationId).
+func (c *Client) EnrollDevice(ctx context.Context, body EnrollDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewEnrollDeviceRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthEmailChangeCancel Cancel a pending email change
+//
+// Abandons a pending change so a different address can be used immediately
+// — the "I typed the wrong address" / "I changed my mind" case — instead of
+// the request blocking a new attempt until it expires.
+//
+// Voids BOTH tokens (including any link already delivered), because it sets
+// the same single-use tombstone every confirmation lookup guards on.
+// Idempotent: cancelling when nothing is pending returns 200.
+//
+// Corresponds with POST /v1/auth/email/change/cancel (the `PostV1AuthEmailChangeCancel` operationId).
+func (c *Client) PostV1AuthEmailChangeCancel(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthEmailChangeCancelRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthEmailChangeConfirmWithBody Approve and commit the email change (stage 5)
+//
+// Redeems the single-use token mailed to the CURRENT address and commits
+// the change. The previous address is retained for audit, and a Valkey
+// cutoff signs out every session (the account owner must sign in again).
+//
+// Must be called by the authenticated owner of the request.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/auth/email/change/confirm (the `PostV1AuthEmailChangeConfirm` operationId).
+func (c *Client) PostV1AuthEmailChangeConfirmWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthEmailChangeConfirmRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthEmailChangeConfirm Approve and commit the email change (stage 5)
+//
+// Redeems the single-use token mailed to the CURRENT address and commits
+// the change. The previous address is retained for audit, and a Valkey
+// cutoff signs out every session (the account owner must sign in again).
+//
+// Must be called by the authenticated owner of the request.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/auth/email/change/confirm (the `PostV1AuthEmailChangeConfirm` operationId).
+func (c *Client) PostV1AuthEmailChangeConfirm(ctx context.Context, body PostV1AuthEmailChangeConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthEmailChangeConfirmRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthEmailChangeConfirmNewWithBody Confirm the new email address (stage 3)
+//
+// Redeems the single-use token mailed to the TARGET address. On success a
+// blocking approval email is sent to the CURRENT address naming the target.
+//
+// Must be called by the authenticated owner of the request — the emailed
+// token is not sufficient on its own.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/auth/email/change/confirm-new (the `PostV1AuthEmailChangeConfirmNew` operationId).
+func (c *Client) PostV1AuthEmailChangeConfirmNewWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthEmailChangeConfirmNewRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthEmailChangeConfirmNew Confirm the new email address (stage 3)
+//
+// Redeems the single-use token mailed to the TARGET address. On success a
+// blocking approval email is sent to the CURRENT address naming the target.
+//
+// Must be called by the authenticated owner of the request — the emailed
+// token is not sufficient on its own.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/auth/email/change/confirm-new (the `PostV1AuthEmailChangeConfirmNew` operationId).
+func (c *Client) PostV1AuthEmailChangeConfirmNew(ctx context.Context, body PostV1AuthEmailChangeConfirmNewJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthEmailChangeConfirmNewRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthEmailChangeRequestWithBody Start an email change
+//
+// Stage 1–2. Step-up with the account password, then stage a move to
+// `new_email`.
+//
+// The change is confirmed from BOTH mailboxes: a token is mailed to the
+// TARGET address first (stage 3), and only after that is a blocking
+// approval token mailed to the CURRENT address naming the target
+// (stage 4). Neither address can complete the change alone.
+//
+// Requires a password on the account. Google/Apple-created accounts have
+// none and receive `403 password_required` — they must set a password
+// first (`PUT /v1/auth/password`), after which the normal flow applies.
+// This prevents the email change from silently minting a second credential
+// on an account whose only credential is the provider link.
+//
+// New requests invalidate any still-pending one. A 60s per-user cooldown
+// applies (`429`, with `retry_after`).
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/auth/email/change/request (the `PostV1AuthEmailChangeRequest` operationId).
+func (c *Client) PostV1AuthEmailChangeRequestWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthEmailChangeRequestRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthEmailChangeRequest Start an email change
+//
+// Stage 1–2. Step-up with the account password, then stage a move to
+// `new_email`.
+//
+// The change is confirmed from BOTH mailboxes: a token is mailed to the
+// TARGET address first (stage 3), and only after that is a blocking
+// approval token mailed to the CURRENT address naming the target
+// (stage 4). Neither address can complete the change alone.
+//
+// Requires a password on the account. Google/Apple-created accounts have
+// none and receive `403 password_required` — they must set a password
+// first (`PUT /v1/auth/password`), after which the normal flow applies.
+// This prevents the email change from silently minting a second credential
+// on an account whose only credential is the provider link.
+//
+// New requests invalidate any still-pending one. A 60s per-user cooldown
+// applies (`429`, with `retry_after`).
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/auth/email/change/request (the `PostV1AuthEmailChangeRequest` operationId).
+func (c *Client) PostV1AuthEmailChangeRequest(ctx context.Context, body PostV1AuthEmailChangeRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthEmailChangeRequestRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthEmailChangeResend Re-send the current step's confirmation email
+//
+// Recovery path for "the confirmation email never arrived" (spam, a typo'd
+// forward, or a failed hand-off).
+//
+// Re-mints the token for whichever stage the change is CURRENTLY on and
+// re-sends only that one email. It never advances the flow: the approval
+// (stage 4) branch is unreachable until the new address has confirmed, so
+// this cannot be used to skip stage 3. The previously issued link for that
+// stage stops working, as the newest token replaces it.
+//
+// Rate-limited to one resend per 60 s (`429` with `retry_after`), matching
+// the per-user cooldown on starting a change.
+//
+// Corresponds with POST /v1/auth/email/change/resend (the `PostV1AuthEmailChangeResend` operationId).
+func (c *Client) PostV1AuthEmailChangeResend(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthEmailChangeResendRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetV1AuthEmailChangeStatus Current email-change state
+//
+// Reports whether a pending change exists and which step it awaits, so the portal can resume after a reload.
+//
+// Corresponds with GET /v1/auth/email/change/status (the `GetV1AuthEmailChangeStatus` operationId).
+func (c *Client) GetV1AuthEmailChangeStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AuthEmailChangeStatusRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // PostV1AuthGoogleWithBody Google Sign-In (native / Android)
 //
 // Validates the Google `id_token`. 409 on email conflict (link flow).
@@ -5618,9 +6868,33 @@ func (c *Client) PostV1AuthGoogleWeb(ctx context.Context, body PostV1AuthGoogleW
 	return c.Client.Do(req)
 }
 
+// GetV1AuthIdentities List linked sign-in providers
+//
+// Returns the OAuth providers (Google, Apple) attached to the account so
+// the portal can offer a disconnect action. Disconnecting uses
+// `DELETE /v1/auth/link/{google,apple}`, which refuses while the account
+// has no password (lockout guard).
+//
+// The synthetic `email` identity from registration is not listed.
+//
+// Corresponds with GET /v1/auth/identities (the `GetV1AuthIdentities` operationId).
+func (c *Client) GetV1AuthIdentities(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AuthIdentitiesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // DeleteV1AuthLinkApple Unlink the Apple identity
 //
-// Lockout guard — refuses if no password is set.
+// Lockout guard — refuses with `403 password_required` if the account has
+// no password, because the provider link would then be its only credential.
+// Set a password first (`PUT /v1/auth/password`).
 //
 // Corresponds with DELETE /v1/auth/link/apple (the `DeleteV1AuthLinkApple` operationId).
 func (c *Client) DeleteV1AuthLinkApple(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5675,7 +6949,9 @@ func (c *Client) PostV1AuthLinkApple(ctx context.Context, body PostV1AuthLinkApp
 
 // DeleteV1AuthLinkGoogle Unlink the Google identity
 //
-// Lockout guard — refuses if no password is set.
+// Lockout guard — refuses with `403 password_required` if the account has
+// no password, because the provider link would then be its only credential.
+// Set a password first (`PUT /v1/auth/password`).
 //
 // Corresponds with DELETE /v1/auth/link/google (the `DeleteV1AuthLinkGoogle` operationId).
 func (c *Client) DeleteV1AuthLinkGoogle(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5859,7 +7135,14 @@ func (c *Client) PatchV1AuthMe(ctx context.Context, body PatchV1AuthMeJSONReques
 
 // PutV1AuthPasswordWithBody Change password
 //
-// Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+// Changes the authenticated user's password and writes a Valkey cutoff
+// (forces re-login everywhere). `old_password` is required and verified.
+//
+// Accounts created via Google/Apple Sign-In have NO password, so they
+// cannot use this endpoint — setting a FIRST password creates a credential
+// and is gated behind an email-confirmed, session-bound flow
+// (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+// account receives `409 password_setup_required`.
 //
 // Takes any type of body and a specified content type.
 //
@@ -5878,7 +7161,14 @@ func (c *Client) PutV1AuthPasswordWithBody(ctx context.Context, contentType stri
 
 // PutV1AuthPassword Change password
 //
-// Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+// Changes the authenticated user's password and writes a Valkey cutoff
+// (forces re-login everywhere). `old_password` is required and verified.
+//
+// Accounts created via Google/Apple Sign-In have NO password, so they
+// cannot use this endpoint — setting a FIRST password creates a credential
+// and is gated behind an email-confirmed, session-bound flow
+// (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+// account receives `409 password_setup_required`.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -5961,6 +7251,74 @@ func (c *Client) PostV1AuthPasswordResetRequestWithBody(ctx context.Context, con
 // Corresponds with POST /v1/auth/password/reset/request (the `PostV1AuthPasswordResetRequest` operationId).
 func (c *Client) PostV1AuthPasswordResetRequest(ctx context.Context, body PostV1AuthPasswordResetRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV1AuthPasswordResetRequestRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthPasswordSetupConfirmWithBody Confirm first-password setup
+//
+// Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+// sets the first password. The caller must be authenticated as the request
+// owner (the token is session-bound), so a forwarded or leaked mail alone
+// is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/auth/password/setup/confirm (the `PostV1AuthPasswordSetupConfirm` operationId).
+func (c *Client) PostV1AuthPasswordSetupConfirmWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthPasswordSetupConfirmRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthPasswordSetupConfirm Confirm first-password setup
+//
+// Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+// sets the first password. The caller must be authenticated as the request
+// owner (the token is session-bound), so a forwarded or leaked mail alone
+// is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/auth/password/setup/confirm (the `PostV1AuthPasswordSetupConfirm` operationId).
+func (c *Client) PostV1AuthPasswordSetupConfirm(ctx context.Context, body PostV1AuthPasswordSetupConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthPasswordSetupConfirmRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostV1AuthPasswordSetupRequest Request first-password setup (OAuth-only accounts)
+//
+// Stages a single-use token and mails it to the account's OWN address. The
+// password is only set when the token is redeemed via
+// `POST /v1/auth/password/setup/confirm` by an authenticated caller, so a
+// stolen session token alone can never create a credential.
+//
+// Refused with `409 password_already_set` when the account already has a
+// password (use `PUT /v1/auth/password` instead). Refused with `403` for
+// API-key callers.
+//
+// Corresponds with POST /v1/auth/password/setup/request (the `PostV1AuthPasswordSetupRequest` operationId).
+func (c *Client) PostV1AuthPasswordSetupRequest(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1AuthPasswordSetupRequestRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -6085,6 +7443,66 @@ func (c *Client) PostV1AuthResendVerification(ctx context.Context, body PostV1Au
 	return c.Client.Do(req)
 }
 
+// DeleteV1AuthSessions Sign out everywhere
+//
+// Ends EVERY session for the account, including the calling one. The
+// caller must sign in again afterwards; this is the deliberate "sign out
+// everywhere" action (the same invalidation the email-change flow applies
+// on commit).
+//
+// Corresponds with DELETE /v1/auth/sessions (the `DeleteV1AuthSessions` operationId).
+func (c *Client) DeleteV1AuthSessions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AuthSessionsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetV1AuthSessions List active sessions
+//
+// Every signed-in session for the account — one per device or browser —
+// most recently active first, with the calling session marked `current`.
+//
+// Signing out one session (`DELETE /v1/auth/sessions/{session_id}`) kills
+// that session's tokens immediately, not just its refresh token.
+//
+// Corresponds with GET /v1/auth/sessions (the `GetV1AuthSessions` operationId).
+func (c *Client) GetV1AuthSessions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetV1AuthSessionsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteV1AuthSessionsSessionId Sign out one session
+//
+// Ends a single session — one device or browser. Refused for the calling
+// session (`400 cannot_revoke_current_session`), which must be ended with
+// `POST /v1/auth/logout` so the client knows it has been signed out.
+//
+// Corresponds with DELETE /v1/auth/sessions/{session_id} (the `DeleteV1AuthSessionsSessionId` operationId).
+func (c *Client) DeleteV1AuthSessionsSessionId(ctx context.Context, sessionId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1AuthSessionsSessionIdRequest(c.Server, sessionId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetV1AuthVerify Verify email address
 //
 // Accepts the token as a URL path segment OR query param. Returns a token pair on success.
@@ -6092,6 +7510,72 @@ func (c *Client) PostV1AuthResendVerification(ctx context.Context, body PostV1Au
 // Corresponds with GET /v1/auth/verify (the `GetV1AuthVerify` operationId).
 func (c *Client) GetV1AuthVerify(ctx context.Context, params *GetV1AuthVerifyParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV1AuthVerifyRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetBackupManifest Fetch an opaque per-device backup manifest
+//
+// Corresponds with GET /v1/backup/manifest/{device} (the `GetBackupManifest` operationId).
+func (c *Client) GetBackupManifest(ctx context.Context, device string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetBackupManifestRequest(c.Server, device)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutBackupManifestWithBody Store an opaque per-device backup manifest (7-5)
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v1/backup/manifest/{device} (the `PutBackupManifest` operationId).
+func (c *Client) PutBackupManifestWithBody(ctx context.Context, device string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutBackupManifestRequestWithBody(c.Server, device, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetBackupObject Fetch an opaque backup object by its SHA-256
+//
+// Corresponds with GET /v1/backup/objects/{sha256} (the `GetBackupObject` operationId).
+func (c *Client) GetBackupObject(ctx context.Context, sha256 string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetBackupObjectRequest(c.Server, sha256)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutBackupObjectWithBody Store an opaque, content-addressed backup object (7-5)
+//
+// Body is an opaque, already-encrypted AEAD blob. The relay verifies only the SHA-256 address (integrity), never the content. Enforces the tier `backup_storage_mb` cap.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /v1/backup/objects/{sha256} (the `PutBackupObject` operationId).
+func (c *Client) PutBackupObjectWithBody(ctx context.Context, sha256 string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutBackupObjectRequestWithBody(c.Server, sha256, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6168,9 +7652,8 @@ func (c *Client) ListDevices(ctx context.Context, reqEditors ...RequestEditorFn)
 // RegisterDeviceWithBody Register or refresh a device
 //
 // Registers a client install (or refreshes an existing one, e.g. a new
-// push token). Devices must be authorized before cloud sessions can be
-// provisioned for them — see `/v1/session/connect` (403
-// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+// push token). Devices are authorized via the `/v1/devices/authorize`
+// email auth-code flow.
 //
 // Takes any type of body and a specified content type.
 //
@@ -6190,9 +7673,8 @@ func (c *Client) RegisterDeviceWithBody(ctx context.Context, contentType string,
 // RegisterDevice Register or refresh a device
 //
 // Registers a client install (or refreshes an existing one, e.g. a new
-// push token). Devices must be authorized before cloud sessions can be
-// provisioned for them — see `/v1/session/connect` (403
-// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+// push token). Devices are authorized via the `/v1/devices/authorize`
+// email auth-code flow.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -6294,6 +7776,171 @@ func (c *Client) AuthorizeDevice(ctx context.Context, body AuthorizeDeviceJSONRe
 // Corresponds with GET /v1/devices/authorize/status (the `GetDeviceAuthorizationStatus` operationId).
 func (c *Client) GetDeviceAuthorizationStatus(ctx context.Context, params *GetDeviceAuthorizationStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetDeviceAuthorizationStatusRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateDeviceConnectSessionWithBody Create a poll-only engine sign-in (connect session)
+//
+// Public (the engine is not authenticated yet). Mints an unguessable connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and returns the portal URL the engine opens in the system browser. The user signs in there and clicks Allow; the engine then polls GET /v1/devices/connect-session/{connect_id} with the secret.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/devices/connect-session (the `CreateDeviceConnectSession` operationId).
+func (c *Client) CreateDeviceConnectSessionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateDeviceConnectSessionRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateDeviceConnectSession Create a poll-only engine sign-in (connect session)
+//
+// Public (the engine is not authenticated yet). Mints an unguessable connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and returns the portal URL the engine opens in the system browser. The user signs in there and clicks Allow; the engine then polls GET /v1/devices/connect-session/{connect_id} with the secret.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/devices/connect-session (the `CreateDeviceConnectSession` operationId).
+func (c *Client) CreateDeviceConnectSession(ctx context.Context, body CreateDeviceConnectSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateDeviceConnectSessionRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetDeviceConnectSession Poll a connect session (auth = the session_secret)
+//
+// The engine polls this with `Authorization: Bearer <session_secret>`. A pending session returns `{"status":"pending"}`; an approved one returns the token pair EXACTLY ONCE (`{"status":"approved","token":…, "refresh_token":…,"expires_at":…}`) and is marked consumed; later polls return `{"status":"consumed"}`; an expired session returns `{"status":"expired"}`.
+//
+// Corresponds with GET /v1/devices/connect-session/{connect_id} (the `GetDeviceConnectSession` operationId).
+func (c *Client) GetDeviceConnectSession(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDeviceConnectSessionRequest(c.Server, connectId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ApproveDeviceConnectSession Approve a connect session (the portal Allow click)
+//
+// Portal (interactive) auth ONLY — API keys are refused. The Allow click is the consent: it registers the device authorized=true and stores the freshly issued token pair (encrypted) for one-time retrieval by the engine's poll. Idempotent once approved.
+//
+// Corresponds with POST /v1/devices/connect-session/{connect_id}/approve (the `ApproveDeviceConnectSession` operationId).
+func (c *Client) ApproveDeviceConnectSession(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewApproveDeviceConnectSessionRequest(c.Server, connectId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetDeviceConnectSessionMeta Read connect-session metadata (no secret)
+//
+// No-secret read for the portal page: the device name to render plus the current status. The connect_id is a 128-bit unguessable UUID.
+//
+// Corresponds with GET /v1/devices/connect-session/{connect_id}/meta (the `GetDeviceConnectSessionMeta` operationId).
+func (c *Client) GetDeviceConnectSessionMeta(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDeviceConnectSessionMetaRequest(c.Server, connectId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// MintEnrollmentGrantWithBody Mint a single-use delegated-enrollment grant
+//
+// Mints a short-lived (5 min), single-use grant that lets an already-authorized device (the desktop vouches) enroll a NEW device into the same account. The minting device must belong to the caller and be authorized. The grant is shown ONCE (only its SHA-256 is stored). Requires an interactive session — API keys are refused.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/devices/enrollment-grants (the `MintEnrollmentGrant` operationId).
+func (c *Client) MintEnrollmentGrantWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMintEnrollmentGrantRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// MintEnrollmentGrant Mint a single-use delegated-enrollment grant
+//
+// Mints a short-lived (5 min), single-use grant that lets an already-authorized device (the desktop vouches) enroll a NEW device into the same account. The minting device must belong to the caller and be authorized. The grant is shown ONCE (only its SHA-256 is stored). Requires an interactive session — API keys are refused.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/devices/enrollment-grants (the `MintEnrollmentGrant` operationId).
+func (c *Client) MintEnrollmentGrant(ctx context.Context, body MintEnrollmentGrantJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMintEnrollmentGrantRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// MintSyncPairingTokenWithBody Mint a single-use sync pairing token
+//
+// Mints a short-lived (5 min), single-use token binding (user, device, dataset). The engine presents it to the sync-relay at first connect (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a dataset group. The device must belong to the caller and be authorized.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/devices/sync-pairing (the `MintSyncPairingToken` operationId).
+func (c *Client) MintSyncPairingTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMintSyncPairingTokenRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// MintSyncPairingToken Mint a single-use sync pairing token
+//
+// Mints a short-lived (5 min), single-use token binding (user, device, dataset). The engine presents it to the sync-relay at first connect (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a dataset group. The device must belong to the caller and be authorized.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/devices/sync-pairing (the `MintSyncPairingToken` operationId).
+func (c *Client) MintSyncPairingToken(ctx context.Context, body MintSyncPairingTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewMintSyncPairingTokenRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6542,154 +8189,6 @@ func (c *Client) PostV1Rerank(ctx context.Context, body PostV1RerankJSONRequestB
 	return c.Client.Do(req)
 }
 
-// PostV1SessionConnectWithBody Connect a cloud session
-//
-// Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-func (c *Client) PostV1SessionConnectWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostV1SessionConnectRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// PostV1SessionConnect Connect a cloud session
-//
-// Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-func (c *Client) PostV1SessionConnect(ctx context.Context, body PostV1SessionConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostV1SessionConnectRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// PostV1SessionConnected Report session connected (proxy → broker)
-//
-// Called by the conduct proxy when the WebSocket upgrade completes; cancels the connect timeout.
-//
-// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
-func (c *Client) PostV1SessionConnected(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostV1SessionConnectedRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// DeleteSessionDataWithBody Purge all cloud-side engine data for the authenticated user (async)
-//
-// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
-func (c *Client) DeleteSessionDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteSessionDataRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// DeleteSessionData Purge all cloud-side engine data for the authenticated user (async)
-//
-// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
-func (c *Client) DeleteSessionData(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteSessionDataRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetSessionDataDeleteStatus Poll the status of the authenticated user's data purge
-//
-// Reports the current purge state. 200 always (after auth) with one of four shapes: in_progress (flag set — purge active or stalled, with phase/request_id/attempts), deleted (terminal success, with the S3 / beat / DEK counters from the result tombstone), failed (terminal failure — the sweeper gave up; the user is unblocked but the data was not guaranteed deleted; retry the delete), or none (nothing running or remembered). Flag presence wins over the terminal tombstone: while a failed run is still flagged for the sweeper the report stays in_progress.
-//
-// Corresponds with GET /v1/session/data/delete/status (the `GetSessionDataDeleteStatus` operationId).
-func (c *Client) GetSessionDataDeleteStatus(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetSessionDataDeleteStatusRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// PostV1SessionDisconnectWithBody Disconnect a cloud session (enter grace period)
-//
-// Transitions the session to a 5-minute grace period, then schedules cleanup.
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-func (c *Client) PostV1SessionDisconnectWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostV1SessionDisconnectRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// PostV1SessionDisconnect Disconnect a cloud session (enter grace period)
-//
-// Transitions the session to a 5-minute grace period, then schedules cleanup.
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-func (c *Client) PostV1SessionDisconnect(ctx context.Context, body PostV1SessionDisconnectJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostV1SessionDisconnectRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // GetV1SubscriptionMe Get the current user's subscription
 //
 // Resolves the tier from the auth context; defaults to `free` if no subscription exists.
@@ -6712,6 +8211,59 @@ func (c *Client) GetV1SubscriptionMe(ctx context.Context, reqEditors ...RequestE
 // Corresponds with GET /v1/subscription/tiers (the `GetV1SubscriptionTiers` operationId).
 func (c *Client) GetV1SubscriptionTiers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV1SubscriptionTiersRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ConsumeSyncPairingTokenWithBody Redeem a single-use sync pairing token
+//
+// Atomically consumes a pairing token and joins the caller's device to the dataset group (enforcing the tier `sync_devices` limit). A token can be consumed exactly once.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/sync/pairing/consume (the `ConsumeSyncPairingToken` operationId).
+func (c *Client) ConsumeSyncPairingTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewConsumeSyncPairingTokenRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ConsumeSyncPairingToken Redeem a single-use sync pairing token
+//
+// Atomically consumes a pairing token and joins the caller's device to the dataset group (enforcing the tier `sync_devices` limit). A token can be consumed exactly once.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/sync/pairing/consume (the `ConsumeSyncPairingToken` operationId).
+func (c *Client) ConsumeSyncPairingToken(ctx context.Context, body ConsumeSyncPairingTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewConsumeSyncPairingTokenRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetSyncStatus Get the caller's sync buffer + quota status
+//
+// Corresponds with GET /v1/sync/status (the `GetSyncStatus` operationId).
+func (c *Client) GetSyncStatus(ctx context.Context, params *GetSyncStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSyncStatusRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -6773,6 +8325,288 @@ func (c *Client) PostV1VoiceConvert(ctx context.Context, body PostV1VoiceConvert
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewDeleteV1AccountBackupKeyRequest constructs an http.Request for the DeleteV1AccountBackupKey method
+func NewDeleteV1AccountBackupKeyRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/backup-key")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetV1AccountBackupKeyRequest constructs an http.Request for the GetV1AccountBackupKey method
+func NewGetV1AccountBackupKeyRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/backup-key")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutV1AccountBackupKeyRequest calls the generic PutV1AccountBackupKey builder with application/json body
+func NewPutV1AccountBackupKeyRequest(server string, body PutV1AccountBackupKeyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutV1AccountBackupKeyRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPutV1AccountBackupKeyRequestWithBody constructs an http.Request for the PutV1AccountBackupKey method, with any body, and a specified content type
+func NewPutV1AccountBackupKeyRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/backup-key")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteV1AccountSyncKeyRequest constructs an http.Request for the DeleteV1AccountSyncKey method
+func NewDeleteV1AccountSyncKeyRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/sync-key")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetV1AccountSyncKeyRequest constructs an http.Request for the GetV1AccountSyncKey method
+func NewGetV1AccountSyncKeyRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/sync-key")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutV1AccountSyncKeyRequest calls the generic PutV1AccountSyncKey builder with application/json body
+func NewPutV1AccountSyncKeyRequest(server string, body PutV1AccountSyncKeyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutV1AccountSyncKeyRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPutV1AccountSyncKeyRequestWithBody constructs an http.Request for the PutV1AccountSyncKey method, with any body, and a specified content type
+func NewPutV1AccountSyncKeyRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/sync-key")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteV1AccountSyncRotationRequiredRequest constructs an http.Request for the DeleteV1AccountSyncRotationRequired method
+func NewDeleteV1AccountSyncRotationRequiredRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/sync-rotation-required")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetV1AccountSyncRotationRequiredRequest constructs an http.Request for the GetV1AccountSyncRotationRequired method
+func NewGetV1AccountSyncRotationRequiredRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/sync-rotation-required")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutV1AccountSyncRotationRequiredRequest calls the generic PutV1AccountSyncRotationRequired builder with application/json body
+func NewPutV1AccountSyncRotationRequiredRequest(server string, body PutV1AccountSyncRotationRequiredJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutV1AccountSyncRotationRequiredRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPutV1AccountSyncRotationRequiredRequestWithBody constructs an http.Request for the PutV1AccountSyncRotationRequired method, with any body, and a specified content type
+func NewPutV1AccountSyncRotationRequiredRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/account/sync-rotation-required")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
 }
 
 // NewPostV1AudioConvertRequest calls the generic PostV1AudioConvert builder with application/json body
@@ -6916,6 +8750,86 @@ func NewPostV1AudioVadRequestWithBody(server string, contentType string, body io
 	}
 
 	operationPath := fmt.Sprintf("/v1/audio/vad")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteV1AuthAccountRequest calls the generic DeleteV1AuthAccount builder with application/json body
+func NewDeleteV1AuthAccountRequest(server string, body DeleteV1AuthAccountJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewDeleteV1AuthAccountRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewDeleteV1AuthAccountRequestWithBody constructs an http.Request for the DeleteV1AuthAccount method, with any body, and a specified content type
+func NewDeleteV1AuthAccountRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/account")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostV1AuthAccountConfirmRequest calls the generic PostV1AuthAccountConfirm builder with application/json body
+func NewPostV1AuthAccountConfirmRequest(server string, body PostV1AuthAccountConfirmJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AuthAccountConfirmRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostV1AuthAccountConfirmRequestWithBody constructs an http.Request for the PostV1AuthAccountConfirm method, with any body, and a specified content type
+func NewPostV1AuthAccountConfirmRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/account/confirm")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -7116,6 +9030,247 @@ func NewPostV1AuthAppleWebRequestWithBody(server string, contentType string, bod
 	return req, nil
 }
 
+// NewEnrollDeviceRequest calls the generic EnrollDevice builder with application/json body
+func NewEnrollDeviceRequest(server string, body EnrollDeviceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewEnrollDeviceRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewEnrollDeviceRequestWithBody constructs an http.Request for the EnrollDevice method, with any body, and a specified content type
+func NewEnrollDeviceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/device/enroll")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostV1AuthEmailChangeCancelRequest constructs an http.Request for the PostV1AuthEmailChangeCancel method
+func NewPostV1AuthEmailChangeCancelRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/email/change/cancel")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostV1AuthEmailChangeConfirmRequest calls the generic PostV1AuthEmailChangeConfirm builder with application/json body
+func NewPostV1AuthEmailChangeConfirmRequest(server string, body PostV1AuthEmailChangeConfirmJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AuthEmailChangeConfirmRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostV1AuthEmailChangeConfirmRequestWithBody constructs an http.Request for the PostV1AuthEmailChangeConfirm method, with any body, and a specified content type
+func NewPostV1AuthEmailChangeConfirmRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/email/change/confirm")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostV1AuthEmailChangeConfirmNewRequest calls the generic PostV1AuthEmailChangeConfirmNew builder with application/json body
+func NewPostV1AuthEmailChangeConfirmNewRequest(server string, body PostV1AuthEmailChangeConfirmNewJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AuthEmailChangeConfirmNewRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostV1AuthEmailChangeConfirmNewRequestWithBody constructs an http.Request for the PostV1AuthEmailChangeConfirmNew method, with any body, and a specified content type
+func NewPostV1AuthEmailChangeConfirmNewRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/email/change/confirm-new")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostV1AuthEmailChangeRequestRequest calls the generic PostV1AuthEmailChangeRequest builder with application/json body
+func NewPostV1AuthEmailChangeRequestRequest(server string, body PostV1AuthEmailChangeRequestJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AuthEmailChangeRequestRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostV1AuthEmailChangeRequestRequestWithBody constructs an http.Request for the PostV1AuthEmailChangeRequest method, with any body, and a specified content type
+func NewPostV1AuthEmailChangeRequestRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/email/change/request")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostV1AuthEmailChangeResendRequest constructs an http.Request for the PostV1AuthEmailChangeResend method
+func NewPostV1AuthEmailChangeResendRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/email/change/resend")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetV1AuthEmailChangeStatusRequest constructs an http.Request for the GetV1AuthEmailChangeStatus method
+func NewGetV1AuthEmailChangeStatusRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/email/change/status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPostV1AuthGoogleRequest calls the generic PostV1AuthGoogle builder with application/json body
 func NewPostV1AuthGoogleRequest(server string, body PostV1AuthGoogleJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -7192,6 +9347,33 @@ func NewPostV1AuthGoogleWebRequestWithBody(server string, contentType string, bo
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetV1AuthIdentitiesRequest constructs an http.Request for the GetV1AuthIdentities method
+func NewGetV1AuthIdentitiesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/identities")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -7597,6 +9779,73 @@ func NewPostV1AuthPasswordResetRequestRequestWithBody(server string, contentType
 	return req, nil
 }
 
+// NewPostV1AuthPasswordSetupConfirmRequest calls the generic PostV1AuthPasswordSetupConfirm builder with application/json body
+func NewPostV1AuthPasswordSetupConfirmRequest(server string, body PostV1AuthPasswordSetupConfirmJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostV1AuthPasswordSetupConfirmRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostV1AuthPasswordSetupConfirmRequestWithBody constructs an http.Request for the PostV1AuthPasswordSetupConfirm method, with any body, and a specified content type
+func NewPostV1AuthPasswordSetupConfirmRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/password/setup/confirm")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostV1AuthPasswordSetupRequestRequest constructs an http.Request for the PostV1AuthPasswordSetupRequest method
+func NewPostV1AuthPasswordSetupRequestRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/password/setup/request")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPostV1AuthRefreshRequest calls the generic PostV1AuthRefresh builder with application/json body
 func NewPostV1AuthRefreshRequest(server string, body PostV1AuthRefreshJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -7717,6 +9966,94 @@ func NewPostV1AuthResendVerificationRequestWithBody(server string, contentType s
 	return req, nil
 }
 
+// NewDeleteV1AuthSessionsRequest constructs an http.Request for the DeleteV1AuthSessions method
+func NewDeleteV1AuthSessionsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/sessions")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetV1AuthSessionsRequest constructs an http.Request for the GetV1AuthSessions method
+func NewGetV1AuthSessionsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/sessions")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteV1AuthSessionsSessionIdRequest constructs an http.Request for the DeleteV1AuthSessionsSessionId method
+func NewDeleteV1AuthSessionsSessionIdRequest(server string, sessionId openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "session_id", sessionId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth/sessions/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetV1AuthVerifyRequest constructs an http.Request for the GetV1AuthVerify method
 func NewGetV1AuthVerifyRequest(server string, params *GetV1AuthVerifyParams) (*http.Request, error) {
 	var err error
@@ -7763,6 +10100,146 @@ func NewGetV1AuthVerifyRequest(server string, params *GetV1AuthVerifyParams) (*h
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewGetBackupManifestRequest constructs an http.Request for the GetBackupManifest method
+func NewGetBackupManifestRequest(server string, device string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "device", device, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/backup/manifest/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutBackupManifestRequestWithBody constructs an http.Request for the PutBackupManifest method, with any body, and a specified content type
+func NewPutBackupManifestRequestWithBody(server string, device string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "device", device, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/backup/manifest/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetBackupObjectRequest constructs an http.Request for the GetBackupObject method
+func NewGetBackupObjectRequest(server string, sha256 string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "sha256", sha256, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/backup/objects/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutBackupObjectRequestWithBody constructs an http.Request for the PutBackupObject method, with any body, and a specified content type
+func NewPutBackupObjectRequestWithBody(server string, sha256 string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "sha256", sha256, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/backup/objects/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -8000,6 +10477,228 @@ func NewGetDeviceAuthorizationStatusRequest(server string, params *GetDeviceAuth
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewCreateDeviceConnectSessionRequest calls the generic CreateDeviceConnectSession builder with application/json body
+func NewCreateDeviceConnectSessionRequest(server string, body CreateDeviceConnectSessionJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateDeviceConnectSessionRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateDeviceConnectSessionRequestWithBody constructs an http.Request for the CreateDeviceConnectSession method, with any body, and a specified content type
+func NewCreateDeviceConnectSessionRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/connect-session")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetDeviceConnectSessionRequest constructs an http.Request for the GetDeviceConnectSession method
+func NewGetDeviceConnectSessionRequest(server string, connectId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "connect_id", connectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/connect-session/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewApproveDeviceConnectSessionRequest constructs an http.Request for the ApproveDeviceConnectSession method
+func NewApproveDeviceConnectSessionRequest(server string, connectId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "connect_id", connectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/connect-session/%s/approve", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetDeviceConnectSessionMetaRequest constructs an http.Request for the GetDeviceConnectSessionMeta method
+func NewGetDeviceConnectSessionMetaRequest(server string, connectId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "connect_id", connectId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/connect-session/%s/meta", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewMintEnrollmentGrantRequest calls the generic MintEnrollmentGrant builder with application/json body
+func NewMintEnrollmentGrantRequest(server string, body MintEnrollmentGrantJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewMintEnrollmentGrantRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewMintEnrollmentGrantRequestWithBody constructs an http.Request for the MintEnrollmentGrant method, with any body, and a specified content type
+func NewMintEnrollmentGrantRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/enrollment-grants")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewMintSyncPairingTokenRequest calls the generic MintSyncPairingToken builder with application/json body
+func NewMintSyncPairingTokenRequest(server string, body MintSyncPairingTokenJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewMintSyncPairingTokenRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewMintSyncPairingTokenRequestWithBody constructs an http.Request for the MintSyncPairingToken method, with any body, and a specified content type
+func NewMintSyncPairingTokenRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/devices/sync-pairing")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -8330,180 +11029,6 @@ func NewPostV1RerankRequestWithBody(server string, contentType string, body io.R
 	return req, nil
 }
 
-// NewPostV1SessionConnectRequest calls the generic PostV1SessionConnect builder with application/json body
-func NewPostV1SessionConnectRequest(server string, body PostV1SessionConnectJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostV1SessionConnectRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewPostV1SessionConnectRequestWithBody constructs an http.Request for the PostV1SessionConnect method, with any body, and a specified content type
-func NewPostV1SessionConnectRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/session/connect")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewPostV1SessionConnectedRequest constructs an http.Request for the PostV1SessionConnected method
-func NewPostV1SessionConnectedRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/session/connected")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewDeleteSessionDataRequest calls the generic DeleteSessionData builder with application/json body
-func NewDeleteSessionDataRequest(server string, body DeleteSessionDataJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewDeleteSessionDataRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewDeleteSessionDataRequestWithBody constructs an http.Request for the DeleteSessionData method, with any body, and a specified content type
-func NewDeleteSessionDataRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/session/data/delete")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewGetSessionDataDeleteStatusRequest constructs an http.Request for the GetSessionDataDeleteStatus method
-func NewGetSessionDataDeleteStatusRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/session/data/delete/status")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewPostV1SessionDisconnectRequest calls the generic PostV1SessionDisconnect builder with application/json body
-func NewPostV1SessionDisconnectRequest(server string, body PostV1SessionDisconnectJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostV1SessionDisconnectRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewPostV1SessionDisconnectRequestWithBody constructs an http.Request for the PostV1SessionDisconnect method, with any body, and a specified content type
-func NewPostV1SessionDisconnectRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/session/disconnect")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 // NewGetV1SubscriptionMeRequest constructs an http.Request for the GetV1SubscriptionMe method
 func NewGetV1SubscriptionMeRequest(server string) (*http.Request, error) {
 	var err error
@@ -8548,6 +11073,108 @@ func NewGetV1SubscriptionTiersRequest(server string) (*http.Request, error) {
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewConsumeSyncPairingTokenRequest calls the generic ConsumeSyncPairingToken builder with application/json body
+func NewConsumeSyncPairingTokenRequest(server string, body ConsumeSyncPairingTokenJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewConsumeSyncPairingTokenRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewConsumeSyncPairingTokenRequestWithBody constructs an http.Request for the ConsumeSyncPairingToken method, with any body, and a specified content type
+func NewConsumeSyncPairingTokenRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/sync/pairing/consume")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetSyncStatusRequest constructs an http.Request for the GetSyncStatus method
+func NewGetSyncStatusRequest(server string, params *GetSyncStatusParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/sync/status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset_id", params.DatasetId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if params.DeviceId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "device_id", *params.DeviceId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
 
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
@@ -8669,6 +11296,148 @@ func WithBaseURL(baseURL string) ClientOption {
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
 
+	// DeleteV1AccountBackupKeyWithResponse Drop the account's escrowed backup key (W1)
+	//
+	// Removes the account's escrowed wrapped-key blob. Idempotent. Used by
+	// the account-deletion rework (6-2) and by a user-initiated "reset backup
+	// key". PASETO (interactive) only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v1/account/backup-key (the `DeleteV1AccountBackupKey` operationId).
+	DeleteV1AccountBackupKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AccountBackupKeyResp, error)
+
+	// GetV1AccountBackupKeyWithResponse Fetch the account's escrowed wrapped backup key (W1)
+	//
+	// Returns the account's escrowed wrapped-key blob for restore (2-6). 404
+	// when no key is escrowed. PASETO (interactive) only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/account/backup-key (the `GetV1AccountBackupKey` operationId).
+	GetV1AccountBackupKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AccountBackupKeyResp, error)
+
+	// PutV1AccountBackupKeyWithBodyWithResponse Escrow (or replace) the account's wrapped backup key (W1)
+	//
+	// Stores a single opaque, client-wrapped backup-key blob for the account
+	// (2-6's W1 account escrow). The backend never generates, derives or
+	// inspects key material: it escrows the blob under a KMS-managed KEK
+	// (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+	// so this can never become a bulk-storage endpoint. PASETO (interactive)
+	// only; API keys are refused. Re-escrowing replaces the previous blob.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v1/account/backup-key (the `PutV1AccountBackupKey` operationId).
+	PutV1AccountBackupKeyWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountBackupKeyResp, error)
+
+	// PutV1AccountBackupKeyWithResponse Escrow (or replace) the account's wrapped backup key (W1)
+	//
+	// Stores a single opaque, client-wrapped backup-key blob for the account
+	// (2-6's W1 account escrow). The backend never generates, derives or
+	// inspects key material: it escrows the blob under a KMS-managed KEK
+	// (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+	// so this can never become a bulk-storage endpoint. PASETO (interactive)
+	// only; API keys are refused. Re-escrowing replaces the previous blob.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v1/account/backup-key (the `PutV1AccountBackupKey` operationId).
+	PutV1AccountBackupKeyWithResponse(ctx context.Context, body PutV1AccountBackupKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountBackupKeyResp, error)
+
+	// DeleteV1AccountSyncKeyWithResponse Drop the account's escrowed sync-group key (7-4)
+	//
+	// Removes the account's escrowed wrapped sync-group-key blob. Idempotent.
+	// Used when all devices are revoked and the group restarts fresh. PASETO
+	// (interactive) only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v1/account/sync-key (the `DeleteV1AccountSyncKey` operationId).
+	DeleteV1AccountSyncKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AccountSyncKeyResp, error)
+
+	// GetV1AccountSyncKeyWithResponse Fetch the account's escrowed wrapped sync-group key (7-4)
+	//
+	// Returns the account's escrowed wrapped sync-group-key blob so a joining
+	// device can unwrap it (7-2/7-3). 404 when no key is escrowed. PASETO
+	// (interactive) only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/account/sync-key (the `GetV1AccountSyncKey` operationId).
+	GetV1AccountSyncKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AccountSyncKeyResp, error)
+
+	// PutV1AccountSyncKeyWithBodyWithResponse Escrow (or replace) the account's wrapped sync-group key (7-4)
+	//
+	// Stores a single opaque, client-wrapped sync-group-key blob for the
+	// account (the second escrow slot beside the backup key, 7-2's sync-group
+	// key). The backend never generates, derives or inspects key material: it
+	// escrows the blob under a KMS-managed KEK (envelope). Scope is
+	// deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+	// only; API keys are refused. Re-escrowing replaces the previous blob.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v1/account/sync-key (the `PutV1AccountSyncKey` operationId).
+	PutV1AccountSyncKeyWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountSyncKeyResp, error)
+
+	// PutV1AccountSyncKeyWithResponse Escrow (or replace) the account's wrapped sync-group key (7-4)
+	//
+	// Stores a single opaque, client-wrapped sync-group-key blob for the
+	// account (the second escrow slot beside the backup key, 7-2's sync-group
+	// key). The backend never generates, derives or inspects key material: it
+	// escrows the blob under a KMS-managed KEK (envelope). Scope is
+	// deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+	// only; API keys are refused. Re-escrowing replaces the previous blob.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v1/account/sync-key (the `PutV1AccountSyncKey` operationId).
+	PutV1AccountSyncKeyWithResponse(ctx context.Context, body PutV1AccountSyncKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountSyncKeyResp, error)
+
+	// DeleteV1AccountSyncRotationRequiredWithResponse Clear the account's sync rotation-required flag (7-4)
+	//
+	// Clears the flag after the app has rotated the engine key and re-escrowed
+	// it. Idempotent. PASETO (interactive) only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v1/account/sync-rotation-required (the `DeleteV1AccountSyncRotationRequired` operationId).
+	DeleteV1AccountSyncRotationRequiredWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AccountSyncRotationRequiredResp, error)
+
+	// GetV1AccountSyncRotationRequiredWithResponse Read the account's sync rotation-required flag (7-4)
+	//
+	// Whether a sync-key rotation is pending. Defaults to `false`. The app
+	// polls this and, when true, drives the engine's engine-authoritative
+	// rotate and re-escrows the new wrapped key. PASETO (interactive) only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/account/sync-rotation-required (the `GetV1AccountSyncRotationRequired` operationId).
+	GetV1AccountSyncRotationRequiredWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AccountSyncRotationRequiredResp, error)
+
+	// PutV1AccountSyncRotationRequiredWithBodyWithResponse Set the account's sync rotation-required flag (7-4)
+	//
+	// The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+	// rotation; `{"required": false}` clears it. The portal never sees key
+	// material. PASETO (interactive) only.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v1/account/sync-rotation-required (the `PutV1AccountSyncRotationRequired` operationId).
+	PutV1AccountSyncRotationRequiredWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountSyncRotationRequiredResp, error)
+
+	// PutV1AccountSyncRotationRequiredWithResponse Set the account's sync rotation-required flag (7-4)
+	//
+	// The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+	// rotation; `{"required": false}` clears it. The portal never sees key
+	// material. PASETO (interactive) only.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v1/account/sync-rotation-required (the `PutV1AccountSyncRotationRequired` operationId).
+	PutV1AccountSyncRotationRequiredWithResponse(ctx context.Context, body PutV1AccountSyncRotationRequiredJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountSyncRotationRequiredResp, error)
+
 	// PostV1AudioConvertWithBodyWithResponse Audio conversion / enhancement
 	//
 	// Audio enhancement / format conversion (e.g. denoising, restoration via VoiceFixer). Max body 10 MB; timeout 120s.
@@ -8745,6 +11514,88 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v1/audio/vad (the `PostV1AudioVad` operationId).
 	PostV1AudioVadWithResponse(ctx context.Context, body PostV1AudioVadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AudioVadResp, error)
 
+	// DeleteV1AuthAccountWithBodyWithResponse Request permanent deletion of the current user's account (email-confirmed)
+	//
+	// STAGES a permanent account deletion — it does NOT delete anything yet.
+	// Because deletion is irreversible, it is gated behind proof of control of
+	// the account's OWN mailbox: this call validates the typed confirmation
+	// (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+	// confirmation link to the account address. The deletion commits only when
+	// that link is redeemed via `POST /v1/auth/account/confirm` by an
+	// authenticated caller, so a stolen session alone cannot destroy the
+	// account.
+	//
+	// Step-up (verified when supplied): `current_password` for passworded
+	// accounts, or `confirm_email` (the user re-typing the account address) for
+	// passwordless Google/Apple accounts. The emailed link is the mandatory
+	// hard confirmation for every account.
+	//
+	// On commit, the user's CLOUD data is purged first (live sessions killed,
+	// every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+	// then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+	// keys, refresh tokens, devices, themes, subscriptions, sessions,
+	// identities and email/password-reset tokens).
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v1/auth/account (the `DeleteV1AuthAccount` operationId).
+	DeleteV1AuthAccountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteV1AuthAccountResp, error)
+
+	// DeleteV1AuthAccountWithResponse Request permanent deletion of the current user's account (email-confirmed)
+	//
+	// STAGES a permanent account deletion — it does NOT delete anything yet.
+	// Because deletion is irreversible, it is gated behind proof of control of
+	// the account's OWN mailbox: this call validates the typed confirmation
+	// (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+	// confirmation link to the account address. The deletion commits only when
+	// that link is redeemed via `POST /v1/auth/account/confirm` by an
+	// authenticated caller, so a stolen session alone cannot destroy the
+	// account.
+	//
+	// Step-up (verified when supplied): `current_password` for passworded
+	// accounts, or `confirm_email` (the user re-typing the account address) for
+	// passwordless Google/Apple accounts. The emailed link is the mandatory
+	// hard confirmation for every account.
+	//
+	// On commit, the user's CLOUD data is purged first (live sessions killed,
+	// every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+	// then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+	// keys, refresh tokens, devices, themes, subscriptions, sessions,
+	// identities and email/password-reset tokens).
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v1/auth/account (the `DeleteV1AuthAccount` operationId).
+	DeleteV1AuthAccountWithResponse(ctx context.Context, body DeleteV1AuthAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteV1AuthAccountResp, error)
+
+	// PostV1AuthAccountConfirmWithBodyWithResponse Confirm and commit a staged account deletion
+	//
+	// Redeems the single-use token mailed to the account address and permanently
+	// deletes the account. The token is bound to the authenticated caller, so a
+	// forwarded or leaked email alone cannot delete the account. The deletion
+	// itself is a single synchronous database transaction (every account-scoped
+	// row is removed via FK cascade); the deleted user's hosted-backup blobs in
+	// s3-sync-backup are purged asynchronously afterwards. Irreversible.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/account/confirm (the `PostV1AuthAccountConfirm` operationId).
+	PostV1AuthAccountConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAccountConfirmResp, error)
+
+	// PostV1AuthAccountConfirmWithResponse Confirm and commit a staged account deletion
+	//
+	// Redeems the single-use token mailed to the account address and permanently
+	// deletes the account. The token is bound to the authenticated caller, so a
+	// forwarded or leaked email alone cannot delete the account. The deletion
+	// itself is a single synchronous database transaction (every account-scoped
+	// row is removed via FK cascade); the deleted user's hosted-backup blobs in
+	// s3-sync-backup are purged asynchronously afterwards. Irreversible.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/account/confirm (the `PostV1AuthAccountConfirm` operationId).
+	PostV1AuthAccountConfirmWithResponse(ctx context.Context, body PostV1AuthAccountConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAccountConfirmResp, error)
+
 	// GetV1AuthApiKeysWithResponse List API keys
 	//
 	// Returns metadata only — the raw key value is NEVER returned (only the prefix for identification).
@@ -8756,8 +11607,8 @@ type ClientWithResponsesInterface interface {
 
 	// PostV1AuthApiKeysWithBodyWithResponse Create an API key
 	//
-	// Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-	// API keys CANNOT create/list/revoke other API keys.
+	// Returns the full key ONCE. Max 5 keys per user.
+	// API keys CANNOT create/list/delete other API keys.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -8766,17 +11617,21 @@ type ClientWithResponsesInterface interface {
 
 	// PostV1AuthApiKeysWithResponse Create an API key
 	//
-	// Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-	// API keys CANNOT create/list/revoke other API keys.
+	// Returns the full key ONCE. Max 5 keys per user.
+	// API keys CANNOT create/list/delete other API keys.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /v1/auth/api-keys (the `PostV1AuthApiKeys` operationId).
 	PostV1AuthApiKeysWithResponse(ctx context.Context, body PostV1AuthApiKeysJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthApiKeysResp, error)
 
-	// DeleteV1AuthApiKeysIdWithResponse Revoke an API key
+	// DeleteV1AuthApiKeysIdWithResponse Delete an API key
 	//
-	// Idempotent (already-revoked returns 204). Writes a negative Valkey cache entry so revocation is effective within milliseconds.
+	// Permanently deletes an API key. The key disappears from the list, can never
+	// authenticate again, and no longer counts towards the 5-key limit. Idempotent
+	// (deleting an unknown or already-deleted key returns 204). Purges the positive
+	// auth-cache entry and writes a negative Valkey cache entry so the key stops
+	// working within milliseconds.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -8819,6 +11674,167 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v1/auth/apple/web (the `PostV1AuthAppleWeb` operationId).
 	PostV1AuthAppleWebWithResponse(ctx context.Context, body PostV1AuthAppleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAppleWebResp, error)
 
+	// EnrollDeviceWithBodyWithResponse Redeem a delegated-enrollment grant for a device session
+	//
+	// Exchanges a single-use delegated-enrollment grant for the enrolled device's OWN device-scoped session (PASETO + refresh token) — the same token shape every other sign-in path returns. NO account authentication is required: the grant is the credential. The device is registered as authorized because the minting device vouched for it. Enrolled devices are full devices and may themselves mint grants.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/device/enroll (the `EnrollDevice` operationId).
+	EnrollDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*EnrollDeviceResp, error)
+
+	// EnrollDeviceWithResponse Redeem a delegated-enrollment grant for a device session
+	//
+	// Exchanges a single-use delegated-enrollment grant for the enrolled device's OWN device-scoped session (PASETO + refresh token) — the same token shape every other sign-in path returns. NO account authentication is required: the grant is the credential. The device is registered as authorized because the minting device vouched for it. Enrolled devices are full devices and may themselves mint grants.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/device/enroll (the `EnrollDevice` operationId).
+	EnrollDeviceWithResponse(ctx context.Context, body EnrollDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*EnrollDeviceResp, error)
+
+	// PostV1AuthEmailChangeCancelWithResponse Cancel a pending email change
+	//
+	// Abandons a pending change so a different address can be used immediately
+	// — the "I typed the wrong address" / "I changed my mind" case — instead of
+	// the request blocking a new attempt until it expires.
+	//
+	// Voids BOTH tokens (including any link already delivered), because it sets
+	// the same single-use tombstone every confirmation lookup guards on.
+	// Idempotent: cancelling when nothing is pending returns 200.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/email/change/cancel (the `PostV1AuthEmailChangeCancel` operationId).
+	PostV1AuthEmailChangeCancelWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeCancelResp, error)
+
+	// PostV1AuthEmailChangeConfirmWithBodyWithResponse Approve and commit the email change (stage 5)
+	//
+	// Redeems the single-use token mailed to the CURRENT address and commits
+	// the change. The previous address is retained for audit, and a Valkey
+	// cutoff signs out every session (the account owner must sign in again).
+	//
+	// Must be called by the authenticated owner of the request.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/email/change/confirm (the `PostV1AuthEmailChangeConfirm` operationId).
+	PostV1AuthEmailChangeConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeConfirmResp, error)
+
+	// PostV1AuthEmailChangeConfirmWithResponse Approve and commit the email change (stage 5)
+	//
+	// Redeems the single-use token mailed to the CURRENT address and commits
+	// the change. The previous address is retained for audit, and a Valkey
+	// cutoff signs out every session (the account owner must sign in again).
+	//
+	// Must be called by the authenticated owner of the request.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/email/change/confirm (the `PostV1AuthEmailChangeConfirm` operationId).
+	PostV1AuthEmailChangeConfirmWithResponse(ctx context.Context, body PostV1AuthEmailChangeConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeConfirmResp, error)
+
+	// PostV1AuthEmailChangeConfirmNewWithBodyWithResponse Confirm the new email address (stage 3)
+	//
+	// Redeems the single-use token mailed to the TARGET address. On success a
+	// blocking approval email is sent to the CURRENT address naming the target.
+	//
+	// Must be called by the authenticated owner of the request — the emailed
+	// token is not sufficient on its own.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/email/change/confirm-new (the `PostV1AuthEmailChangeConfirmNew` operationId).
+	PostV1AuthEmailChangeConfirmNewWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeConfirmNewResp, error)
+
+	// PostV1AuthEmailChangeConfirmNewWithResponse Confirm the new email address (stage 3)
+	//
+	// Redeems the single-use token mailed to the TARGET address. On success a
+	// blocking approval email is sent to the CURRENT address naming the target.
+	//
+	// Must be called by the authenticated owner of the request — the emailed
+	// token is not sufficient on its own.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/email/change/confirm-new (the `PostV1AuthEmailChangeConfirmNew` operationId).
+	PostV1AuthEmailChangeConfirmNewWithResponse(ctx context.Context, body PostV1AuthEmailChangeConfirmNewJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeConfirmNewResp, error)
+
+	// PostV1AuthEmailChangeRequestWithBodyWithResponse Start an email change
+	//
+	// Stage 1–2. Step-up with the account password, then stage a move to
+	// `new_email`.
+	//
+	// The change is confirmed from BOTH mailboxes: a token is mailed to the
+	// TARGET address first (stage 3), and only after that is a blocking
+	// approval token mailed to the CURRENT address naming the target
+	// (stage 4). Neither address can complete the change alone.
+	//
+	// Requires a password on the account. Google/Apple-created accounts have
+	// none and receive `403 password_required` — they must set a password
+	// first (`PUT /v1/auth/password`), after which the normal flow applies.
+	// This prevents the email change from silently minting a second credential
+	// on an account whose only credential is the provider link.
+	//
+	// New requests invalidate any still-pending one. A 60s per-user cooldown
+	// applies (`429`, with `retry_after`).
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/email/change/request (the `PostV1AuthEmailChangeRequest` operationId).
+	PostV1AuthEmailChangeRequestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeRequestResp, error)
+
+	// PostV1AuthEmailChangeRequestWithResponse Start an email change
+	//
+	// Stage 1–2. Step-up with the account password, then stage a move to
+	// `new_email`.
+	//
+	// The change is confirmed from BOTH mailboxes: a token is mailed to the
+	// TARGET address first (stage 3), and only after that is a blocking
+	// approval token mailed to the CURRENT address naming the target
+	// (stage 4). Neither address can complete the change alone.
+	//
+	// Requires a password on the account. Google/Apple-created accounts have
+	// none and receive `403 password_required` — they must set a password
+	// first (`PUT /v1/auth/password`), after which the normal flow applies.
+	// This prevents the email change from silently minting a second credential
+	// on an account whose only credential is the provider link.
+	//
+	// New requests invalidate any still-pending one. A 60s per-user cooldown
+	// applies (`429`, with `retry_after`).
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/email/change/request (the `PostV1AuthEmailChangeRequest` operationId).
+	PostV1AuthEmailChangeRequestWithResponse(ctx context.Context, body PostV1AuthEmailChangeRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeRequestResp, error)
+
+	// PostV1AuthEmailChangeResendWithResponse Re-send the current step's confirmation email
+	//
+	// Recovery path for "the confirmation email never arrived" (spam, a typo'd
+	// forward, or a failed hand-off).
+	//
+	// Re-mints the token for whichever stage the change is CURRENTLY on and
+	// re-sends only that one email. It never advances the flow: the approval
+	// (stage 4) branch is unreachable until the new address has confirmed, so
+	// this cannot be used to skip stage 3. The previously issued link for that
+	// stage stops working, as the newest token replaces it.
+	//
+	// Rate-limited to one resend per 60 s (`429` with `retry_after`), matching
+	// the per-user cooldown on starting a change.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/email/change/resend (the `PostV1AuthEmailChangeResend` operationId).
+	PostV1AuthEmailChangeResendWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeResendResp, error)
+
+	// GetV1AuthEmailChangeStatusWithResponse Current email-change state
+	//
+	// Reports whether a pending change exists and which step it awaits, so the portal can resume after a reload.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/auth/email/change/status (the `GetV1AuthEmailChangeStatus` operationId).
+	GetV1AuthEmailChangeStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthEmailChangeStatusResp, error)
+
 	// PostV1AuthGoogleWithBodyWithResponse Google Sign-In (native / Android)
 	//
 	// Validates the Google `id_token`. 409 on email conflict (link flow).
@@ -8855,9 +11871,25 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v1/auth/google/web (the `PostV1AuthGoogleWeb` operationId).
 	PostV1AuthGoogleWebWithResponse(ctx context.Context, body PostV1AuthGoogleWebJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthGoogleWebResp, error)
 
+	// GetV1AuthIdentitiesWithResponse List linked sign-in providers
+	//
+	// Returns the OAuth providers (Google, Apple) attached to the account so
+	// the portal can offer a disconnect action. Disconnecting uses
+	// `DELETE /v1/auth/link/{google,apple}`, which refuses while the account
+	// has no password (lockout guard).
+	//
+	// The synthetic `email` identity from registration is not listed.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/auth/identities (the `GetV1AuthIdentities` operationId).
+	GetV1AuthIdentitiesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthIdentitiesResp, error)
+
 	// DeleteV1AuthLinkAppleWithResponse Unlink the Apple identity
 	//
-	// Lockout guard — refuses if no password is set.
+	// Lockout guard — refuses with `403 password_required` if the account has
+	// no password, because the provider link would then be its only credential.
+	// Set a password first (`PUT /v1/auth/password`).
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -8884,7 +11916,9 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteV1AuthLinkGoogleWithResponse Unlink the Google identity
 	//
-	// Lockout guard — refuses if no password is set.
+	// Lockout guard — refuses with `403 password_required` if the account has
+	// no password, because the provider link would then be its only credential.
+	// Set a password first (`PUT /v1/auth/password`).
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -8972,7 +12006,14 @@ type ClientWithResponsesInterface interface {
 
 	// PutV1AuthPasswordWithBodyWithResponse Change password
 	//
-	// Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+	// Changes the authenticated user's password and writes a Valkey cutoff
+	// (forces re-login everywhere). `old_password` is required and verified.
+	//
+	// Accounts created via Google/Apple Sign-In have NO password, so they
+	// cannot use this endpoint — setting a FIRST password creates a credential
+	// and is gated behind an email-confirmed, session-bound flow
+	// (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+	// account receives `409 password_setup_required`.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -8981,7 +12022,14 @@ type ClientWithResponsesInterface interface {
 
 	// PutV1AuthPasswordWithResponse Change password
 	//
-	// Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+	// Changes the authenticated user's password and writes a Valkey cutoff
+	// (forces re-login everywhere). `old_password` is required and verified.
+	//
+	// Accounts created via Google/Apple Sign-In have NO password, so they
+	// cannot use this endpoint — setting a FIRST password creates a credential
+	// and is gated behind an email-confirmed, session-bound flow
+	// (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+	// account receives `409 password_setup_required`.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -9023,6 +12071,46 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /v1/auth/password/reset/request (the `PostV1AuthPasswordResetRequest` operationId).
 	PostV1AuthPasswordResetRequestWithResponse(ctx context.Context, body PostV1AuthPasswordResetRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordResetRequestResp, error)
+
+	// PostV1AuthPasswordSetupConfirmWithBodyWithResponse Confirm first-password setup
+	//
+	// Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+	// sets the first password. The caller must be authenticated as the request
+	// owner (the token is session-bound), so a forwarded or leaked mail alone
+	// is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/password/setup/confirm (the `PostV1AuthPasswordSetupConfirm` operationId).
+	PostV1AuthPasswordSetupConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordSetupConfirmResp, error)
+
+	// PostV1AuthPasswordSetupConfirmWithResponse Confirm first-password setup
+	//
+	// Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+	// sets the first password. The caller must be authenticated as the request
+	// owner (the token is session-bound), so a forwarded or leaked mail alone
+	// is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/password/setup/confirm (the `PostV1AuthPasswordSetupConfirm` operationId).
+	PostV1AuthPasswordSetupConfirmWithResponse(ctx context.Context, body PostV1AuthPasswordSetupConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordSetupConfirmResp, error)
+
+	// PostV1AuthPasswordSetupRequestWithResponse Request first-password setup (OAuth-only accounts)
+	//
+	// Stages a single-use token and mails it to the account's OWN address. The
+	// password is only set when the token is redeemed via
+	// `POST /v1/auth/password/setup/confirm` by an authenticated caller, so a
+	// stolen session token alone can never create a credential.
+	//
+	// Refused with `409 password_already_set` when the account already has a
+	// password (use `PUT /v1/auth/password` instead). Refused with `403` for
+	// API-key callers.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/auth/password/setup/request (the `PostV1AuthPasswordSetupRequest` operationId).
+	PostV1AuthPasswordSetupRequestWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordSetupRequestResp, error)
 
 	// PostV1AuthRefreshWithBodyWithResponse Refresh the PASETO token
 	//
@@ -9078,6 +12166,42 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v1/auth/resend-verification (the `PostV1AuthResendVerification` operationId).
 	PostV1AuthResendVerificationWithResponse(ctx context.Context, body PostV1AuthResendVerificationJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthResendVerificationResp, error)
 
+	// DeleteV1AuthSessionsWithResponse Sign out everywhere
+	//
+	// Ends EVERY session for the account, including the calling one. The
+	// caller must sign in again afterwards; this is the deliberate "sign out
+	// everywhere" action (the same invalidation the email-change flow applies
+	// on commit).
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v1/auth/sessions (the `DeleteV1AuthSessions` operationId).
+	DeleteV1AuthSessionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthSessionsResp, error)
+
+	// GetV1AuthSessionsWithResponse List active sessions
+	//
+	// Every signed-in session for the account — one per device or browser —
+	// most recently active first, with the calling session marked `current`.
+	//
+	// Signing out one session (`DELETE /v1/auth/sessions/{session_id}`) kills
+	// that session's tokens immediately, not just its refresh token.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/auth/sessions (the `GetV1AuthSessions` operationId).
+	GetV1AuthSessionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthSessionsResp, error)
+
+	// DeleteV1AuthSessionsSessionIdWithResponse Sign out one session
+	//
+	// Ends a single session — one device or browser. Refused for the calling
+	// session (`400 cannot_revoke_current_session`), which must be ended with
+	// `POST /v1/auth/logout` so the client knows it has been signed out.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /v1/auth/sessions/{session_id} (the `DeleteV1AuthSessionsSessionId` operationId).
+	DeleteV1AuthSessionsSessionIdWithResponse(ctx context.Context, sessionId openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteV1AuthSessionsSessionIdResp, error)
+
 	// GetV1AuthVerifyWithResponse Verify email address
 	//
 	// Accepts the token as a URL path segment OR query param. Returns a token pair on success.
@@ -9086,6 +12210,36 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /v1/auth/verify (the `GetV1AuthVerify` operationId).
 	GetV1AuthVerifyWithResponse(ctx context.Context, params *GetV1AuthVerifyParams, reqEditors ...RequestEditorFn) (*GetV1AuthVerifyResp, error)
+
+	// GetBackupManifestWithResponse Fetch an opaque per-device backup manifest
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/backup/manifest/{device} (the `GetBackupManifest` operationId).
+	GetBackupManifestWithResponse(ctx context.Context, device string, reqEditors ...RequestEditorFn) (*GetBackupManifestResp, error)
+
+	// PutBackupManifestWithBodyWithResponse Store an opaque per-device backup manifest (7-5)
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v1/backup/manifest/{device} (the `PutBackupManifest` operationId).
+	PutBackupManifestWithBodyWithResponse(ctx context.Context, device string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutBackupManifestResp, error)
+
+	// GetBackupObjectWithResponse Fetch an opaque backup object by its SHA-256
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/backup/objects/{sha256} (the `GetBackupObject` operationId).
+	GetBackupObjectWithResponse(ctx context.Context, sha256 string, reqEditors ...RequestEditorFn) (*GetBackupObjectResp, error)
+
+	// PutBackupObjectWithBodyWithResponse Store an opaque, content-addressed backup object (7-5)
+	//
+	// Body is an opaque, already-encrypted AEAD blob. The relay verifies only the SHA-256 address (integrity), never the content. Enforces the tier `backup_storage_mb` cap.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /v1/backup/objects/{sha256} (the `PutBackupObject` operationId).
+	PutBackupObjectWithBodyWithResponse(ctx context.Context, sha256 string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutBackupObjectResp, error)
 
 	// PostV1ChatCompletionsWithBodyWithResponse Chat completions (LLM)
 	//
@@ -9125,9 +12279,8 @@ type ClientWithResponsesInterface interface {
 	// RegisterDeviceWithBodyWithResponse Register or refresh a device
 	//
 	// Registers a client install (or refreshes an existing one, e.g. a new
-	// push token). Devices must be authorized before cloud sessions can be
-	// provisioned for them — see `/v1/session/connect` (403
-	// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+	// push token). Devices are authorized via the `/v1/devices/authorize`
+	// email auth-code flow.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -9137,9 +12290,8 @@ type ClientWithResponsesInterface interface {
 	// RegisterDeviceWithResponse Register or refresh a device
 	//
 	// Registers a client install (or refreshes an existing one, e.g. a new
-	// push token). Devices must be authorized before cloud sessions can be
-	// provisioned for them — see `/v1/session/connect` (403
-	// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+	// push token). Devices are authorized via the `/v1/devices/authorize`
+	// email auth-code flow.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -9192,6 +12344,87 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /v1/devices/authorize/status (the `GetDeviceAuthorizationStatus` operationId).
 	GetDeviceAuthorizationStatusWithResponse(ctx context.Context, params *GetDeviceAuthorizationStatusParams, reqEditors ...RequestEditorFn) (*GetDeviceAuthorizationStatusResp, error)
+
+	// CreateDeviceConnectSessionWithBodyWithResponse Create a poll-only engine sign-in (connect session)
+	//
+	// Public (the engine is not authenticated yet). Mints an unguessable connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and returns the portal URL the engine opens in the system browser. The user signs in there and clicks Allow; the engine then polls GET /v1/devices/connect-session/{connect_id} with the secret.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/connect-session (the `CreateDeviceConnectSession` operationId).
+	CreateDeviceConnectSessionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateDeviceConnectSessionResp, error)
+
+	// CreateDeviceConnectSessionWithResponse Create a poll-only engine sign-in (connect session)
+	//
+	// Public (the engine is not authenticated yet). Mints an unguessable connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and returns the portal URL the engine opens in the system browser. The user signs in there and clicks Allow; the engine then polls GET /v1/devices/connect-session/{connect_id} with the secret.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/connect-session (the `CreateDeviceConnectSession` operationId).
+	CreateDeviceConnectSessionWithResponse(ctx context.Context, body CreateDeviceConnectSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateDeviceConnectSessionResp, error)
+
+	// GetDeviceConnectSessionWithResponse Poll a connect session (auth = the session_secret)
+	//
+	// The engine polls this with `Authorization: Bearer <session_secret>`. A pending session returns `{"status":"pending"}`; an approved one returns the token pair EXACTLY ONCE (`{"status":"approved","token":…, "refresh_token":…,"expires_at":…}`) and is marked consumed; later polls return `{"status":"consumed"}`; an expired session returns `{"status":"expired"}`.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/devices/connect-session/{connect_id} (the `GetDeviceConnectSession` operationId).
+	GetDeviceConnectSessionWithResponse(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*GetDeviceConnectSessionResp, error)
+
+	// ApproveDeviceConnectSessionWithResponse Approve a connect session (the portal Allow click)
+	//
+	// Portal (interactive) auth ONLY — API keys are refused. The Allow click is the consent: it registers the device authorized=true and stores the freshly issued token pair (encrypted) for one-time retrieval by the engine's poll. Idempotent once approved.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/connect-session/{connect_id}/approve (the `ApproveDeviceConnectSession` operationId).
+	ApproveDeviceConnectSessionWithResponse(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*ApproveDeviceConnectSessionResp, error)
+
+	// GetDeviceConnectSessionMetaWithResponse Read connect-session metadata (no secret)
+	//
+	// No-secret read for the portal page: the device name to render plus the current status. The connect_id is a 128-bit unguessable UUID.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/devices/connect-session/{connect_id}/meta (the `GetDeviceConnectSessionMeta` operationId).
+	GetDeviceConnectSessionMetaWithResponse(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*GetDeviceConnectSessionMetaResp, error)
+
+	// MintEnrollmentGrantWithBodyWithResponse Mint a single-use delegated-enrollment grant
+	//
+	// Mints a short-lived (5 min), single-use grant that lets an already-authorized device (the desktop vouches) enroll a NEW device into the same account. The minting device must belong to the caller and be authorized. The grant is shown ONCE (only its SHA-256 is stored). Requires an interactive session — API keys are refused.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/enrollment-grants (the `MintEnrollmentGrant` operationId).
+	MintEnrollmentGrantWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*MintEnrollmentGrantResp, error)
+
+	// MintEnrollmentGrantWithResponse Mint a single-use delegated-enrollment grant
+	//
+	// Mints a short-lived (5 min), single-use grant that lets an already-authorized device (the desktop vouches) enroll a NEW device into the same account. The minting device must belong to the caller and be authorized. The grant is shown ONCE (only its SHA-256 is stored). Requires an interactive session — API keys are refused.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/enrollment-grants (the `MintEnrollmentGrant` operationId).
+	MintEnrollmentGrantWithResponse(ctx context.Context, body MintEnrollmentGrantJSONRequestBody, reqEditors ...RequestEditorFn) (*MintEnrollmentGrantResp, error)
+
+	// MintSyncPairingTokenWithBodyWithResponse Mint a single-use sync pairing token
+	//
+	// Mints a short-lived (5 min), single-use token binding (user, device, dataset). The engine presents it to the sync-relay at first connect (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a dataset group. The device must belong to the caller and be authorized.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/sync-pairing (the `MintSyncPairingToken` operationId).
+	MintSyncPairingTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*MintSyncPairingTokenResp, error)
+
+	// MintSyncPairingTokenWithResponse Mint a single-use sync pairing token
+	//
+	// Mints a short-lived (5 min), single-use token binding (user, device, dataset). The engine presents it to the sync-relay at first connect (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a dataset group. The device must belong to the caller and be authorized.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/devices/sync-pairing (the `MintSyncPairingToken` operationId).
+	MintSyncPairingTokenWithResponse(ctx context.Context, body MintSyncPairingTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*MintSyncPairingTokenResp, error)
 
 	// RevokeDeviceWithResponse Revoke a device
 	//
@@ -9321,78 +12554,6 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /v1/rerank (the `PostV1Rerank` operationId).
 	PostV1RerankWithResponse(ctx context.Context, body PostV1RerankJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1RerankResp, error)
 
-	// PostV1SessionConnectWithBodyWithResponse Connect a cloud session
-	//
-	// Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-	PostV1SessionConnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResp, error)
-
-	// PostV1SessionConnectWithResponse Connect a cloud session
-	//
-	// Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-	PostV1SessionConnectWithResponse(ctx context.Context, body PostV1SessionConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResp, error)
-
-	// PostV1SessionConnectedWithResponse Report session connected (proxy → broker)
-	//
-	// Called by the conduct proxy when the WebSocket upgrade completes; cancels the connect timeout.
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
-	PostV1SessionConnectedWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1SessionConnectedResp, error)
-
-	// DeleteSessionDataWithBodyWithResponse Purge all cloud-side engine data for the authenticated user (async)
-	//
-	// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
-	DeleteSessionDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error)
-
-	// DeleteSessionDataWithResponse Purge all cloud-side engine data for the authenticated user (async)
-	//
-	// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
-	DeleteSessionDataWithResponse(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error)
-
-	// GetSessionDataDeleteStatusWithResponse Poll the status of the authenticated user's data purge
-	//
-	// Reports the current purge state. 200 always (after auth) with one of four shapes: in_progress (flag set — purge active or stalled, with phase/request_id/attempts), deleted (terminal success, with the S3 / beat / DEK counters from the result tombstone), failed (terminal failure — the sweeper gave up; the user is unblocked but the data was not guaranteed deleted; retry the delete), or none (nothing running or remembered). Flag presence wins over the terminal tombstone: while a failed run is still flagged for the sweeper the report stays in_progress.
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /v1/session/data/delete/status (the `GetSessionDataDeleteStatus` operationId).
-	GetSessionDataDeleteStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSessionDataDeleteStatusResp, error)
-
-	// PostV1SessionDisconnectWithBodyWithResponse Disconnect a cloud session (enter grace period)
-	//
-	// Transitions the session to a 5-minute grace period, then schedules cleanup.
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-	PostV1SessionDisconnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResp, error)
-
-	// PostV1SessionDisconnectWithResponse Disconnect a cloud session (enter grace period)
-	//
-	// Transitions the session to a 5-minute grace period, then schedules cleanup.
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-	PostV1SessionDisconnectWithResponse(ctx context.Context, body PostV1SessionDisconnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResp, error)
-
 	// GetV1SubscriptionMeWithResponse Get the current user's subscription
 	//
 	// Resolves the tier from the auth context; defaults to `free` if no subscription exists.
@@ -9408,6 +12569,31 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /v1/subscription/tiers (the `GetV1SubscriptionTiers` operationId).
 	GetV1SubscriptionTiersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1SubscriptionTiersResp, error)
+
+	// ConsumeSyncPairingTokenWithBodyWithResponse Redeem a single-use sync pairing token
+	//
+	// Atomically consumes a pairing token and joins the caller's device to the dataset group (enforcing the tier `sync_devices` limit). A token can be consumed exactly once.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/sync/pairing/consume (the `ConsumeSyncPairingToken` operationId).
+	ConsumeSyncPairingTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConsumeSyncPairingTokenResp, error)
+
+	// ConsumeSyncPairingTokenWithResponse Redeem a single-use sync pairing token
+	//
+	// Atomically consumes a pairing token and joins the caller's device to the dataset group (enforcing the tier `sync_devices` limit). A token can be consumed exactly once.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v1/sync/pairing/consume (the `ConsumeSyncPairingToken` operationId).
+	ConsumeSyncPairingTokenWithResponse(ctx context.Context, body ConsumeSyncPairingTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*ConsumeSyncPairingTokenResp, error)
+
+	// GetSyncStatusWithResponse Get the caller's sync buffer + quota status
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /v1/sync/status (the `GetSyncStatus` operationId).
+	GetSyncStatusWithResponse(ctx context.Context, params *GetSyncStatusParams, reqEditors ...RequestEditorFn) (*GetSyncStatusResp, error)
 
 	// GetV1VersionsWithResponse List available HL image versions
 	//
@@ -9433,6 +12619,613 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /v1/voice/convert (the `PostV1VoiceConvert` operationId).
 	PostV1VoiceConvertWithResponse(ctx context.Context, body PostV1VoiceConvertJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1VoiceConvertResp, error)
+}
+
+type DeleteV1AccountBackupKeyResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *BackupKeyStatus
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteV1AccountBackupKeyResp) GetJSON200() *BackupKeyStatus {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteV1AccountBackupKeyResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteV1AccountBackupKeyResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r DeleteV1AccountBackupKeyResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteV1AccountBackupKeyResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AccountBackupKeyResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AccountBackupKeyResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteV1AccountBackupKeyResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetV1AccountBackupKeyResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *BackupKeyResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetV1AccountBackupKeyResp) GetJSON200() *BackupKeyResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetV1AccountBackupKeyResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetV1AccountBackupKeyResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetV1AccountBackupKeyResp) GetJSON404() *Error {
+	return r.JSON404
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r GetV1AccountBackupKeyResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r GetV1AccountBackupKeyResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountBackupKeyResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountBackupKeyResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetV1AccountBackupKeyResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutV1AccountBackupKeyResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *BackupKeyStatus
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *Error
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON413 the response for an HTTP 413 `application/json` response
+	JSON413 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutV1AccountBackupKeyResp) GetJSON200() *BackupKeyStatus {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PutV1AccountBackupKeyResp) GetJSON400() *Error {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PutV1AccountBackupKeyResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutV1AccountBackupKeyResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON413 returns the response for an HTTP 413 `application/json` response
+func (r PutV1AccountBackupKeyResp) GetJSON413() *Error {
+	return r.JSON413
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r PutV1AccountBackupKeyResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r PutV1AccountBackupKeyResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV1AccountBackupKeyResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV1AccountBackupKeyResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutV1AccountBackupKeyResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteV1AccountSyncKeyResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SyncKeyStatus
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteV1AccountSyncKeyResp) GetJSON200() *SyncKeyStatus {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteV1AccountSyncKeyResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteV1AccountSyncKeyResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r DeleteV1AccountSyncKeyResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteV1AccountSyncKeyResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AccountSyncKeyResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AccountSyncKeyResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteV1AccountSyncKeyResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetV1AccountSyncKeyResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SyncKeyResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetV1AccountSyncKeyResp) GetJSON200() *SyncKeyResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetV1AccountSyncKeyResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetV1AccountSyncKeyResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetV1AccountSyncKeyResp) GetJSON404() *Error {
+	return r.JSON404
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r GetV1AccountSyncKeyResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r GetV1AccountSyncKeyResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountSyncKeyResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountSyncKeyResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetV1AccountSyncKeyResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutV1AccountSyncKeyResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SyncKeyStatus
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *Error
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON413 the response for an HTTP 413 `application/json` response
+	JSON413 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutV1AccountSyncKeyResp) GetJSON200() *SyncKeyStatus {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PutV1AccountSyncKeyResp) GetJSON400() *Error {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PutV1AccountSyncKeyResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutV1AccountSyncKeyResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON413 returns the response for an HTTP 413 `application/json` response
+func (r PutV1AccountSyncKeyResp) GetJSON413() *Error {
+	return r.JSON413
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r PutV1AccountSyncKeyResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r PutV1AccountSyncKeyResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV1AccountSyncKeyResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV1AccountSyncKeyResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutV1AccountSyncKeyResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteV1AccountSyncRotationRequiredResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SyncRotationStatus
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteV1AccountSyncRotationRequiredResp) GetJSON200() *SyncRotationStatus {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteV1AccountSyncRotationRequiredResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteV1AccountSyncRotationRequiredResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r DeleteV1AccountSyncRotationRequiredResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteV1AccountSyncRotationRequiredResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AccountSyncRotationRequiredResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AccountSyncRotationRequiredResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteV1AccountSyncRotationRequiredResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetV1AccountSyncRotationRequiredResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SyncRotationStatus
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetV1AccountSyncRotationRequiredResp) GetJSON200() *SyncRotationStatus {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetV1AccountSyncRotationRequiredResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetV1AccountSyncRotationRequiredResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r GetV1AccountSyncRotationRequiredResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r GetV1AccountSyncRotationRequiredResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AccountSyncRotationRequiredResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AccountSyncRotationRequiredResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetV1AccountSyncRotationRequiredResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutV1AccountSyncRotationRequiredResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SyncRotationStatus
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *Error
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutV1AccountSyncRotationRequiredResp) GetJSON200() *SyncRotationStatus {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PutV1AccountSyncRotationRequiredResp) GetJSON400() *Error {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PutV1AccountSyncRotationRequiredResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutV1AccountSyncRotationRequiredResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r PutV1AccountSyncRotationRequiredResp) GetJSON503() *Error {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r PutV1AccountSyncRotationRequiredResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV1AccountSyncRotationRequiredResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV1AccountSyncRotationRequiredResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutV1AccountSyncRotationRequiredResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
 }
 
 // PostV1AudioConvertResp200Headers the declared response headers of an HTTP 200 response for PostV1AudioConvert
@@ -9836,6 +13629,151 @@ func (r PostV1AudioVadResp) ContentType() string {
 	return ""
 }
 
+type DeleteV1AuthAccountResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *Message
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *Error
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *Error
+}
+
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
+func (r DeleteV1AuthAccountResp) GetJSON202() *Message {
+	return r.JSON202
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteV1AuthAccountResp) GetJSON400() *Error {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteV1AuthAccountResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteV1AuthAccountResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteV1AuthAccountResp) GetJSON500() *Error {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteV1AuthAccountResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AuthAccountResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AuthAccountResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteV1AuthAccountResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostV1AuthAccountConfirmResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *Message
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *Error
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *Error
+	// JSON410 the response for an HTTP 410 `application/json` response
+	JSON410 *Error
+}
+
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
+func (r PostV1AuthAccountConfirmResp) GetJSON202() *Message {
+	return r.JSON202
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PostV1AuthAccountConfirmResp) GetJSON400() *Error {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PostV1AuthAccountConfirmResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1AuthAccountConfirmResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PostV1AuthAccountConfirmResp) GetJSON404() *Error {
+	return r.JSON404
+}
+
+// GetJSON410 returns the response for an HTTP 410 `application/json` response
+func (r PostV1AuthAccountConfirmResp) GetJSON410() *Error {
+	return r.JSON410
+}
+
+// GetBody returns the raw response body bytes
+func (r PostV1AuthAccountConfirmResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AuthAccountConfirmResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AuthAccountConfirmResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostV1AuthAccountConfirmResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetV1AuthApiKeysResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -10111,6 +14049,471 @@ func (r PostV1AuthAppleWebResp) ContentType() string {
 	return ""
 }
 
+// EnrollDeviceResp429Headers the declared response headers of an HTTP 429 response for EnrollDevice
+type EnrollDeviceResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type EnrollDeviceResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TokenResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Error
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *EnrollDeviceResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r EnrollDeviceResp) GetJSON200() *TokenResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r EnrollDeviceResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r EnrollDeviceResp) GetJSON401() *Error {
+	return r.JSON401
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r EnrollDeviceResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r EnrollDeviceResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r EnrollDeviceResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r EnrollDeviceResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r EnrollDeviceResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostV1AuthEmailChangeCancelResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Message
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostV1AuthEmailChangeCancelResp) GetJSON200() *Message {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PostV1AuthEmailChangeCancelResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1AuthEmailChangeCancelResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetBody returns the raw response body bytes
+func (r PostV1AuthEmailChangeCancelResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AuthEmailChangeCancelResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AuthEmailChangeCancelResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostV1AuthEmailChangeCancelResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostV1AuthEmailChangeConfirmResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Message
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Error
+	// JSON410 the response for an HTTP 410 `application/json` response
+	JSON410 *StandardError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostV1AuthEmailChangeConfirmResp) GetJSON200() *Message {
+	return r.JSON200
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1AuthEmailChangeConfirmResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PostV1AuthEmailChangeConfirmResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PostV1AuthEmailChangeConfirmResp) GetJSON409() *Error {
+	return r.JSON409
+}
+
+// GetJSON410 returns the response for an HTTP 410 `application/json` response
+func (r PostV1AuthEmailChangeConfirmResp) GetJSON410() *StandardError {
+	return r.JSON410
+}
+
+// GetBody returns the raw response body bytes
+func (r PostV1AuthEmailChangeConfirmResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AuthEmailChangeConfirmResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AuthEmailChangeConfirmResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostV1AuthEmailChangeConfirmResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostV1AuthEmailChangeConfirmNewResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Message
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+	// JSON410 the response for an HTTP 410 `application/json` response
+	JSON410 *StandardError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostV1AuthEmailChangeConfirmNewResp) GetJSON200() *Message {
+	return r.JSON200
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1AuthEmailChangeConfirmNewResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PostV1AuthEmailChangeConfirmNewResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetJSON410 returns the response for an HTTP 410 `application/json` response
+func (r PostV1AuthEmailChangeConfirmNewResp) GetJSON410() *StandardError {
+	return r.JSON410
+}
+
+// GetBody returns the raw response body bytes
+func (r PostV1AuthEmailChangeConfirmNewResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AuthEmailChangeConfirmNewResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AuthEmailChangeConfirmNewResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostV1AuthEmailChangeConfirmNewResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostV1AuthEmailChangeRequestResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *Message
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *Error
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Error
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Error
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *Error
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *Error
+}
+
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
+func (r PostV1AuthEmailChangeRequestResp) GetJSON202() *Message {
+	return r.JSON202
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PostV1AuthEmailChangeRequestResp) GetJSON400() *Error {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PostV1AuthEmailChangeRequestResp) GetJSON401() *Error {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1AuthEmailChangeRequestResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PostV1AuthEmailChangeRequestResp) GetJSON409() *Error {
+	return r.JSON409
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r PostV1AuthEmailChangeRequestResp) GetJSON429() *Error {
+	return r.JSON429
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r PostV1AuthEmailChangeRequestResp) GetJSON500() *Error {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r PostV1AuthEmailChangeRequestResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AuthEmailChangeRequestResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AuthEmailChangeRequestResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostV1AuthEmailChangeRequestResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostV1AuthEmailChangeResendResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Message
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *Error
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostV1AuthEmailChangeResendResp) GetJSON200() *Message {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PostV1AuthEmailChangeResendResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1AuthEmailChangeResendResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PostV1AuthEmailChangeResendResp) GetJSON404() *Error {
+	return r.JSON404
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r PostV1AuthEmailChangeResendResp) GetJSON429() *Error {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r PostV1AuthEmailChangeResendResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AuthEmailChangeResendResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AuthEmailChangeResendResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostV1AuthEmailChangeResendResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetV1AuthEmailChangeStatusResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *EmailChangeStatus
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetV1AuthEmailChangeStatusResp) GetJSON200() *EmailChangeStatus {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetV1AuthEmailChangeStatusResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetV1AuthEmailChangeStatusResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetBody returns the raw response body bytes
+func (r GetV1AuthEmailChangeStatusResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AuthEmailChangeStatusResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AuthEmailChangeStatusResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetV1AuthEmailChangeStatusResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type PostV1AuthGoogleResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -10229,6 +14632,61 @@ func (r PostV1AuthGoogleWebResp) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PostV1AuthGoogleWebResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetV1AuthIdentitiesResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]LinkedIdentity
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetV1AuthIdentitiesResp) GetJSON200() *[]LinkedIdentity {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetV1AuthIdentitiesResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetV1AuthIdentitiesResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetBody returns the raw response body bytes
+func (r GetV1AuthIdentitiesResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AuthIdentitiesResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AuthIdentitiesResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetV1AuthIdentitiesResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -10544,6 +15002,8 @@ type GetV1AuthMeResp struct {
 	JSON200 *UserProfile
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
@@ -10554,6 +15014,11 @@ func (r GetV1AuthMeResp) GetJSON200() *UserProfile {
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
 func (r GetV1AuthMeResp) GetJSON401() *Unauthorized {
 	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetV1AuthMeResp) GetJSON403() *StandardError {
+	return r.JSON403
 }
 
 // GetBody returns the raw response body bytes
@@ -10640,6 +15105,8 @@ type PutV1AuthPasswordResp struct {
 	JSON200 *Message
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
@@ -10650,6 +15117,11 @@ func (r PutV1AuthPasswordResp) GetJSON200() *Message {
 // GetJSON401 returns the response for an HTTP 401 `application/json` response
 func (r PutV1AuthPasswordResp) GetJSON401() *Unauthorized {
 	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutV1AuthPasswordResp) GetJSON403() *StandardError {
+	return r.JSON403
 }
 
 // GetBody returns the raw response body bytes
@@ -10785,6 +15257,137 @@ func (r PostV1AuthPasswordResetRequestResp) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PostV1AuthPasswordResetRequestResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostV1AuthPasswordSetupConfirmResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Message
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+	// JSON410 the response for an HTTP 410 `application/json` response
+	JSON410 *Error
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostV1AuthPasswordSetupConfirmResp) GetJSON200() *Message {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PostV1AuthPasswordSetupConfirmResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PostV1AuthPasswordSetupConfirmResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1AuthPasswordSetupConfirmResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PostV1AuthPasswordSetupConfirmResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetJSON410 returns the response for an HTTP 410 `application/json` response
+func (r PostV1AuthPasswordSetupConfirmResp) GetJSON410() *Error {
+	return r.JSON410
+}
+
+// GetBody returns the raw response body bytes
+func (r PostV1AuthPasswordSetupConfirmResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AuthPasswordSetupConfirmResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AuthPasswordSetupConfirmResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostV1AuthPasswordSetupConfirmResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostV1AuthPasswordSetupRequestResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *Message
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+}
+
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
+func (r PostV1AuthPasswordSetupRequestResp) GetJSON202() *Message {
+	return r.JSON202
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PostV1AuthPasswordSetupRequestResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostV1AuthPasswordSetupRequestResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetBody returns the raw response body bytes
+func (r PostV1AuthPasswordSetupRequestResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1AuthPasswordSetupRequestResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1AuthPasswordSetupRequestResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostV1AuthPasswordSetupRequestResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -10973,6 +15576,178 @@ func (r PostV1AuthResendVerificationResp) ContentType() string {
 	return ""
 }
 
+type DeleteV1AuthSessionsResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RevokeAllSessionsResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteV1AuthSessionsResp) GetJSON200() *RevokeAllSessionsResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteV1AuthSessionsResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteV1AuthSessionsResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteV1AuthSessionsResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AuthSessionsResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AuthSessionsResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteV1AuthSessionsResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetV1AuthSessionsResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SessionListResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetV1AuthSessionsResp) GetJSON200() *SessionListResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetV1AuthSessionsResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetV1AuthSessionsResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetBody returns the raw response body bytes
+func (r GetV1AuthSessionsResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetV1AuthSessionsResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetV1AuthSessionsResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetV1AuthSessionsResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteV1AuthSessionsSessionIdResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteV1AuthSessionsSessionIdResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteV1AuthSessionsSessionIdResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteV1AuthSessionsSessionIdResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteV1AuthSessionsSessionIdResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteV1AuthSessionsSessionIdResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1AuthSessionsSessionIdResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1AuthSessionsSessionIdResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteV1AuthSessionsSessionIdResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetV1AuthVerifyResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -11029,6 +15804,253 @@ func (r GetV1AuthVerifyResp) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV1AuthVerifyResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetBackupManifestResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetBackupManifestResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetBackupManifestResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r GetBackupManifestResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetBackupManifestResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetBackupManifestResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetBackupManifestResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// PutBackupManifestResp429Headers the declared response headers of an HTTP 429 response for PutBackupManifest
+type PutBackupManifestResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type PutBackupManifestResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *BackupPutResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON413 the response for an HTTP 413 `application/json` response
+	JSON413 *StandardError
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *PutBackupManifestResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutBackupManifestResp) GetJSON200() *BackupPutResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PutBackupManifestResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON413 returns the response for an HTTP 413 `application/json` response
+func (r PutBackupManifestResp) GetJSON413() *StandardError {
+	return r.JSON413
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r PutBackupManifestResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r PutBackupManifestResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutBackupManifestResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutBackupManifestResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutBackupManifestResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetBackupObjectResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *StandardError
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetBackupObjectResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetBackupObjectResp) GetJSON404() *StandardError {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r GetBackupObjectResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetBackupObjectResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetBackupObjectResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetBackupObjectResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// PutBackupObjectResp429Headers the declared response headers of an HTTP 429 response for PutBackupObject
+type PutBackupObjectResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type PutBackupObjectResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *BackupPutResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *Error
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON413 the response for an HTTP 413 `application/json` response
+	JSON413 *StandardError
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *PutBackupObjectResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutBackupObjectResp) GetJSON200() *BackupPutResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PutBackupObjectResp) GetJSON400() *Error {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PutBackupObjectResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON413 returns the response for an HTTP 413 `application/json` response
+func (r PutBackupObjectResp) GetJSON413() *StandardError {
+	return r.JSON413
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r PutBackupObjectResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r PutBackupObjectResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutBackupObjectResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutBackupObjectResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutBackupObjectResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -11454,6 +16476,398 @@ func (r GetDeviceAuthorizationStatusResp) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetDeviceAuthorizationStatusResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// CreateDeviceConnectSessionResp429Headers the declared response headers of an HTTP 429 response for CreateDeviceConnectSession
+type CreateDeviceConnectSessionResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type CreateDeviceConnectSessionResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *DeviceConnectSessionResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *CreateDeviceConnectSessionResp429Headers
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateDeviceConnectSessionResp) GetJSON201() *DeviceConnectSessionResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateDeviceConnectSessionResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r CreateDeviceConnectSessionResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateDeviceConnectSessionResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateDeviceConnectSessionResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateDeviceConnectSessionResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateDeviceConnectSessionResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetDeviceConnectSessionResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DeviceConnectStatusResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Error
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetDeviceConnectSessionResp) GetJSON200() *DeviceConnectStatusResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetDeviceConnectSessionResp) GetJSON401() *Error {
+	return r.JSON401
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetDeviceConnectSessionResp) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r GetDeviceConnectSessionResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDeviceConnectSessionResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDeviceConnectSessionResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetDeviceConnectSessionResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ApproveDeviceConnectSessionResp429Headers the declared response headers of an HTTP 429 response for ApproveDeviceConnectSession
+type ApproveDeviceConnectSessionResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type ApproveDeviceConnectSessionResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DeviceConnectApproveResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON410 the response for an HTTP 410 `application/json` response
+	JSON410 *Error
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *ApproveDeviceConnectSessionResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ApproveDeviceConnectSessionResp) GetJSON200() *DeviceConnectApproveResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ApproveDeviceConnectSessionResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ApproveDeviceConnectSessionResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r ApproveDeviceConnectSessionResp) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON410 returns the response for an HTTP 410 `application/json` response
+func (r ApproveDeviceConnectSessionResp) GetJSON410() *Error {
+	return r.JSON410
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r ApproveDeviceConnectSessionResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r ApproveDeviceConnectSessionResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ApproveDeviceConnectSessionResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ApproveDeviceConnectSessionResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ApproveDeviceConnectSessionResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetDeviceConnectSessionMetaResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *DeviceConnectMetaResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetDeviceConnectSessionMetaResp) GetJSON200() *DeviceConnectMetaResponse {
+	return r.JSON200
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetDeviceConnectSessionMetaResp) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r GetDeviceConnectSessionMetaResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDeviceConnectSessionMetaResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDeviceConnectSessionMetaResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetDeviceConnectSessionMetaResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type MintEnrollmentGrantResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *EnrollmentGrantResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *Error
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r MintEnrollmentGrantResp) GetJSON201() *EnrollmentGrantResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r MintEnrollmentGrantResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r MintEnrollmentGrantResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r MintEnrollmentGrantResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r MintEnrollmentGrantResp) GetJSON404() *Error {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r MintEnrollmentGrantResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r MintEnrollmentGrantResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r MintEnrollmentGrantResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r MintEnrollmentGrantResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type MintSyncPairingTokenResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *SyncPairingResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Error
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *Error
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r MintSyncPairingTokenResp) GetJSON201() *SyncPairingResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r MintSyncPairingTokenResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r MintSyncPairingTokenResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r MintSyncPairingTokenResp) GetJSON403() *Error {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r MintSyncPairingTokenResp) GetJSON404() *Error {
+	return r.JSON404
+}
+
+// GetBody returns the raw response body bytes
+func (r MintSyncPairingTokenResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r MintSyncPairingTokenResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r MintSyncPairingTokenResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r MintSyncPairingTokenResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -11964,379 +17378,6 @@ func (r PostV1RerankResp) ContentType() string {
 	return ""
 }
 
-// PostV1SessionConnectResp429Headers the declared response headers of an HTTP 429 response for PostV1SessionConnect
-type PostV1SessionConnectResp429Headers struct {
-	RetryAfter          *int
-	XRateLimitLimit     *int
-	XRateLimitRemaining *int
-	XRateLimitReset     *int64
-}
-
-type PostV1SessionConnectResp struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *SessionConnectResponse
-	// JSON202 the response for an HTTP 202 `application/json` response
-	JSON202 *SessionConnectResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *Unauthorized
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *struct {
-		Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
-	}
-	// JSON409 the response for an HTTP 409 `application/json` response
-	JSON409 *struct {
-		Error        *PostV1SessionConnect409JSONResponseBodyError `json:"error,omitempty"`
-		RetryAfterMs *int                                          `json:"retry_after_ms,omitempty"`
-	}
-	// JSON429 the response for an HTTP 429 `application/json` response
-	JSON429 *RateLimited
-	// JSON503 the response for an HTTP 503 `application/json` response
-	JSON503 *SessionConnectResponse
-	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *PostV1SessionConnectResp429Headers
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1SessionConnectResp) GetJSON200() *SessionConnectResponse {
-	return r.JSON200
-}
-
-// GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r PostV1SessionConnectResp) GetJSON202() *SessionConnectResponse {
-	return r.JSON202
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1SessionConnectResp) GetJSON401() *Unauthorized {
-	return r.JSON401
-}
-
-// GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r PostV1SessionConnectResp) GetJSON403() *struct {
-	Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
-} {
-	return r.JSON403
-}
-
-// GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostV1SessionConnectResp) GetJSON409() *struct {
-	Error        *PostV1SessionConnect409JSONResponseBodyError `json:"error,omitempty"`
-	RetryAfterMs *int                                          `json:"retry_after_ms,omitempty"`
-} {
-	return r.JSON409
-}
-
-// GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r PostV1SessionConnectResp) GetJSON429() *RateLimited {
-	return r.JSON429
-}
-
-// GetJSON503 returns the response for an HTTP 503 `application/json` response
-func (r PostV1SessionConnectResp) GetJSON503() *SessionConnectResponse {
-	return r.JSON503
-}
-
-// GetBody returns the raw response body bytes
-func (r PostV1SessionConnectResp) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r PostV1SessionConnectResp) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostV1SessionConnectResp) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1SessionConnectResp) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type PostV1SessionConnectedResp struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *SessionConnectedResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *Unauthorized
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1SessionConnectedResp) GetJSON200() *SessionConnectedResponse {
-	return r.JSON200
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1SessionConnectedResp) GetJSON401() *Unauthorized {
-	return r.JSON401
-}
-
-// GetBody returns the raw response body bytes
-func (r PostV1SessionConnectedResp) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r PostV1SessionConnectedResp) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostV1SessionConnectedResp) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1SessionConnectedResp) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-// DeleteSessionDataResp429Headers the declared response headers of an HTTP 429 response for DeleteSessionData
-type DeleteSessionDataResp429Headers struct {
-	RetryAfter          *int
-	XRateLimitLimit     *int
-	XRateLimitRemaining *int
-	XRateLimitReset     *int64
-}
-
-type DeleteSessionDataResp struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *SessionDataDeleteResponse
-	// JSON202 the response for an HTTP 202 `application/json` response
-	JSON202 *SessionDataDeleteResponse
-	// JSON400 the response for an HTTP 400 `application/json` response
-	JSON400 *struct {
-		Error *DeleteSessionData400JSONResponseBodyError `json:"error,omitempty"`
-	}
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *Unauthorized
-	// JSON409 the response for an HTTP 409 `application/json` response
-	JSON409 *struct {
-		Error        *DeleteSessionData409JSONResponseBodyError `json:"error,omitempty"`
-		RetryAfterMs *int                                       `json:"retry_after_ms,omitempty"`
-	}
-	// JSON429 the response for an HTTP 429 `application/json` response
-	JSON429 *RateLimited
-	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *DeleteSessionDataResp429Headers
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r DeleteSessionDataResp) GetJSON200() *SessionDataDeleteResponse {
-	return r.JSON200
-}
-
-// GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r DeleteSessionDataResp) GetJSON202() *SessionDataDeleteResponse {
-	return r.JSON202
-}
-
-// GetJSON400 returns the response for an HTTP 400 `application/json` response
-func (r DeleteSessionDataResp) GetJSON400() *struct {
-	Error *DeleteSessionData400JSONResponseBodyError `json:"error,omitempty"`
-} {
-	return r.JSON400
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r DeleteSessionDataResp) GetJSON401() *Unauthorized {
-	return r.JSON401
-}
-
-// GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r DeleteSessionDataResp) GetJSON409() *struct {
-	Error        *DeleteSessionData409JSONResponseBodyError `json:"error,omitempty"`
-	RetryAfterMs *int                                       `json:"retry_after_ms,omitempty"`
-} {
-	return r.JSON409
-}
-
-// GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r DeleteSessionDataResp) GetJSON429() *RateLimited {
-	return r.JSON429
-}
-
-// GetBody returns the raw response body bytes
-func (r DeleteSessionDataResp) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteSessionDataResp) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteSessionDataResp) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r DeleteSessionDataResp) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-// GetSessionDataDeleteStatusResp429Headers the declared response headers of an HTTP 429 response for GetSessionDataDeleteStatus
-type GetSessionDataDeleteStatusResp429Headers struct {
-	RetryAfter          *int
-	XRateLimitLimit     *int
-	XRateLimitRemaining *int
-	XRateLimitReset     *int64
-}
-
-type GetSessionDataDeleteStatusResp struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *SessionDataDeleteStatusResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *Unauthorized
-	// JSON429 the response for an HTTP 429 `application/json` response
-	JSON429 *RateLimited
-	// JSON503 the response for an HTTP 503 `application/json` response
-	JSON503 *struct {
-		ErrorCode *GetSessionDataDeleteStatus503JSONResponseBodyErrorCode `json:"error_code,omitempty"`
-		Message   *string                                                 `json:"message,omitempty"`
-	}
-	// Headers429 the parsed response headers for an HTTP 429 response
-	Headers429 *GetSessionDataDeleteStatusResp429Headers
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetSessionDataDeleteStatusResp) GetJSON200() *SessionDataDeleteStatusResponse {
-	return r.JSON200
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetSessionDataDeleteStatusResp) GetJSON401() *Unauthorized {
-	return r.JSON401
-}
-
-// GetJSON429 returns the response for an HTTP 429 `application/json` response
-func (r GetSessionDataDeleteStatusResp) GetJSON429() *RateLimited {
-	return r.JSON429
-}
-
-// GetJSON503 returns the response for an HTTP 503 `application/json` response
-func (r GetSessionDataDeleteStatusResp) GetJSON503() *struct {
-	ErrorCode *GetSessionDataDeleteStatus503JSONResponseBodyErrorCode `json:"error_code,omitempty"`
-	Message   *string                                                 `json:"message,omitempty"`
-} {
-	return r.JSON503
-}
-
-// GetBody returns the raw response body bytes
-func (r GetSessionDataDeleteStatusResp) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetSessionDataDeleteStatusResp) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetSessionDataDeleteStatusResp) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetSessionDataDeleteStatusResp) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type PostV1SessionDisconnectResp struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *SessionDisconnectResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *Unauthorized
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PostV1SessionDisconnectResp) GetJSON200() *SessionDisconnectResponse {
-	return r.JSON200
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostV1SessionDisconnectResp) GetJSON401() *Unauthorized {
-	return r.JSON401
-}
-
-// GetBody returns the raw response body bytes
-func (r PostV1SessionDisconnectResp) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r PostV1SessionDisconnectResp) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostV1SessionDisconnectResp) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostV1SessionDisconnectResp) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
 type GetV1SubscriptionMeResp struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -12420,6 +17461,146 @@ func (r GetV1SubscriptionTiersResp) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV1SubscriptionTiersResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ConsumeSyncPairingTokenResp429Headers the declared response headers of an HTTP 429 response for ConsumeSyncPairingToken
+type ConsumeSyncPairingTokenResp429Headers struct {
+	RetryAfter          *int
+	XRateLimitLimit     *int
+	XRateLimitRemaining *int
+	XRateLimitReset     *int64
+}
+
+type ConsumeSyncPairingTokenResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		DatasetId *string `json:"dataset_id,omitempty"`
+		DeviceId  *string `json:"device_id,omitempty"`
+	}
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *StandardError
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *RateLimited
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *ConsumeSyncPairingTokenResp429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ConsumeSyncPairingTokenResp) GetJSON200() *struct {
+	DatasetId *string `json:"dataset_id,omitempty"`
+	DeviceId  *string `json:"device_id,omitempty"`
+} {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ConsumeSyncPairingTokenResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ConsumeSyncPairingTokenResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ConsumeSyncPairingTokenResp) GetJSON403() *StandardError {
+	return r.JSON403
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r ConsumeSyncPairingTokenResp) GetJSON429() *RateLimited {
+	return r.JSON429
+}
+
+// GetBody returns the raw response body bytes
+func (r ConsumeSyncPairingTokenResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ConsumeSyncPairingTokenResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ConsumeSyncPairingTokenResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ConsumeSyncPairingTokenResp) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetSyncStatusResp struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SyncStatus
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *StandardError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetSyncStatusResp) GetJSON200() *SyncStatus {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetSyncStatusResp) GetJSON400() *StandardError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetSyncStatusResp) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetBody returns the raw response body bytes
+func (r GetSyncStatusResp) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSyncStatusResp) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSyncStatusResp) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetSyncStatusResp) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -12576,6 +17757,220 @@ func (r PostV1VoiceConvertResp) ContentType() string {
 	return ""
 }
 
+// DeleteV1AccountBackupKeyWithResponse Drop the account's escrowed backup key (W1)
+//
+// Removes the account's escrowed wrapped-key blob. Idempotent. Used by
+// the account-deletion rework (6-2) and by a user-initiated "reset backup
+// key". PASETO (interactive) only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v1/account/backup-key (the `DeleteV1AccountBackupKey` operationId).
+func (c *ClientWithResponses) DeleteV1AccountBackupKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AccountBackupKeyResp, error) {
+	rsp, err := c.DeleteV1AccountBackupKey(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AccountBackupKeyResp(rsp)
+}
+
+// GetV1AccountBackupKeyWithResponse Fetch the account's escrowed wrapped backup key (W1)
+//
+// Returns the account's escrowed wrapped-key blob for restore (2-6). 404
+// when no key is escrowed. PASETO (interactive) only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/account/backup-key (the `GetV1AccountBackupKey` operationId).
+func (c *ClientWithResponses) GetV1AccountBackupKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AccountBackupKeyResp, error) {
+	rsp, err := c.GetV1AccountBackupKey(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountBackupKeyResp(rsp)
+}
+
+// PutV1AccountBackupKeyWithBodyWithResponse Escrow (or replace) the account's wrapped backup key (W1)
+//
+// Stores a single opaque, client-wrapped backup-key blob for the account
+// (2-6's W1 account escrow). The backend never generates, derives or
+// inspects key material: it escrows the blob under a KMS-managed KEK
+// (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+// so this can never become a bulk-storage endpoint. PASETO (interactive)
+// only; API keys are refused. Re-escrowing replaces the previous blob.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v1/account/backup-key (the `PutV1AccountBackupKey` operationId).
+func (c *ClientWithResponses) PutV1AccountBackupKeyWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountBackupKeyResp, error) {
+	rsp, err := c.PutV1AccountBackupKeyWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountBackupKeyResp(rsp)
+}
+
+// PutV1AccountBackupKeyWithResponse Escrow (or replace) the account's wrapped backup key (W1)
+//
+// Stores a single opaque, client-wrapped backup-key blob for the account
+// (2-6's W1 account escrow). The backend never generates, derives or
+// inspects key material: it escrows the blob under a KMS-managed KEK
+// (envelope). Scope is deliberately narrow — blob only, ≤1 KiB decoded —
+// so this can never become a bulk-storage endpoint. PASETO (interactive)
+// only; API keys are refused. Re-escrowing replaces the previous blob.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v1/account/backup-key (the `PutV1AccountBackupKey` operationId).
+func (c *ClientWithResponses) PutV1AccountBackupKeyWithResponse(ctx context.Context, body PutV1AccountBackupKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountBackupKeyResp, error) {
+	rsp, err := c.PutV1AccountBackupKey(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountBackupKeyResp(rsp)
+}
+
+// DeleteV1AccountSyncKeyWithResponse Drop the account's escrowed sync-group key (7-4)
+//
+// Removes the account's escrowed wrapped sync-group-key blob. Idempotent.
+// Used when all devices are revoked and the group restarts fresh. PASETO
+// (interactive) only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v1/account/sync-key (the `DeleteV1AccountSyncKey` operationId).
+func (c *ClientWithResponses) DeleteV1AccountSyncKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AccountSyncKeyResp, error) {
+	rsp, err := c.DeleteV1AccountSyncKey(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AccountSyncKeyResp(rsp)
+}
+
+// GetV1AccountSyncKeyWithResponse Fetch the account's escrowed wrapped sync-group key (7-4)
+//
+// Returns the account's escrowed wrapped sync-group-key blob so a joining
+// device can unwrap it (7-2/7-3). 404 when no key is escrowed. PASETO
+// (interactive) only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/account/sync-key (the `GetV1AccountSyncKey` operationId).
+func (c *ClientWithResponses) GetV1AccountSyncKeyWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AccountSyncKeyResp, error) {
+	rsp, err := c.GetV1AccountSyncKey(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountSyncKeyResp(rsp)
+}
+
+// PutV1AccountSyncKeyWithBodyWithResponse Escrow (or replace) the account's wrapped sync-group key (7-4)
+//
+// Stores a single opaque, client-wrapped sync-group-key blob for the
+// account (the second escrow slot beside the backup key, 7-2's sync-group
+// key). The backend never generates, derives or inspects key material: it
+// escrows the blob under a KMS-managed KEK (envelope). Scope is
+// deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+// only; API keys are refused. Re-escrowing replaces the previous blob.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v1/account/sync-key (the `PutV1AccountSyncKey` operationId).
+func (c *ClientWithResponses) PutV1AccountSyncKeyWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountSyncKeyResp, error) {
+	rsp, err := c.PutV1AccountSyncKeyWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountSyncKeyResp(rsp)
+}
+
+// PutV1AccountSyncKeyWithResponse Escrow (or replace) the account's wrapped sync-group key (7-4)
+//
+// Stores a single opaque, client-wrapped sync-group-key blob for the
+// account (the second escrow slot beside the backup key, 7-2's sync-group
+// key). The backend never generates, derives or inspects key material: it
+// escrows the blob under a KMS-managed KEK (envelope). Scope is
+// deliberately narrow — blob only, ≤1 KiB decoded. PASETO (interactive)
+// only; API keys are refused. Re-escrowing replaces the previous blob.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v1/account/sync-key (the `PutV1AccountSyncKey` operationId).
+func (c *ClientWithResponses) PutV1AccountSyncKeyWithResponse(ctx context.Context, body PutV1AccountSyncKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountSyncKeyResp, error) {
+	rsp, err := c.PutV1AccountSyncKey(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountSyncKeyResp(rsp)
+}
+
+// DeleteV1AccountSyncRotationRequiredWithResponse Clear the account's sync rotation-required flag (7-4)
+//
+// Clears the flag after the app has rotated the engine key and re-escrowed
+// it. Idempotent. PASETO (interactive) only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v1/account/sync-rotation-required (the `DeleteV1AccountSyncRotationRequired` operationId).
+func (c *ClientWithResponses) DeleteV1AccountSyncRotationRequiredWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AccountSyncRotationRequiredResp, error) {
+	rsp, err := c.DeleteV1AccountSyncRotationRequired(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AccountSyncRotationRequiredResp(rsp)
+}
+
+// GetV1AccountSyncRotationRequiredWithResponse Read the account's sync rotation-required flag (7-4)
+//
+// Whether a sync-key rotation is pending. Defaults to `false`. The app
+// polls this and, when true, drives the engine's engine-authoritative
+// rotate and re-escrows the new wrapped key. PASETO (interactive) only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/account/sync-rotation-required (the `GetV1AccountSyncRotationRequired` operationId).
+func (c *ClientWithResponses) GetV1AccountSyncRotationRequiredWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AccountSyncRotationRequiredResp, error) {
+	rsp, err := c.GetV1AccountSyncRotationRequired(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AccountSyncRotationRequiredResp(rsp)
+}
+
+// PutV1AccountSyncRotationRequiredWithBodyWithResponse Set the account's sync rotation-required flag (7-4)
+//
+// The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+// rotation; `{"required": false}` clears it. The portal never sees key
+// material. PASETO (interactive) only.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v1/account/sync-rotation-required (the `PutV1AccountSyncRotationRequired` operationId).
+func (c *ClientWithResponses) PutV1AccountSyncRotationRequiredWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutV1AccountSyncRotationRequiredResp, error) {
+	rsp, err := c.PutV1AccountSyncRotationRequiredWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountSyncRotationRequiredResp(rsp)
+}
+
+// PutV1AccountSyncRotationRequiredWithResponse Set the account's sync rotation-required flag (7-4)
+//
+// The portal sets `{"required": true}` ("Reset sync key") to flag a pending
+// rotation; `{"required": false}` clears it. The portal never sees key
+// material. PASETO (interactive) only.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v1/account/sync-rotation-required (the `PutV1AccountSyncRotationRequired` operationId).
+func (c *ClientWithResponses) PutV1AccountSyncRotationRequiredWithResponse(ctx context.Context, body PutV1AccountSyncRotationRequiredJSONRequestBody, reqEditors ...RequestEditorFn) (*PutV1AccountSyncRotationRequiredResp, error) {
+	rsp, err := c.PutV1AccountSyncRotationRequired(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1AccountSyncRotationRequiredResp(rsp)
+}
+
 // PostV1AudioConvertWithBodyWithResponse Audio conversion / enhancement
 //
 // Audio enhancement / format conversion (e.g. denoising, restoration via VoiceFixer). Max body 10 MB; timeout 120s.
@@ -12700,6 +18095,112 @@ func (c *ClientWithResponses) PostV1AudioVadWithResponse(ctx context.Context, bo
 	return ParsePostV1AudioVadResp(rsp)
 }
 
+// DeleteV1AuthAccountWithBodyWithResponse Request permanent deletion of the current user's account (email-confirmed)
+//
+// STAGES a permanent account deletion — it does NOT delete anything yet.
+// Because deletion is irreversible, it is gated behind proof of control of
+// the account's OWN mailbox: this call validates the typed confirmation
+// (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+// confirmation link to the account address. The deletion commits only when
+// that link is redeemed via `POST /v1/auth/account/confirm` by an
+// authenticated caller, so a stolen session alone cannot destroy the
+// account.
+//
+// Step-up (verified when supplied): `current_password` for passworded
+// accounts, or `confirm_email` (the user re-typing the account address) for
+// passwordless Google/Apple accounts. The emailed link is the mandatory
+// hard confirmation for every account.
+//
+// On commit, the user's CLOUD data is purged first (live sessions killed,
+// every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+// then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+// keys, refresh tokens, devices, themes, subscriptions, sessions,
+// identities and email/password-reset tokens).
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v1/auth/account (the `DeleteV1AuthAccount` operationId).
+func (c *ClientWithResponses) DeleteV1AuthAccountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteV1AuthAccountResp, error) {
+	rsp, err := c.DeleteV1AuthAccountWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AuthAccountResp(rsp)
+}
+
+// DeleteV1AuthAccountWithResponse Request permanent deletion of the current user's account (email-confirmed)
+//
+// STAGES a permanent account deletion — it does NOT delete anything yet.
+// Because deletion is irreversible, it is gated behind proof of control of
+// the account's OWN mailbox: this call validates the typed confirmation
+// (`"confirm":"DELETE"`) plus a step-up credential and mails a single-use
+// confirmation link to the account address. The deletion commits only when
+// that link is redeemed via `POST /v1/auth/account/confirm` by an
+// authenticated caller, so a stolen session alone cannot destroy the
+// account.
+//
+// Step-up (verified when supplied): `current_password` for passworded
+// accounts, or `confirm_email` (the user re-typing the account address) for
+// passwordless Google/Apple accounts. The emailed link is the mandatory
+// hard confirmation for every account.
+//
+// On commit, the user's CLOUD data is purged first (live sessions killed,
+// every S3 version under `{userID}/` deleted, the per-user DEK deleted),
+// then the user row is hard-deleted (DB `ON DELETE CASCADE` removes API
+// keys, refresh tokens, devices, themes, subscriptions, sessions,
+// identities and email/password-reset tokens).
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v1/auth/account (the `DeleteV1AuthAccount` operationId).
+func (c *ClientWithResponses) DeleteV1AuthAccountWithResponse(ctx context.Context, body DeleteV1AuthAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteV1AuthAccountResp, error) {
+	rsp, err := c.DeleteV1AuthAccount(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AuthAccountResp(rsp)
+}
+
+// PostV1AuthAccountConfirmWithBodyWithResponse Confirm and commit a staged account deletion
+//
+// Redeems the single-use token mailed to the account address and permanently
+// deletes the account. The token is bound to the authenticated caller, so a
+// forwarded or leaked email alone cannot delete the account. The deletion
+// itself is a single synchronous database transaction (every account-scoped
+// row is removed via FK cascade); the deleted user's hosted-backup blobs in
+// s3-sync-backup are purged asynchronously afterwards. Irreversible.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/account/confirm (the `PostV1AuthAccountConfirm` operationId).
+func (c *ClientWithResponses) PostV1AuthAccountConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthAccountConfirmResp, error) {
+	rsp, err := c.PostV1AuthAccountConfirmWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthAccountConfirmResp(rsp)
+}
+
+// PostV1AuthAccountConfirmWithResponse Confirm and commit a staged account deletion
+//
+// Redeems the single-use token mailed to the account address and permanently
+// deletes the account. The token is bound to the authenticated caller, so a
+// forwarded or leaked email alone cannot delete the account. The deletion
+// itself is a single synchronous database transaction (every account-scoped
+// row is removed via FK cascade); the deleted user's hosted-backup blobs in
+// s3-sync-backup are purged asynchronously afterwards. Irreversible.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/account/confirm (the `PostV1AuthAccountConfirm` operationId).
+func (c *ClientWithResponses) PostV1AuthAccountConfirmWithResponse(ctx context.Context, body PostV1AuthAccountConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthAccountConfirmResp, error) {
+	rsp, err := c.PostV1AuthAccountConfirm(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthAccountConfirmResp(rsp)
+}
+
 // GetV1AuthApiKeysWithResponse List API keys
 //
 // Returns metadata only — the raw key value is NEVER returned (only the prefix for identification).
@@ -12717,8 +18218,8 @@ func (c *ClientWithResponses) GetV1AuthApiKeysWithResponse(ctx context.Context, 
 
 // PostV1AuthApiKeysWithBodyWithResponse Create an API key
 //
-// Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-// API keys CANNOT create/list/revoke other API keys.
+// Returns the full key ONCE. Max 5 keys per user.
+// API keys CANNOT create/list/delete other API keys.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -12733,8 +18234,8 @@ func (c *ClientWithResponses) PostV1AuthApiKeysWithBodyWithResponse(ctx context.
 
 // PostV1AuthApiKeysWithResponse Create an API key
 //
-// Returns the full key ONCE. Max 5 active (non-revoked) keys per user.
-// API keys CANNOT create/list/revoke other API keys.
+// Returns the full key ONCE. Max 5 keys per user.
+// API keys CANNOT create/list/delete other API keys.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -12747,9 +18248,13 @@ func (c *ClientWithResponses) PostV1AuthApiKeysWithResponse(ctx context.Context,
 	return ParsePostV1AuthApiKeysResp(rsp)
 }
 
-// DeleteV1AuthApiKeysIdWithResponse Revoke an API key
+// DeleteV1AuthApiKeysIdWithResponse Delete an API key
 //
-// Idempotent (already-revoked returns 204). Writes a negative Valkey cache entry so revocation is effective within milliseconds.
+// Permanently deletes an API key. The key disappears from the list, can never
+// authenticate again, and no longer counts towards the 5-key limit. Idempotent
+// (deleting an unknown or already-deleted key returns 204). Purges the positive
+// auth-cache entry and writes a negative Valkey cache entry so the key stops
+// working within milliseconds.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -12822,6 +18327,233 @@ func (c *ClientWithResponses) PostV1AuthAppleWebWithResponse(ctx context.Context
 	return ParsePostV1AuthAppleWebResp(rsp)
 }
 
+// EnrollDeviceWithBodyWithResponse Redeem a delegated-enrollment grant for a device session
+//
+// Exchanges a single-use delegated-enrollment grant for the enrolled device's OWN device-scoped session (PASETO + refresh token) — the same token shape every other sign-in path returns. NO account authentication is required: the grant is the credential. The device is registered as authorized because the minting device vouched for it. Enrolled devices are full devices and may themselves mint grants.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/device/enroll (the `EnrollDevice` operationId).
+func (c *ClientWithResponses) EnrollDeviceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*EnrollDeviceResp, error) {
+	rsp, err := c.EnrollDeviceWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseEnrollDeviceResp(rsp)
+}
+
+// EnrollDeviceWithResponse Redeem a delegated-enrollment grant for a device session
+//
+// Exchanges a single-use delegated-enrollment grant for the enrolled device's OWN device-scoped session (PASETO + refresh token) — the same token shape every other sign-in path returns. NO account authentication is required: the grant is the credential. The device is registered as authorized because the minting device vouched for it. Enrolled devices are full devices and may themselves mint grants.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/device/enroll (the `EnrollDevice` operationId).
+func (c *ClientWithResponses) EnrollDeviceWithResponse(ctx context.Context, body EnrollDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*EnrollDeviceResp, error) {
+	rsp, err := c.EnrollDevice(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseEnrollDeviceResp(rsp)
+}
+
+// PostV1AuthEmailChangeCancelWithResponse Cancel a pending email change
+//
+// Abandons a pending change so a different address can be used immediately
+// — the "I typed the wrong address" / "I changed my mind" case — instead of
+// the request blocking a new attempt until it expires.
+//
+// Voids BOTH tokens (including any link already delivered), because it sets
+// the same single-use tombstone every confirmation lookup guards on.
+// Idempotent: cancelling when nothing is pending returns 200.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/email/change/cancel (the `PostV1AuthEmailChangeCancel` operationId).
+func (c *ClientWithResponses) PostV1AuthEmailChangeCancelWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeCancelResp, error) {
+	rsp, err := c.PostV1AuthEmailChangeCancel(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthEmailChangeCancelResp(rsp)
+}
+
+// PostV1AuthEmailChangeConfirmWithBodyWithResponse Approve and commit the email change (stage 5)
+//
+// Redeems the single-use token mailed to the CURRENT address and commits
+// the change. The previous address is retained for audit, and a Valkey
+// cutoff signs out every session (the account owner must sign in again).
+//
+// Must be called by the authenticated owner of the request.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/email/change/confirm (the `PostV1AuthEmailChangeConfirm` operationId).
+func (c *ClientWithResponses) PostV1AuthEmailChangeConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeConfirmResp, error) {
+	rsp, err := c.PostV1AuthEmailChangeConfirmWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthEmailChangeConfirmResp(rsp)
+}
+
+// PostV1AuthEmailChangeConfirmWithResponse Approve and commit the email change (stage 5)
+//
+// Redeems the single-use token mailed to the CURRENT address and commits
+// the change. The previous address is retained for audit, and a Valkey
+// cutoff signs out every session (the account owner must sign in again).
+//
+// Must be called by the authenticated owner of the request.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/email/change/confirm (the `PostV1AuthEmailChangeConfirm` operationId).
+func (c *ClientWithResponses) PostV1AuthEmailChangeConfirmWithResponse(ctx context.Context, body PostV1AuthEmailChangeConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeConfirmResp, error) {
+	rsp, err := c.PostV1AuthEmailChangeConfirm(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthEmailChangeConfirmResp(rsp)
+}
+
+// PostV1AuthEmailChangeConfirmNewWithBodyWithResponse Confirm the new email address (stage 3)
+//
+// Redeems the single-use token mailed to the TARGET address. On success a
+// blocking approval email is sent to the CURRENT address naming the target.
+//
+// Must be called by the authenticated owner of the request — the emailed
+// token is not sufficient on its own.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/email/change/confirm-new (the `PostV1AuthEmailChangeConfirmNew` operationId).
+func (c *ClientWithResponses) PostV1AuthEmailChangeConfirmNewWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeConfirmNewResp, error) {
+	rsp, err := c.PostV1AuthEmailChangeConfirmNewWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthEmailChangeConfirmNewResp(rsp)
+}
+
+// PostV1AuthEmailChangeConfirmNewWithResponse Confirm the new email address (stage 3)
+//
+// Redeems the single-use token mailed to the TARGET address. On success a
+// blocking approval email is sent to the CURRENT address naming the target.
+//
+// Must be called by the authenticated owner of the request — the emailed
+// token is not sufficient on its own.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/email/change/confirm-new (the `PostV1AuthEmailChangeConfirmNew` operationId).
+func (c *ClientWithResponses) PostV1AuthEmailChangeConfirmNewWithResponse(ctx context.Context, body PostV1AuthEmailChangeConfirmNewJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeConfirmNewResp, error) {
+	rsp, err := c.PostV1AuthEmailChangeConfirmNew(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthEmailChangeConfirmNewResp(rsp)
+}
+
+// PostV1AuthEmailChangeRequestWithBodyWithResponse Start an email change
+//
+// Stage 1–2. Step-up with the account password, then stage a move to
+// `new_email`.
+//
+// The change is confirmed from BOTH mailboxes: a token is mailed to the
+// TARGET address first (stage 3), and only after that is a blocking
+// approval token mailed to the CURRENT address naming the target
+// (stage 4). Neither address can complete the change alone.
+//
+// Requires a password on the account. Google/Apple-created accounts have
+// none and receive `403 password_required` — they must set a password
+// first (`PUT /v1/auth/password`), after which the normal flow applies.
+// This prevents the email change from silently minting a second credential
+// on an account whose only credential is the provider link.
+//
+// New requests invalidate any still-pending one. A 60s per-user cooldown
+// applies (`429`, with `retry_after`).
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/email/change/request (the `PostV1AuthEmailChangeRequest` operationId).
+func (c *ClientWithResponses) PostV1AuthEmailChangeRequestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeRequestResp, error) {
+	rsp, err := c.PostV1AuthEmailChangeRequestWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthEmailChangeRequestResp(rsp)
+}
+
+// PostV1AuthEmailChangeRequestWithResponse Start an email change
+//
+// Stage 1–2. Step-up with the account password, then stage a move to
+// `new_email`.
+//
+// The change is confirmed from BOTH mailboxes: a token is mailed to the
+// TARGET address first (stage 3), and only after that is a blocking
+// approval token mailed to the CURRENT address naming the target
+// (stage 4). Neither address can complete the change alone.
+//
+// Requires a password on the account. Google/Apple-created accounts have
+// none and receive `403 password_required` — they must set a password
+// first (`PUT /v1/auth/password`), after which the normal flow applies.
+// This prevents the email change from silently minting a second credential
+// on an account whose only credential is the provider link.
+//
+// New requests invalidate any still-pending one. A 60s per-user cooldown
+// applies (`429`, with `retry_after`).
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/email/change/request (the `PostV1AuthEmailChangeRequest` operationId).
+func (c *ClientWithResponses) PostV1AuthEmailChangeRequestWithResponse(ctx context.Context, body PostV1AuthEmailChangeRequestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeRequestResp, error) {
+	rsp, err := c.PostV1AuthEmailChangeRequest(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthEmailChangeRequestResp(rsp)
+}
+
+// PostV1AuthEmailChangeResendWithResponse Re-send the current step's confirmation email
+//
+// Recovery path for "the confirmation email never arrived" (spam, a typo'd
+// forward, or a failed hand-off).
+//
+// Re-mints the token for whichever stage the change is CURRENTLY on and
+// re-sends only that one email. It never advances the flow: the approval
+// (stage 4) branch is unreachable until the new address has confirmed, so
+// this cannot be used to skip stage 3. The previously issued link for that
+// stage stops working, as the newest token replaces it.
+//
+// Rate-limited to one resend per 60 s (`429` with `retry_after`), matching
+// the per-user cooldown on starting a change.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/email/change/resend (the `PostV1AuthEmailChangeResend` operationId).
+func (c *ClientWithResponses) PostV1AuthEmailChangeResendWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1AuthEmailChangeResendResp, error) {
+	rsp, err := c.PostV1AuthEmailChangeResend(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthEmailChangeResendResp(rsp)
+}
+
+// GetV1AuthEmailChangeStatusWithResponse Current email-change state
+//
+// Reports whether a pending change exists and which step it awaits, so the portal can resume after a reload.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/auth/email/change/status (the `GetV1AuthEmailChangeStatus` operationId).
+func (c *ClientWithResponses) GetV1AuthEmailChangeStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthEmailChangeStatusResp, error) {
+	rsp, err := c.GetV1AuthEmailChangeStatus(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AuthEmailChangeStatusResp(rsp)
+}
+
 // PostV1AuthGoogleWithBodyWithResponse Google Sign-In (native / Android)
 //
 // Validates the Google `id_token`. 409 on email conflict (link flow).
@@ -12882,9 +18614,31 @@ func (c *ClientWithResponses) PostV1AuthGoogleWebWithResponse(ctx context.Contex
 	return ParsePostV1AuthGoogleWebResp(rsp)
 }
 
+// GetV1AuthIdentitiesWithResponse List linked sign-in providers
+//
+// Returns the OAuth providers (Google, Apple) attached to the account so
+// the portal can offer a disconnect action. Disconnecting uses
+// `DELETE /v1/auth/link/{google,apple}`, which refuses while the account
+// has no password (lockout guard).
+//
+// The synthetic `email` identity from registration is not listed.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/auth/identities (the `GetV1AuthIdentities` operationId).
+func (c *ClientWithResponses) GetV1AuthIdentitiesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthIdentitiesResp, error) {
+	rsp, err := c.GetV1AuthIdentities(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AuthIdentitiesResp(rsp)
+}
+
 // DeleteV1AuthLinkAppleWithResponse Unlink the Apple identity
 //
-// Lockout guard — refuses if no password is set.
+// Lockout guard — refuses with `403 password_required` if the account has
+// no password, because the provider link would then be its only credential.
+// Set a password first (`PUT /v1/auth/password`).
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -12929,7 +18683,9 @@ func (c *ClientWithResponses) PostV1AuthLinkAppleWithResponse(ctx context.Contex
 
 // DeleteV1AuthLinkGoogleWithResponse Unlink the Google identity
 //
-// Lockout guard — refuses if no password is set.
+// Lockout guard — refuses with `403 password_required` if the account has
+// no password, because the provider link would then be its only credential.
+// Set a password first (`PUT /v1/auth/password`).
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -13077,7 +18833,14 @@ func (c *ClientWithResponses) PatchV1AuthMeWithResponse(ctx context.Context, bod
 
 // PutV1AuthPasswordWithBodyWithResponse Change password
 //
-// Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+// Changes the authenticated user's password and writes a Valkey cutoff
+// (forces re-login everywhere). `old_password` is required and verified.
+//
+// Accounts created via Google/Apple Sign-In have NO password, so they
+// cannot use this endpoint — setting a FIRST password creates a credential
+// and is gated behind an email-confirmed, session-bound flow
+// (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+// account receives `409 password_setup_required`.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13092,7 +18855,14 @@ func (c *ClientWithResponses) PutV1AuthPasswordWithBodyWithResponse(ctx context.
 
 // PutV1AuthPasswordWithResponse Change password
 //
-// Verifies the old password, sets the new one, and writes a Valkey cutoff (forces re-login everywhere).
+// Changes the authenticated user's password and writes a Valkey cutoff
+// (forces re-login everywhere). `old_password` is required and verified.
+//
+// Accounts created via Google/Apple Sign-In have NO password, so they
+// cannot use this endpoint — setting a FIRST password creates a credential
+// and is gated behind an email-confirmed, session-bound flow
+// (`POST /v1/auth/password/setup/request` → `.../confirm`). A password-less
+// account receives `409 password_setup_required`.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13163,6 +18933,64 @@ func (c *ClientWithResponses) PostV1AuthPasswordResetRequestWithResponse(ctx con
 		return nil, err
 	}
 	return ParsePostV1AuthPasswordResetRequestResp(rsp)
+}
+
+// PostV1AuthPasswordSetupConfirmWithBodyWithResponse Confirm first-password setup
+//
+// Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+// sets the first password. The caller must be authenticated as the request
+// owner (the token is session-bound), so a forwarded or leaked mail alone
+// is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/password/setup/confirm (the `PostV1AuthPasswordSetupConfirm` operationId).
+func (c *ClientWithResponses) PostV1AuthPasswordSetupConfirmWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordSetupConfirmResp, error) {
+	rsp, err := c.PostV1AuthPasswordSetupConfirmWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthPasswordSetupConfirmResp(rsp)
+}
+
+// PostV1AuthPasswordSetupConfirmWithResponse Confirm first-password setup
+//
+// Redeems the token mailed by `POST /v1/auth/password/setup/request` and
+// sets the first password. The caller must be authenticated as the request
+// owner (the token is session-bound), so a forwarded or leaked mail alone
+// is not sufficient. Writes a Valkey cutoff (forces re-login everywhere).
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/password/setup/confirm (the `PostV1AuthPasswordSetupConfirm` operationId).
+func (c *ClientWithResponses) PostV1AuthPasswordSetupConfirmWithResponse(ctx context.Context, body PostV1AuthPasswordSetupConfirmJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordSetupConfirmResp, error) {
+	rsp, err := c.PostV1AuthPasswordSetupConfirm(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthPasswordSetupConfirmResp(rsp)
+}
+
+// PostV1AuthPasswordSetupRequestWithResponse Request first-password setup (OAuth-only accounts)
+//
+// Stages a single-use token and mails it to the account's OWN address. The
+// password is only set when the token is redeemed via
+// `POST /v1/auth/password/setup/confirm` by an authenticated caller, so a
+// stolen session token alone can never create a credential.
+//
+// Refused with `409 password_already_set` when the account already has a
+// password (use `PUT /v1/auth/password` instead). Refused with `403` for
+// API-key callers.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/auth/password/setup/request (the `PostV1AuthPasswordSetupRequest` operationId).
+func (c *ClientWithResponses) PostV1AuthPasswordSetupRequestWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1AuthPasswordSetupRequestResp, error) {
+	rsp, err := c.PostV1AuthPasswordSetupRequest(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1AuthPasswordSetupRequestResp(rsp)
 }
 
 // PostV1AuthRefreshWithBodyWithResponse Refresh the PASETO token
@@ -13255,6 +19083,60 @@ func (c *ClientWithResponses) PostV1AuthResendVerificationWithResponse(ctx conte
 	return ParsePostV1AuthResendVerificationResp(rsp)
 }
 
+// DeleteV1AuthSessionsWithResponse Sign out everywhere
+//
+// Ends EVERY session for the account, including the calling one. The
+// caller must sign in again afterwards; this is the deliberate "sign out
+// everywhere" action (the same invalidation the email-change flow applies
+// on commit).
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v1/auth/sessions (the `DeleteV1AuthSessions` operationId).
+func (c *ClientWithResponses) DeleteV1AuthSessionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteV1AuthSessionsResp, error) {
+	rsp, err := c.DeleteV1AuthSessions(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AuthSessionsResp(rsp)
+}
+
+// GetV1AuthSessionsWithResponse List active sessions
+//
+// Every signed-in session for the account — one per device or browser —
+// most recently active first, with the calling session marked `current`.
+//
+// Signing out one session (`DELETE /v1/auth/sessions/{session_id}`) kills
+// that session's tokens immediately, not just its refresh token.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/auth/sessions (the `GetV1AuthSessions` operationId).
+func (c *ClientWithResponses) GetV1AuthSessionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1AuthSessionsResp, error) {
+	rsp, err := c.GetV1AuthSessions(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetV1AuthSessionsResp(rsp)
+}
+
+// DeleteV1AuthSessionsSessionIdWithResponse Sign out one session
+//
+// Ends a single session — one device or browser. Refused for the calling
+// session (`400 cannot_revoke_current_session`), which must be ended with
+// `POST /v1/auth/logout` so the client knows it has been signed out.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v1/auth/sessions/{session_id} (the `DeleteV1AuthSessionsSessionId` operationId).
+func (c *ClientWithResponses) DeleteV1AuthSessionsSessionIdWithResponse(ctx context.Context, sessionId openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteV1AuthSessionsSessionIdResp, error) {
+	rsp, err := c.DeleteV1AuthSessionsSessionId(ctx, sessionId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1AuthSessionsSessionIdResp(rsp)
+}
+
 // GetV1AuthVerifyWithResponse Verify email address
 //
 // Accepts the token as a URL path segment OR query param. Returns a token pair on success.
@@ -13268,6 +19150,60 @@ func (c *ClientWithResponses) GetV1AuthVerifyWithResponse(ctx context.Context, p
 		return nil, err
 	}
 	return ParseGetV1AuthVerifyResp(rsp)
+}
+
+// GetBackupManifestWithResponse Fetch an opaque per-device backup manifest
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/backup/manifest/{device} (the `GetBackupManifest` operationId).
+func (c *ClientWithResponses) GetBackupManifestWithResponse(ctx context.Context, device string, reqEditors ...RequestEditorFn) (*GetBackupManifestResp, error) {
+	rsp, err := c.GetBackupManifest(ctx, device, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetBackupManifestResp(rsp)
+}
+
+// PutBackupManifestWithBodyWithResponse Store an opaque per-device backup manifest (7-5)
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v1/backup/manifest/{device} (the `PutBackupManifest` operationId).
+func (c *ClientWithResponses) PutBackupManifestWithBodyWithResponse(ctx context.Context, device string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutBackupManifestResp, error) {
+	rsp, err := c.PutBackupManifestWithBody(ctx, device, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutBackupManifestResp(rsp)
+}
+
+// GetBackupObjectWithResponse Fetch an opaque backup object by its SHA-256
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/backup/objects/{sha256} (the `GetBackupObject` operationId).
+func (c *ClientWithResponses) GetBackupObjectWithResponse(ctx context.Context, sha256 string, reqEditors ...RequestEditorFn) (*GetBackupObjectResp, error) {
+	rsp, err := c.GetBackupObject(ctx, sha256, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetBackupObjectResp(rsp)
+}
+
+// PutBackupObjectWithBodyWithResponse Store an opaque, content-addressed backup object (7-5)
+//
+// Body is an opaque, already-encrypted AEAD blob. The relay verifies only the SHA-256 address (integrity), never the content. Enforces the tier `backup_storage_mb` cap.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /v1/backup/objects/{sha256} (the `PutBackupObject` operationId).
+func (c *ClientWithResponses) PutBackupObjectWithBodyWithResponse(ctx context.Context, sha256 string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutBackupObjectResp, error) {
+	rsp, err := c.PutBackupObjectWithBody(ctx, sha256, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutBackupObjectResp(rsp)
 }
 
 // PostV1ChatCompletionsWithBodyWithResponse Chat completions (LLM)
@@ -13326,9 +19262,8 @@ func (c *ClientWithResponses) ListDevicesWithResponse(ctx context.Context, reqEd
 // RegisterDeviceWithBodyWithResponse Register or refresh a device
 //
 // Registers a client install (or refreshes an existing one, e.g. a new
-// push token). Devices must be authorized before cloud sessions can be
-// provisioned for them — see `/v1/session/connect` (403
-// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+// push token). Devices are authorized via the `/v1/devices/authorize`
+// email auth-code flow.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13344,9 +19279,8 @@ func (c *ClientWithResponses) RegisterDeviceWithBodyWithResponse(ctx context.Con
 // RegisterDeviceWithResponse Register or refresh a device
 //
 // Registers a client install (or refreshes an existing one, e.g. a new
-// push token). Devices must be authorized before cloud sessions can be
-// provisioned for them — see `/v1/session/connect` (403
-// `device_authorization_required`) and the `/v1/devices/authorize` flow.
+// push token). Devices are authorized via the `/v1/devices/authorize`
+// email auth-code flow.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -13434,6 +19368,141 @@ func (c *ClientWithResponses) GetDeviceAuthorizationStatusWithResponse(ctx conte
 		return nil, err
 	}
 	return ParseGetDeviceAuthorizationStatusResp(rsp)
+}
+
+// CreateDeviceConnectSessionWithBodyWithResponse Create a poll-only engine sign-in (connect session)
+//
+// Public (the engine is not authenticated yet). Mints an unguessable connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and returns the portal URL the engine opens in the system browser. The user signs in there and clicks Allow; the engine then polls GET /v1/devices/connect-session/{connect_id} with the secret.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/connect-session (the `CreateDeviceConnectSession` operationId).
+func (c *ClientWithResponses) CreateDeviceConnectSessionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateDeviceConnectSessionResp, error) {
+	rsp, err := c.CreateDeviceConnectSessionWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateDeviceConnectSessionResp(rsp)
+}
+
+// CreateDeviceConnectSessionWithResponse Create a poll-only engine sign-in (connect session)
+//
+// Public (the engine is not authenticated yet). Mints an unguessable connect_id + a once-shown 256-bit session_secret (SHA-256 at rest) and returns the portal URL the engine opens in the system browser. The user signs in there and clicks Allow; the engine then polls GET /v1/devices/connect-session/{connect_id} with the secret.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/connect-session (the `CreateDeviceConnectSession` operationId).
+func (c *ClientWithResponses) CreateDeviceConnectSessionWithResponse(ctx context.Context, body CreateDeviceConnectSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateDeviceConnectSessionResp, error) {
+	rsp, err := c.CreateDeviceConnectSession(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateDeviceConnectSessionResp(rsp)
+}
+
+// GetDeviceConnectSessionWithResponse Poll a connect session (auth = the session_secret)
+//
+// The engine polls this with `Authorization: Bearer <session_secret>`. A pending session returns `{"status":"pending"}`; an approved one returns the token pair EXACTLY ONCE (`{"status":"approved","token":…, "refresh_token":…,"expires_at":…}`) and is marked consumed; later polls return `{"status":"consumed"}`; an expired session returns `{"status":"expired"}`.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/devices/connect-session/{connect_id} (the `GetDeviceConnectSession` operationId).
+func (c *ClientWithResponses) GetDeviceConnectSessionWithResponse(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*GetDeviceConnectSessionResp, error) {
+	rsp, err := c.GetDeviceConnectSession(ctx, connectId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDeviceConnectSessionResp(rsp)
+}
+
+// ApproveDeviceConnectSessionWithResponse Approve a connect session (the portal Allow click)
+//
+// Portal (interactive) auth ONLY — API keys are refused. The Allow click is the consent: it registers the device authorized=true and stores the freshly issued token pair (encrypted) for one-time retrieval by the engine's poll. Idempotent once approved.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/connect-session/{connect_id}/approve (the `ApproveDeviceConnectSession` operationId).
+func (c *ClientWithResponses) ApproveDeviceConnectSessionWithResponse(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*ApproveDeviceConnectSessionResp, error) {
+	rsp, err := c.ApproveDeviceConnectSession(ctx, connectId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseApproveDeviceConnectSessionResp(rsp)
+}
+
+// GetDeviceConnectSessionMetaWithResponse Read connect-session metadata (no secret)
+//
+// No-secret read for the portal page: the device name to render plus the current status. The connect_id is a 128-bit unguessable UUID.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/devices/connect-session/{connect_id}/meta (the `GetDeviceConnectSessionMeta` operationId).
+func (c *ClientWithResponses) GetDeviceConnectSessionMetaWithResponse(ctx context.Context, connectId string, reqEditors ...RequestEditorFn) (*GetDeviceConnectSessionMetaResp, error) {
+	rsp, err := c.GetDeviceConnectSessionMeta(ctx, connectId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDeviceConnectSessionMetaResp(rsp)
+}
+
+// MintEnrollmentGrantWithBodyWithResponse Mint a single-use delegated-enrollment grant
+//
+// Mints a short-lived (5 min), single-use grant that lets an already-authorized device (the desktop vouches) enroll a NEW device into the same account. The minting device must belong to the caller and be authorized. The grant is shown ONCE (only its SHA-256 is stored). Requires an interactive session — API keys are refused.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/enrollment-grants (the `MintEnrollmentGrant` operationId).
+func (c *ClientWithResponses) MintEnrollmentGrantWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*MintEnrollmentGrantResp, error) {
+	rsp, err := c.MintEnrollmentGrantWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMintEnrollmentGrantResp(rsp)
+}
+
+// MintEnrollmentGrantWithResponse Mint a single-use delegated-enrollment grant
+//
+// Mints a short-lived (5 min), single-use grant that lets an already-authorized device (the desktop vouches) enroll a NEW device into the same account. The minting device must belong to the caller and be authorized. The grant is shown ONCE (only its SHA-256 is stored). Requires an interactive session — API keys are refused.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/enrollment-grants (the `MintEnrollmentGrant` operationId).
+func (c *ClientWithResponses) MintEnrollmentGrantWithResponse(ctx context.Context, body MintEnrollmentGrantJSONRequestBody, reqEditors ...RequestEditorFn) (*MintEnrollmentGrantResp, error) {
+	rsp, err := c.MintEnrollmentGrant(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMintEnrollmentGrantResp(rsp)
+}
+
+// MintSyncPairingTokenWithBodyWithResponse Mint a single-use sync pairing token
+//
+// Mints a short-lived (5 min), single-use token binding (user, device, dataset). The engine presents it to the sync-relay at first connect (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a dataset group. The device must belong to the caller and be authorized.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/sync-pairing (the `MintSyncPairingToken` operationId).
+func (c *ClientWithResponses) MintSyncPairingTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*MintSyncPairingTokenResp, error) {
+	rsp, err := c.MintSyncPairingTokenWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMintSyncPairingTokenResp(rsp)
+}
+
+// MintSyncPairingTokenWithResponse Mint a single-use sync pairing token
+//
+// Mints a short-lived (5 min), single-use token binding (user, device, dataset). The engine presents it to the sync-relay at first connect (WebSocket `?pairing=` or POST /v1/sync/pairing/consume) to join a dataset group. The device must belong to the caller and be authorized.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/devices/sync-pairing (the `MintSyncPairingToken` operationId).
+func (c *ClientWithResponses) MintSyncPairingTokenWithResponse(ctx context.Context, body MintSyncPairingTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*MintSyncPairingTokenResp, error) {
+	rsp, err := c.MintSyncPairingToken(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseMintSyncPairingTokenResp(rsp)
 }
 
 // RevokeDeviceWithResponse Revoke a device
@@ -13635,126 +19704,6 @@ func (c *ClientWithResponses) PostV1RerankWithResponse(ctx context.Context, body
 	return ParsePostV1RerankResp(rsp)
 }
 
-// PostV1SessionConnectWithBodyWithResponse Connect a cloud session
-//
-// Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-func (c *ClientWithResponses) PostV1SessionConnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResp, error) {
-	rsp, err := c.PostV1SessionConnectWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostV1SessionConnectResp(rsp)
-}
-
-// PostV1SessionConnectWithResponse Connect a cloud session
-//
-// Asynchronous session provisioning. Returns the current session state — `provisioning` (202) while the broker prepares the task, `ready` (200) with a proxy endpoint when the session is reachable, or `failed` (503) with a failure reason on terminal error. The client polls this same endpoint with backoff respecting `retry_after_ms`. Idempotent per user — concurrent calls return the same session. Routed by userID in Valkey.
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v1/session/connect (the `PostV1SessionConnect` operationId).
-func (c *ClientWithResponses) PostV1SessionConnectWithResponse(ctx context.Context, body PostV1SessionConnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionConnectResp, error) {
-	rsp, err := c.PostV1SessionConnect(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostV1SessionConnectResp(rsp)
-}
-
-// PostV1SessionConnectedWithResponse Report session connected (proxy → broker)
-//
-// Called by the conduct proxy when the WebSocket upgrade completes; cancels the connect timeout.
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v1/session/connected (the `PostV1SessionConnected` operationId).
-func (c *ClientWithResponses) PostV1SessionConnectedWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PostV1SessionConnectedResp, error) {
-	rsp, err := c.PostV1SessionConnected(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostV1SessionConnectedResp(rsp)
-}
-
-// DeleteSessionDataWithBodyWithResponse Purge all cloud-side engine data for the authenticated user (async)
-//
-// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
-func (c *ClientWithResponses) DeleteSessionDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error) {
-	rsp, err := c.DeleteSessionDataWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteSessionDataResp(rsp)
-}
-
-// DeleteSessionDataWithResponse Purge all cloud-side engine data for the authenticated user (async)
-//
-// Starts an asynchronous purge: hard-kills any live session for the user (force-stop, no graceful snapshot upload), then permanently deletes ALL versions of the user's engine data from the sessions bucket (sync DB + RAG vectors), removes the user's autonomy beat schedule, and deletes the per-user encryption key — all in the background. Requires typed confirmation. Returns 202 Accepted immediately with a request_id; poll GET /v1/session/data/delete/status for the terminal outcome ("deleted" with counters, or "failed"). Idempotent — a second call after a completed purge restarts an empty (zero-count) purge. While a purge is in flight, /v1/session/connect returns 409 purge_in_progress. The purge holds the snapshot lease before it starts; a contended lease returns 409 snapshot_busy (the client auto-retries).
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v1/session/data/delete (the `DeleteSessionData` operationId).
-func (c *ClientWithResponses) DeleteSessionDataWithResponse(ctx context.Context, body DeleteSessionDataJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteSessionDataResp, error) {
-	rsp, err := c.DeleteSessionData(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteSessionDataResp(rsp)
-}
-
-// GetSessionDataDeleteStatusWithResponse Poll the status of the authenticated user's data purge
-//
-// Reports the current purge state. 200 always (after auth) with one of four shapes: in_progress (flag set — purge active or stalled, with phase/request_id/attempts), deleted (terminal success, with the S3 / beat / DEK counters from the result tombstone), failed (terminal failure — the sweeper gave up; the user is unblocked but the data was not guaranteed deleted; retry the delete), or none (nothing running or remembered). Flag presence wins over the terminal tombstone: while a failed run is still flagged for the sweeper the report stays in_progress.
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /v1/session/data/delete/status (the `GetSessionDataDeleteStatus` operationId).
-func (c *ClientWithResponses) GetSessionDataDeleteStatusWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSessionDataDeleteStatusResp, error) {
-	rsp, err := c.GetSessionDataDeleteStatus(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetSessionDataDeleteStatusResp(rsp)
-}
-
-// PostV1SessionDisconnectWithBodyWithResponse Disconnect a cloud session (enter grace period)
-//
-// Transitions the session to a 5-minute grace period, then schedules cleanup.
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-func (c *ClientWithResponses) PostV1SessionDisconnectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResp, error) {
-	rsp, err := c.PostV1SessionDisconnectWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostV1SessionDisconnectResp(rsp)
-}
-
-// PostV1SessionDisconnectWithResponse Disconnect a cloud session (enter grace period)
-//
-// Transitions the session to a 5-minute grace period, then schedules cleanup.
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /v1/session/disconnect (the `PostV1SessionDisconnect` operationId).
-func (c *ClientWithResponses) PostV1SessionDisconnectWithResponse(ctx context.Context, body PostV1SessionDisconnectJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV1SessionDisconnectResp, error) {
-	rsp, err := c.PostV1SessionDisconnect(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostV1SessionDisconnectResp(rsp)
-}
-
 // GetV1SubscriptionMeWithResponse Get the current user's subscription
 //
 // Resolves the tier from the auth context; defaults to `free` if no subscription exists.
@@ -13781,6 +19730,49 @@ func (c *ClientWithResponses) GetV1SubscriptionTiersWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParseGetV1SubscriptionTiersResp(rsp)
+}
+
+// ConsumeSyncPairingTokenWithBodyWithResponse Redeem a single-use sync pairing token
+//
+// Atomically consumes a pairing token and joins the caller's device to the dataset group (enforcing the tier `sync_devices` limit). A token can be consumed exactly once.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/sync/pairing/consume (the `ConsumeSyncPairingToken` operationId).
+func (c *ClientWithResponses) ConsumeSyncPairingTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ConsumeSyncPairingTokenResp, error) {
+	rsp, err := c.ConsumeSyncPairingTokenWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseConsumeSyncPairingTokenResp(rsp)
+}
+
+// ConsumeSyncPairingTokenWithResponse Redeem a single-use sync pairing token
+//
+// Atomically consumes a pairing token and joins the caller's device to the dataset group (enforcing the tier `sync_devices` limit). A token can be consumed exactly once.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/sync/pairing/consume (the `ConsumeSyncPairingToken` operationId).
+func (c *ClientWithResponses) ConsumeSyncPairingTokenWithResponse(ctx context.Context, body ConsumeSyncPairingTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*ConsumeSyncPairingTokenResp, error) {
+	rsp, err := c.ConsumeSyncPairingToken(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseConsumeSyncPairingTokenResp(rsp)
+}
+
+// GetSyncStatusWithResponse Get the caller's sync buffer + quota status
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v1/sync/status (the `GetSyncStatus` operationId).
+func (c *ClientWithResponses) GetSyncStatusWithResponse(ctx context.Context, params *GetSyncStatusParams, reqEditors ...RequestEditorFn) (*GetSyncStatusResp, error) {
+	rsp, err := c.GetSyncStatus(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSyncStatusResp(rsp)
 }
 
 // GetV1VersionsWithResponse List available HL image versions
@@ -13824,6 +19816,478 @@ func (c *ClientWithResponses) PostV1VoiceConvertWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParsePostV1VoiceConvertResp(rsp)
+}
+
+// ParseDeleteV1AccountBackupKeyResp parses an HTTP response from a DeleteV1AccountBackupKeyWithResponse call
+func ParseDeleteV1AccountBackupKeyResp(rsp *http.Response) (*DeleteV1AccountBackupKeyResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AccountBackupKeyResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BackupKeyStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AccountBackupKeyResp parses an HTTP response from a GetV1AccountBackupKeyWithResponse call
+func ParseGetV1AccountBackupKeyResp(rsp *http.Response) (*GetV1AccountBackupKeyResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountBackupKeyResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BackupKeyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutV1AccountBackupKeyResp parses an HTTP response from a PutV1AccountBackupKeyWithResponse call
+func ParsePutV1AccountBackupKeyResp(rsp *http.Response) (*PutV1AccountBackupKeyResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV1AccountBackupKeyResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BackupKeyStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 413:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON413 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteV1AccountSyncKeyResp parses an HTTP response from a DeleteV1AccountSyncKeyWithResponse call
+func ParseDeleteV1AccountSyncKeyResp(rsp *http.Response) (*DeleteV1AccountSyncKeyResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AccountSyncKeyResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SyncKeyStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AccountSyncKeyResp parses an HTTP response from a GetV1AccountSyncKeyWithResponse call
+func ParseGetV1AccountSyncKeyResp(rsp *http.Response) (*GetV1AccountSyncKeyResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountSyncKeyResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SyncKeyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutV1AccountSyncKeyResp parses an HTTP response from a PutV1AccountSyncKeyWithResponse call
+func ParsePutV1AccountSyncKeyResp(rsp *http.Response) (*PutV1AccountSyncKeyResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV1AccountSyncKeyResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SyncKeyStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 413:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON413 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteV1AccountSyncRotationRequiredResp parses an HTTP response from a DeleteV1AccountSyncRotationRequiredWithResponse call
+func ParseDeleteV1AccountSyncRotationRequiredResp(rsp *http.Response) (*DeleteV1AccountSyncRotationRequiredResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AccountSyncRotationRequiredResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SyncRotationStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AccountSyncRotationRequiredResp parses an HTTP response from a GetV1AccountSyncRotationRequiredWithResponse call
+func ParseGetV1AccountSyncRotationRequiredResp(rsp *http.Response) (*GetV1AccountSyncRotationRequiredResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AccountSyncRotationRequiredResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SyncRotationStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutV1AccountSyncRotationRequiredResp parses an HTTP response from a PutV1AccountSyncRotationRequiredWithResponse call
+func ParsePutV1AccountSyncRotationRequiredResp(rsp *http.Response) (*PutV1AccountSyncRotationRequiredResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV1AccountSyncRotationRequiredResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SyncRotationStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParsePostV1AudioConvertResp parses an HTTP response from a PostV1AudioConvertWithResponse call
@@ -14323,6 +20787,121 @@ func ParsePostV1AudioVadResp(rsp *http.Response) (*PostV1AudioVadResp, error) {
 	return response, nil
 }
 
+// ParseDeleteV1AuthAccountResp parses an HTTP response from a DeleteV1AuthAccountWithResponse call
+func ParseDeleteV1AuthAccountResp(rsp *http.Response) (*DeleteV1AuthAccountResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AuthAccountResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AuthAccountConfirmResp parses an HTTP response from a PostV1AuthAccountConfirmWithResponse call
+func ParsePostV1AuthAccountConfirmResp(rsp *http.Response) (*PostV1AuthAccountConfirmResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AuthAccountConfirmResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetV1AuthApiKeysResp parses an HTTP response from a GetV1AuthApiKeysWithResponse call
 func ParseGetV1AuthApiKeysResp(rsp *http.Response) (*GetV1AuthApiKeysResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -14526,6 +21105,390 @@ func ParsePostV1AuthAppleWebResp(rsp *http.Response) (*PostV1AuthAppleWebResp, e
 	return response, nil
 }
 
+// ParseEnrollDeviceResp parses an HTTP response from a EnrollDeviceWithResponse call
+func ParseEnrollDeviceResp(rsp *http.Response) (*EnrollDeviceResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &EnrollDeviceResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TokenResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers EnrollDeviceResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AuthEmailChangeCancelResp parses an HTTP response from a PostV1AuthEmailChangeCancelWithResponse call
+func ParsePostV1AuthEmailChangeCancelResp(rsp *http.Response) (*PostV1AuthEmailChangeCancelResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AuthEmailChangeCancelResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AuthEmailChangeConfirmResp parses an HTTP response from a PostV1AuthEmailChangeConfirmWithResponse call
+func ParsePostV1AuthEmailChangeConfirmResp(rsp *http.Response) (*PostV1AuthEmailChangeConfirmResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AuthEmailChangeConfirmResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AuthEmailChangeConfirmNewResp parses an HTTP response from a PostV1AuthEmailChangeConfirmNewWithResponse call
+func ParsePostV1AuthEmailChangeConfirmNewResp(rsp *http.Response) (*PostV1AuthEmailChangeConfirmNewResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AuthEmailChangeConfirmNewResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AuthEmailChangeRequestResp parses an HTTP response from a PostV1AuthEmailChangeRequestWithResponse call
+func ParsePostV1AuthEmailChangeRequestResp(rsp *http.Response) (*PostV1AuthEmailChangeRequestResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AuthEmailChangeRequestResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AuthEmailChangeResendResp parses an HTTP response from a PostV1AuthEmailChangeResendWithResponse call
+func ParsePostV1AuthEmailChangeResendResp(rsp *http.Response) (*PostV1AuthEmailChangeResendResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AuthEmailChangeResendResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AuthEmailChangeStatusResp parses an HTTP response from a GetV1AuthEmailChangeStatusWithResponse call
+func ParseGetV1AuthEmailChangeStatusResp(rsp *http.Response) (*GetV1AuthEmailChangeStatusResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AuthEmailChangeStatusResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest EmailChangeStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostV1AuthGoogleResp parses an HTTP response from a PostV1AuthGoogleWithResponse call
 func ParsePostV1AuthGoogleResp(rsp *http.Response) (*PostV1AuthGoogleResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -14614,6 +21577,46 @@ func ParsePostV1AuthGoogleWebResp(rsp *http.Response) (*PostV1AuthGoogleWebResp,
 			return nil, err
 		}
 		response.JSON409 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AuthIdentitiesResp parses an HTTP response from a GetV1AuthIdentitiesWithResponse call
+func ParseGetV1AuthIdentitiesResp(rsp *http.Response) (*GetV1AuthIdentitiesResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AuthIdentitiesResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []LinkedIdentity
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	}
 
@@ -14866,6 +21869,13 @@ func ParseGetV1AuthMeResp(rsp *http.Response) (*GetV1AuthMeResp, error) {
 		}
 		response.JSON401 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -14925,12 +21935,25 @@ func ParsePutV1AuthPasswordResp(rsp *http.Response) (*PutV1AuthPasswordResp, err
 		}
 		response.JSON200 = &dest
 
+	case rsp.StatusCode == 400:
+		break // No content-type
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest Unauthorized
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case rsp.StatusCode == 409:
+		break // No content-type
 
 	}
 
@@ -15011,6 +22034,113 @@ func ParsePostV1AuthPasswordResetRequestResp(rsp *http.Response) (*PostV1AuthPas
 			return nil, err
 		}
 		response.JSON400 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AuthPasswordSetupConfirmResp parses an HTTP response from a PostV1AuthPasswordSetupConfirmWithResponse call
+func ParsePostV1AuthPasswordSetupConfirmResp(rsp *http.Response) (*PostV1AuthPasswordSetupConfirmResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AuthPasswordSetupConfirmResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case rsp.StatusCode == 409:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostV1AuthPasswordSetupRequestResp parses an HTTP response from a PostV1AuthPasswordSetupRequestWithResponse call
+func ParsePostV1AuthPasswordSetupRequestResp(rsp *http.Response) (*PostV1AuthPasswordSetupRequestResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1AuthPasswordSetupRequestResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest Message
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case rsp.StatusCode == 409:
+		break // No content-type
 
 	}
 
@@ -15178,6 +22308,136 @@ func ParsePostV1AuthResendVerificationResp(rsp *http.Response) (*PostV1AuthResen
 	return response, nil
 }
 
+// ParseDeleteV1AuthSessionsResp parses an HTTP response from a DeleteV1AuthSessionsWithResponse call
+func ParseDeleteV1AuthSessionsResp(rsp *http.Response) (*DeleteV1AuthSessionsResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AuthSessionsResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RevokeAllSessionsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetV1AuthSessionsResp parses an HTTP response from a GetV1AuthSessionsWithResponse call
+func ParseGetV1AuthSessionsResp(rsp *http.Response) (*GetV1AuthSessionsResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetV1AuthSessionsResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SessionListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteV1AuthSessionsSessionIdResp parses an HTTP response from a DeleteV1AuthSessionsSessionIdWithResponse call
+func ParseDeleteV1AuthSessionsSessionIdResp(rsp *http.Response) (*DeleteV1AuthSessionsSessionIdResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1AuthSessionsSessionIdResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetV1AuthVerifyResp parses an HTTP response from a GetV1AuthVerifyWithResponse call
 func ParseGetV1AuthVerifyResp(rsp *http.Response) (*GetV1AuthVerifyResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -15220,6 +22480,241 @@ func ParseGetV1AuthVerifyResp(rsp *http.Response) (*GetV1AuthVerifyResp, error) 
 		}
 		response.JSON410 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseGetBackupManifestResp parses an HTTP response from a GetBackupManifestWithResponse call
+func ParseGetBackupManifestResp(rsp *http.Response) (*GetBackupManifestResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetBackupManifestResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutBackupManifestResp parses an HTTP response from a PutBackupManifestWithResponse call
+func ParsePutBackupManifestResp(rsp *http.Response) (*PutBackupManifestResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutBackupManifestResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BackupPutResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 413:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON413 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers PutBackupManifestResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetBackupObjectResp parses an HTTP response from a GetBackupObjectWithResponse call
+func ParseGetBackupObjectResp(rsp *http.Response) (*GetBackupObjectResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetBackupObjectResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutBackupObjectResp parses an HTTP response from a PutBackupObjectWithResponse call
+func ParsePutBackupObjectResp(rsp *http.Response) (*PutBackupObjectResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutBackupObjectResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest BackupPutResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 413:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON413 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers PutBackupObjectResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
 	}
 
 	return response, nil
@@ -15634,6 +23129,356 @@ func ParseGetDeviceAuthorizationStatusResp(rsp *http.Response) (*GetDeviceAuthor
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateDeviceConnectSessionResp parses an HTTP response from a CreateDeviceConnectSessionWithResponse call
+func ParseCreateDeviceConnectSessionResp(rsp *http.Response) (*CreateDeviceConnectSessionResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateDeviceConnectSessionResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest DeviceConnectSessionResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers CreateDeviceConnectSessionResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetDeviceConnectSessionResp parses an HTTP response from a GetDeviceConnectSessionWithResponse call
+func ParseGetDeviceConnectSessionResp(rsp *http.Response) (*GetDeviceConnectSessionResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDeviceConnectSessionResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeviceConnectStatusResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseApproveDeviceConnectSessionResp parses an HTTP response from a ApproveDeviceConnectSessionWithResponse call
+func ParseApproveDeviceConnectSessionResp(rsp *http.Response) (*ApproveDeviceConnectSessionResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ApproveDeviceConnectSessionResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeviceConnectApproveResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON410 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers ApproveDeviceConnectSessionResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetDeviceConnectSessionMetaResp parses an HTTP response from a GetDeviceConnectSessionMetaWithResponse call
+func ParseGetDeviceConnectSessionMetaResp(rsp *http.Response) (*GetDeviceConnectSessionMetaResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDeviceConnectSessionMetaResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeviceConnectMetaResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseMintEnrollmentGrantResp parses an HTTP response from a MintEnrollmentGrantWithResponse call
+func ParseMintEnrollmentGrantResp(rsp *http.Response) (*MintEnrollmentGrantResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &MintEnrollmentGrantResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest EnrollmentGrantResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseMintSyncPairingTokenResp parses an HTTP response from a MintSyncPairingTokenWithResponse call
+func ParseMintSyncPairingTokenResp(rsp *http.Response) (*MintSyncPairingTokenResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &MintSyncPairingTokenResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest SyncPairingResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Error
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
 		var dest Error
@@ -16151,363 +23996,6 @@ func ParsePostV1RerankResp(rsp *http.Response) (*PostV1RerankResp, error) {
 	return response, nil
 }
 
-// ParsePostV1SessionConnectResp parses an HTTP response from a PostV1SessionConnectWithResponse call
-func ParsePostV1SessionConnectResp(rsp *http.Response) (*PostV1SessionConnectResp, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostV1SessionConnectResp{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest SessionConnectResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
-		var dest SessionConnectResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON202 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Unauthorized
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest struct {
-			Error *PostV1SessionConnect403JSONResponseBodyError `json:"error,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
-		var dest struct {
-			Error        *PostV1SessionConnect409JSONResponseBodyError `json:"error,omitempty"`
-			RetryAfterMs *int                                          `json:"retry_after_ms,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
-		var dest RateLimited
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON429 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
-		var dest SessionConnectResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON503 = &dest
-
-	}
-
-	switch {
-	case rsp.StatusCode == 429:
-		var headers PostV1SessionConnectResp429Headers
-		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.RetryAfter = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitLimit = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitRemaining = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
-			var value int64
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitReset = &value
-		}
-		response.Headers429 = &headers
-	}
-
-	return response, nil
-}
-
-// ParsePostV1SessionConnectedResp parses an HTTP response from a PostV1SessionConnectedWithResponse call
-func ParsePostV1SessionConnectedResp(rsp *http.Response) (*PostV1SessionConnectedResp, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostV1SessionConnectedResp{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest SessionConnectedResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Unauthorized
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeleteSessionDataResp parses an HTTP response from a DeleteSessionDataWithResponse call
-func ParseDeleteSessionDataResp(rsp *http.Response) (*DeleteSessionDataResp, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteSessionDataResp{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest SessionDataDeleteResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
-		var dest SessionDataDeleteResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON202 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest struct {
-			Error *DeleteSessionData400JSONResponseBodyError `json:"error,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Unauthorized
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
-		var dest struct {
-			Error        *DeleteSessionData409JSONResponseBodyError `json:"error,omitempty"`
-			RetryAfterMs *int                                       `json:"retry_after_ms,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
-		var dest RateLimited
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON429 = &dest
-
-	}
-
-	switch {
-	case rsp.StatusCode == 429:
-		var headers DeleteSessionDataResp429Headers
-		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.RetryAfter = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitLimit = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitRemaining = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
-			var value int64
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitReset = &value
-		}
-		response.Headers429 = &headers
-	}
-
-	return response, nil
-}
-
-// ParseGetSessionDataDeleteStatusResp parses an HTTP response from a GetSessionDataDeleteStatusWithResponse call
-func ParseGetSessionDataDeleteStatusResp(rsp *http.Response) (*GetSessionDataDeleteStatusResp, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetSessionDataDeleteStatusResp{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest SessionDataDeleteStatusResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Unauthorized
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
-		var dest RateLimited
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON429 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
-		var dest struct {
-			ErrorCode *GetSessionDataDeleteStatus503JSONResponseBodyErrorCode `json:"error_code,omitempty"`
-			Message   *string                                                 `json:"message,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON503 = &dest
-
-	}
-
-	switch {
-	case rsp.StatusCode == 429:
-		var headers GetSessionDataDeleteStatusResp429Headers
-		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.RetryAfter = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitLimit = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
-			var value int
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitRemaining = &value
-		}
-		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
-			var value int64
-			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
-				return nil, err
-			}
-			headers.XRateLimitReset = &value
-		}
-		response.Headers429 = &headers
-	}
-
-	return response, nil
-}
-
-// ParsePostV1SessionDisconnectResp parses an HTTP response from a PostV1SessionDisconnectWithResponse call
-func ParsePostV1SessionDisconnectResp(rsp *http.Response) (*PostV1SessionDisconnectResp, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostV1SessionDisconnectResp{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest SessionDisconnectResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Unauthorized
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseGetV1SubscriptionMeResp parses an HTTP response from a GetV1SubscriptionMeWithResponse call
 func ParseGetV1SubscriptionMeResp(rsp *http.Response) (*GetV1SubscriptionMeResp, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -16561,6 +24049,137 @@ func ParseGetV1SubscriptionTiersResp(rsp *http.Response) (*GetV1SubscriptionTier
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseConsumeSyncPairingTokenResp parses an HTTP response from a ConsumeSyncPairingTokenWithResponse call
+func ParseConsumeSyncPairingTokenResp(rsp *http.Response) (*ConsumeSyncPairingTokenResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ConsumeSyncPairingTokenResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			DatasetId *string `json:"dataset_id,omitempty"`
+			DeviceId  *string `json:"device_id,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest RateLimited
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 429:
+		var headers ConsumeSyncPairingTokenResp429Headers
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("X-RateLimit-Reset"); len(values) > 0 {
+			var value int64
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			}
+			headers.XRateLimitReset = &value
+		}
+		response.Headers429 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetSyncStatusResp parses an HTTP response from a GetSyncStatusWithResponse call
+func ParseGetSyncStatusResp(rsp *http.Response) (*GetSyncStatusResp, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSyncStatusResp{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SyncStatus
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest StandardError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
 
 	}
 

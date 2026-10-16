@@ -159,3 +159,107 @@ func (c *Client) GetDeviceAuthorizationStatus(ctx context.Context, deviceID stri
 	}
 	return checkOK(resp.JSON200, resp.Body, resp.HTTPResponse)
 }
+
+// ---------------------------------------------------------------------------
+// Delegated device enrollment (phase 7-15)
+// ---------------------------------------------------------------------------
+
+// MintEnrollmentGrant mints a short-lived, single-use delegated-enrollment
+// grant from an already-authorized device (deviceID is the MINTING device).
+// The opaque grant is returned ONCE; only its SHA-256 is stored server-side.
+// Requires account auth (device-scoped session or interactive/PASETO).
+func (c *Client) MintEnrollmentGrant(ctx context.Context, deviceID string) (*gen.EnrollmentGrantResponse, error) {
+	if deviceID == "" {
+		return nil, fmt.Errorf("device id is required")
+	}
+	body := gen.MintEnrollmentGrantJSONRequestBody(gen.EnrollmentGrantRequest{DeviceId: deviceID})
+	resp, err := c.cloudGen.MintEnrollmentGrantWithResponse(ctx, body)
+	if err != nil {
+		return nil, fmt.Errorf("mint enrollment grant request: %w", err)
+	}
+	return checkOK(resp.JSON201, resp.Body, resp.HTTPResponse)
+}
+
+// EnrollDeviceWithGrant redeems an enrollment grant for the NEW device's own
+// device-scoped session. Public: no account auth is sent — the grant IS the
+// credential. deviceName and platform are optional metadata; pass a nil
+// platform to let the server default it to "android".
+func (c *Client) EnrollDeviceWithGrant(ctx context.Context, grant, deviceID string, deviceName *string, platform *gen.DeviceEnrollRequestPlatform) (*gen.TokenResponse, error) {
+	if grant == "" {
+		return nil, fmt.Errorf("enrollment grant is required")
+	}
+	if deviceID == "" {
+		return nil, fmt.Errorf("device id is required")
+	}
+	body := gen.EnrollDeviceJSONRequestBody(gen.DeviceEnrollRequest{
+		Grant:      grant,
+		DeviceId:   deviceID,
+		DeviceName: deviceName,
+		Platform:   platform,
+	})
+	resp, err := c.cloudGen.EnrollDeviceWithResponse(ctx, body)
+	if err != nil {
+		return nil, fmt.Errorf("enroll device request: %w", err)
+	}
+	return checkOK(resp.JSON200, resp.Body, resp.HTTPResponse)
+}
+
+// ---------------------------------------------------------------------------
+// Portal-mediated connect sessions (phase 7-15 C2)
+// ---------------------------------------------------------------------------
+
+// CreateDeviceConnectSession starts the portal-mediated engine sign-in flow.
+// Public (the engine is not authenticated yet): the server mints an
+// unguessable connect_id plus a once-shown 256-bit session_secret and returns
+// the portal URL the engine should open in the system browser. Poll
+// GetDeviceConnectSession with the returned secret until the user allows it.
+//
+// deviceName and platform are optional; pass a nil platform to let the server
+// default it to "web".
+func (c *Client) CreateDeviceConnectSession(ctx context.Context, deviceID string, deviceName *string, platform *gen.DeviceConnectSessionRequestPlatform) (*gen.DeviceConnectSessionResponse, error) {
+	if deviceID == "" {
+		return nil, fmt.Errorf("device id is required")
+	}
+	body := gen.CreateDeviceConnectSessionJSONRequestBody(gen.DeviceConnectSessionRequest{
+		DeviceId:   deviceID,
+		DeviceName: deviceName,
+		Platform:   platform,
+	})
+	resp, err := c.cloudGen.CreateDeviceConnectSessionWithResponse(ctx, body)
+	if err != nil {
+		return nil, fmt.Errorf("create device connect session request: %w", err)
+	}
+	return checkOK(resp.JSON201, resp.Body, resp.HTTPResponse)
+}
+
+// GetDeviceConnectSession polls a connect session using the once-shown
+// session_secret as the Bearer credential. Status is one of
+// pending|approved|consumed|expired. The token pair is populated ONLY on the
+// approved transition and returned exactly once (the server marks the row
+// consumed in the same statement), so persist it immediately.
+//
+// Use an UNauthenticated client (no API key / PASETO) for this call: the
+// secret is set as the Authorization header and, when account auth is
+// configured, the auth round-tripper would overwrite it (see transport.go).
+func (c *Client) GetDeviceConnectSession(ctx context.Context, connectID, sessionSecret string) (*gen.DeviceConnectStatusResponse, error) {
+	if connectID == "" {
+		return nil, fmt.Errorf("connect id is required")
+	}
+	if sessionSecret == "" {
+		return nil, fmt.Errorf("session secret is required")
+	}
+	resp, err := c.cloudGen.GetDeviceConnectSessionWithResponse(ctx, connectID, connectSecretEditor(sessionSecret))
+	if err != nil {
+		return nil, fmt.Errorf("get device connect session request: %w", err)
+	}
+	return checkOK(resp.JSON200, resp.Body, resp.HTTPResponse)
+}
+
+// connectSecretEditor returns a gen.RequestEditorFn that sets
+// Authorization: Bearer <sessionSecret> for a connect-session poll.
+func connectSecretEditor(sessionSecret string) gen.RequestEditorFn {
+	return func(_ context.Context, req *http.Request) error {
+		req.Header.Set("Authorization", "Bearer "+sessionSecret)
+		return nil
+	}
+}
