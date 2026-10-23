@@ -33,6 +33,12 @@ type Config struct {
 	// transport. Required for PASETO token refresh on 401.
 	RefreshToken string
 
+	// AuthStrategy, when non-nil, is used verbatim as the auth strategy and
+	// takes precedence over APIKey/PasetoToken/RefreshToken. Use this to
+	// inject a dynamic credential source (resolved per request via
+	// authRoundTripper). When nil, behavior is identical to previous versions.
+	AuthStrategy AuthStrategy
+
 	// HTTPClient is the HTTP client used for API requests.
 	// If nil, http.DefaultClient is used.
 	HTTPClient *http.Client

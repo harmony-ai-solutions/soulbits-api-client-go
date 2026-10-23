@@ -29,6 +29,94 @@ func TestEnsureDefaultsSetsHTTPClientTimeout(t *testing.T) {
 	}
 }
 
+// TestNewUsesInjectedAuthStrategy verifies that a non-nil Config.AuthStrategy
+// is used verbatim and that the string credential fields are ignored.
+func TestNewUsesInjectedAuthStrategy(t *testing.T) {
+	t.Parallel()
+
+	stub := &stubAuthStrategy{token: "dynamic-token"}
+
+	client, err := New(&Config{
+		CloudBaseURL: "http://127.0.0.1:1",
+		AuthStrategy: stub,
+		// These must be ignored when AuthStrategy is set.
+		APIKey:       "sb_cloud_ignored",
+		PasetoToken:  "v4.local.ignored",
+		RefreshToken: "ignored_refresh",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got := client.Auth(); got != stub {
+		t.Fatalf("expected injected strategy to be used verbatim, got %T", got)
+	}
+	if _, ok := client.Auth().(*APIKeyAuth); ok {
+		t.Error("APIKey must not override an injected AuthStrategy")
+	}
+	if _, ok := client.Auth().(*PasetoAuth); ok {
+		t.Error("PasetoToken must not override an injected AuthStrategy")
+	}
+	if got := client.Auth().Token(); got != "dynamic-token" {
+		t.Errorf("token = %q, want %q", got, "dynamic-token")
+	}
+}
+
+// TestNewAPIKeyAuthBackwardCompatible verifies that, with no injected
+// AuthStrategy, an APIKey still selects APIKeyAuth (precedence over PASETO).
+func TestNewAPIKeyAuthBackwardCompatible(t *testing.T) {
+	t.Parallel()
+
+	client, err := New(&Config{
+		CloudBaseURL: "http://127.0.0.1:1",
+		APIKey:       "sb_cloud_test_key",
+		PasetoToken:  "v4.local.also_set",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	apiKeyAuth, ok := client.Auth().(*APIKeyAuth)
+	if !ok {
+		t.Fatalf("expected *APIKeyAuth, got %T", client.Auth())
+	}
+	if apiKeyAuth.Token() != "sb_cloud_test_key" {
+		t.Errorf("token = %q, want %q", apiKeyAuth.Token(), "sb_cloud_test_key")
+	}
+	if apiKeyAuth.IsPASETO() {
+		t.Error("APIKeyAuth.IsPASETO() should be false")
+	}
+}
+
+// TestNewPasetoAuthBackwardCompatible verifies that, with no injected
+// AuthStrategy, a PasetoToken (plus RefreshToken) still selects PasetoAuth.
+func TestNewPasetoAuthBackwardCompatible(t *testing.T) {
+	t.Parallel()
+
+	client, err := New(&Config{
+		CloudBaseURL: "http://127.0.0.1:1",
+		PasetoToken:  "v4.local.test_token",
+		RefreshToken: "test_refresh",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	pasetoAuth, ok := client.Auth().(*PasetoAuth)
+	if !ok {
+		t.Fatalf("expected *PasetoAuth, got %T", client.Auth())
+	}
+	if pasetoAuth.Token() != "v4.local.test_token" {
+		t.Errorf("token = %q, want %q", pasetoAuth.Token(), "v4.local.test_token")
+	}
+	if pasetoAuth.RefreshToken() != "test_refresh" {
+		t.Errorf("refresh token = %q, want %q", pasetoAuth.RefreshToken(), "test_refresh")
+	}
+	if !pasetoAuth.IsPASETO() {
+		t.Error("PasetoAuth.IsPASETO() should be true")
+	}
+}
+
 // TestClientLoginListModelsChat verifies a full login → list models → chat
 // flow against mocked cloud and inference servers.
 func TestClientLoginListModelsChat(t *testing.T) {

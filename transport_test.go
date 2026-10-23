@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 )
@@ -131,6 +132,95 @@ func TestTransportRetryAfterRefresh(t *testing.T) {
 		t.Errorf("expected at least 2 HTTP calls (Me+refresh+retry), got %d", totalCalls)
 	}
 	t.Logf("Retry-after-refresh verified: %d total HTTP calls", totalCalls)
+}
+
+// stubAuthStrategy is a test AuthStrategy with a controllable token. When
+// dynamicTokens is non-empty, each Token() call advances through the slice and
+// the final value is returned for all subsequent calls.
+type stubAuthStrategy struct {
+	token         string
+	dynamicTokens []string
+	paseto        bool
+
+	mu    sync.Mutex
+	calls int
+}
+
+func (s *stubAuthStrategy) Token() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if len(s.dynamicTokens) == 0 {
+		return s.token
+	}
+	i := s.calls
+	s.calls++
+	if i >= len(s.dynamicTokens) {
+		i = len(s.dynamicTokens) - 1
+	}
+	return s.dynamicTokens[i]
+}
+
+func (s *stubAuthStrategy) IsPASETO() bool { return s.paseto }
+
+// TestTransportDynamicTokenPerRequest verifies that an injected AuthStrategy is
+// consulted on every request, so a token swap is picked up without
+// reconstructing the client. This is the property the engine's credential
+// mirror depends on.
+func TestTransportDynamicTokenPerRequest(t *testing.T) {
+	t.Parallel()
+
+	var (
+		mu   sync.Mutex
+		seen []string
+	)
+
+	cloudSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		seen = append(seen, r.Header.Get("Authorization"))
+		mu.Unlock()
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"id":             "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+			"email":          "test@example.com",
+			"display_name":   "Test",
+			"email_verified": true,
+			"created_at":     "2026-01-01T00:00:00Z",
+		})
+	}))
+	defer cloudSrv.Close()
+
+	strategy := &stubAuthStrategy{dynamicTokens: []string{"token-A", "token-B"}}
+	client, err := New(&Config{
+		CloudBaseURL: cloudSrv.URL,
+		AuthStrategy: strategy,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	for i := 0; i < 2; i++ {
+		if _, err := client.Me(ctx); err != nil {
+			t.Fatalf("Me (request %d) failed: %v", i+1, err)
+		}
+	}
+
+	mu.Lock()
+	got := append([]string(nil), seen...)
+	mu.Unlock()
+
+	want := []string{"Bearer token-A", "Bearer token-B"}
+	if len(got) != len(want) {
+		t.Fatalf("expected %d requests, got %d: %v", len(want), len(got), got)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Errorf("request %d Authorization = %q, want %q", i+1, got[i], want[i])
+		}
+	}
+	t.Logf("Per-request token resolution verified: %v", got)
 }
 
 // TestTransportNoAuthForPublicEndpoints verifies that public endpoints can be

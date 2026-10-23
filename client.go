@@ -71,10 +71,11 @@ type Client struct {
 
 // New creates a new Soulbits API Client.
 //
-// If the config provides an APIKey, API key auth is used. Otherwise, if a
-// PasetoToken is provided, PASETO auth is used. If both are empty, the
-// client is created without auth (suitable for public endpoints like
-// model listing and subscription tiers).
+// If the config provides an AuthStrategy, it is used verbatim and the string
+// credential fields below are ignored. Otherwise, if the config provides an
+// APIKey, API key auth is used. Otherwise, if a PasetoToken is provided,
+// PASETO auth is used. If none are set, the client is created without auth
+// (suitable for public endpoints like model listing and subscription tiers).
 //
 // The config is modified in place to fill defaults; the caller should not
 // reuse it after passing to New.
@@ -92,9 +93,15 @@ func New(cfg *Config) (*Client, error) {
 	cfg.ensureDefaults()
 
 	var auth AuthStrategy
-	if cfg.APIKey != "" {
+	switch {
+	case cfg.AuthStrategy != nil:
+		// Injected strategy wins verbatim; the string credential fields are
+		// ignored. This allows a dynamic source whose Token() is resolved on
+		// every request by the auth round-tripper.
+		auth = cfg.AuthStrategy
+	case cfg.APIKey != "":
 		auth = NewAPIKeyAuth(cfg.APIKey)
-	} else if cfg.PasetoToken != "" {
+	case cfg.PasetoToken != "":
 		// PasetoAuth uses the raw cfg.HTTPClient for its own refresh calls
 		// (no auth wrapping — avoids refresh loops).
 		auth = NewPasetoAuth(cfg.PasetoToken, cfg.RefreshToken, cfg.HTTPClient, cfg.CloudBaseURL)
